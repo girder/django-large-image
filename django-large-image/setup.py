@@ -37,28 +37,13 @@ setup(
     include_package_data=True,
     install_requires=[
         'django>=3.2',
-        'django-allauth',
-        'django-configurations[database,email]',
         'django-extensions',
-        'django-filter',
         'django-girder-utils',
-        'django-oauth-toolkit',
         'djangorestframework',
         'drf-yasg',
-        # Production-only
-        'django-composed-configuration[prod]>=0.18',
-        'django-s3-file-field[boto3]',
-        'gunicorn',
         'large-image>=1.9.0',
     ],
     extras_require={
-        'dev': [
-            'django-composed-configuration[dev]>=0.18',
-            'django-debug-toolbar',
-            'django-s3-file-field[minio]',
-            'ipython',
-            'tox',
-        ],
         'colormaps': [
             'matplotlib',
             'cmocean',
