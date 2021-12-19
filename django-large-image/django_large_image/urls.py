@@ -38,14 +38,9 @@ urlpatterns = [
         name='image-tiles',
     ),
     path(
-        'api/large_image/<int:pk>/tiles/region/world/<float:left>/<float:right>/<float:bottom>/<float:top>/region.tif',
+        'api/large_image/<int:pk>/tiles/region/<float:left>/<float:right>/<float:bottom>/<float:top>/region.tif',
         rest.tiles.TileRegionView.as_view(),
         name='image-region',
-    ),
-    path(
-        'api/large_image/<int:pk>/tiles/region/pixel/<int:left>/<int:right>/<int:bottom>/<int:top>/region.tif',
-        rest.tiles.TileRegionPixelView.as_view(),
-        name='image-region-pixel',
     ),
     path(
         'api/large_image/<int:pk>/tiles/<int:z>/<int:x>/<int:y>/corners',

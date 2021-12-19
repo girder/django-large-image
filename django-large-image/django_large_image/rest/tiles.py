@@ -143,7 +143,8 @@ class TileRegionView(BaseTileView):
     ----
     Use the `units` query parameter to inidicate the projection of the given
     coordinates. This can be different than the `projection` parameter used
-    to open the tile source. `units` defaults to `EPSG:4326`.
+    to open the tile source. `units` defaults to `EPSG:4326` for geospatial
+    images, otherwise, must use `pixels`.
 
     """
 
@@ -151,12 +152,9 @@ class TileRegionView(BaseTileView):
         self, request: Request, pk: int, left: float, right: float, bottom: float, top: float
     ) -> HttpResponse:
         tile_source = self.get_tile_source(request, pk)
-        # TODO: check for geospatial reference
-        # if not isinstance(tile_source, GDALFileTileSource):
-        #     raise TypeError('Souce image must have geospatial reference.')
-        units = request.query_params.get('units', 'EPSG:4326')
-        encoding = request.query_params.get('encoding', 'TILED')
-        path, mime_type = utilities.get_region_world(
+        units = request.query_params.get('units', None)
+        encoding = request.query_params.get('encoding', None)
+        path, mime_type = utilities.get_region(
             tile_source,
             left,
             right,
@@ -168,26 +166,6 @@ class TileRegionView(BaseTileView):
         if not path:
             # TODO: should this raise error status?
             return HttpResponse(b'', content_type=mime_type)
-        tile_binary = open(path, 'rb')
-        return HttpResponse(tile_binary, content_type=mime_type)
-
-
-class TileRegionPixelView(BaseTileView):
-    """Returns region tile binary from pixel coordinates."""
-
-    def get(
-        self, request: Request, pk: int, left: float, right: float, bottom: float, top: float
-    ) -> HttpResponse:
-        tile_source = self.get_tile_source(request, pk)
-        encoding = request.query_params.get('encoding', None)
-        path, mime_type = utilities.get_region_pixel(
-            tile_source,
-            left,
-            right,
-            bottom,
-            top,
-            encoding=encoding,
-        )
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
 

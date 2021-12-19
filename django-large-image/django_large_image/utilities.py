@@ -62,38 +62,34 @@ def _get_region(tile_source: FileTileSource, region: dict, encoding: str):
     return path, mime_type
 
 
-def get_region_world(
+def get_region(
     tile_source: FileTileSource,
     left: float,
     right: float,
     bottom: float,
     top: float,
-    units: str = 'EPSG:4326',
-    encoding: str = 'TILED',
-):
-    region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
-    return _get_region(tile_source, region, encoding)
-
-
-def get_region_pixel(
-    tile_source: FileTileSource,
-    left: int,
-    right: int,
-    bottom: int,
-    top: int,
-    units: str = 'pixels',
+    units: str = None,
     encoding: str = None,
 ):
-    left, right = min(left, right), max(left, right)
-    top, bottom = min(top, bottom), max(top, bottom)
-    region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
-    if encoding is None:  # TODO: check if geospatial
+    geospatial = hasattr(tile_source, 'geospatial') and tile_source.geospatial
+    if encoding is None and geospatial:
         # Use tiled encoding by default for geospatial rasters
         #   output will be a tiled TIF
         encoding = 'TILED'
     elif encoding is None:
-        # Otherwise use JPEG encoding by default
+        # Use JPEG encoding by default for nongeospatial rasters
         encoding = 'JPEG'
+    if geospatial and units not in [
+        'pixels',
+    ]:
+        if units is None:
+            units = 'EPSG:4326'
+        region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
+        return _get_region(tile_source, region, encoding)
+    units = 'pixels'
+    left, right = min(left, right), max(left, right)
+    top, bottom = min(top, bottom), max(top, bottom)
+    region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
     return _get_region(tile_source, region, encoding)
 
 
