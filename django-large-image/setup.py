@@ -2,7 +2,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-readme_file = Path(__file__).parent / 'README.md'
+readme_file = Path(__file__).parent.parent / 'README.md'
 if readme_file.exists():
     with readme_file.open() as f:
         long_description = f.read()
