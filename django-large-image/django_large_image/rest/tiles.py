@@ -61,8 +61,10 @@ class TileMetadataView(BaseTileView):
     def get(self, request: Request, pk: int) -> Response:
         tile_source = self.get_tile_source(request, pk)
         metadata = tile_source.getMetadata()
-        bounds = utilities.get_tile_bounds(tile_source)
-        metadata['bounds'] = bounds
+        metadata.setdefault('geospatial', False)
+        if metadata['geospatial']:
+            bounds = utilities.get_tile_bounds(tile_source)
+            metadata['bounds'] = bounds
         return Response(metadata)
 
 
@@ -72,8 +74,10 @@ class TileInternalMetadataView(BaseTileView):
     def get(self, request: Request, pk: int) -> Response:
         tile_source = self.get_tile_source(request, pk)
         metadata = tile_source.getInternalMetadata()
-        bounds = utilities.get_tile_bounds(tile_source)
-        metadata['bounds'] = bounds
+        metadata.setdefault('geospatial', False)
+        if metadata['geospatial']:
+            bounds = utilities.get_tile_bounds(tile_source)
+            metadata['bounds'] = bounds
         return Response(metadata)
 
 

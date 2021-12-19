@@ -50,6 +50,8 @@ setup(
         'django-s3-file-field[boto3]',
         'gunicorn',
         'django-large-image',
+        'large-image-source-gdal>=1.9.0',
+        'large-image-source-pil>=1.9.0',
     ],
     extras_require={
         'dev': [
