@@ -9,20 +9,26 @@ geared towards geospatial tile serving.
 - [x] endpoints for metadata (/tiles, /tiles/internal_metadata)
 - [x] endpoints for serving tiles (/tiles/zxy, /tiles/fzxy)
 - [x] cache management - tile sources should be cached so that we don't open a file for each tile
-- [ ] endpoint for regions
+- [x] endpoint for regions
 - [x] endpoint for thumbnails
 - [x] thumbnail caching
 - [x] endpoint for individual pixels
 - [x] endpoint for histograms
 - [x] some diagnostic and settings endpoints (list available sources, set whether to automatically use large_images and the size of small images that can be used)
+
+
+Things that would require implementing tasks with celery:
+
 - [ ] ability to convert images via large_image_converter
-- [ ] endpoints for serving tiles in deepzoom format
+- [ ] async endpoint for regions
 
 
 Things I'm unsure about:
 
 - [ ] endpoints for associated images
 - [ ] ability to precache thumbnails (the thumbnail jobs endpoints)
+- [ ] endpoints for serving tiles in deepzoom format
+
 
 Things I think should be implemented downstream:
 
