@@ -67,4 +67,19 @@ urlpatterns = [
         rest.tiles.TileSingleBandInfoView.as_view(),
         name='image-bands-single',
     ),
+    path(
+        'api/large_image/<int:pk>/tiles/pixel/<int:left>/<int:top>',
+        rest.tiles.TilePixelView.as_view(),
+        name='image-pixel',
+    ),
+    path(
+        'api/large_image/<int:pk>/tiles/histogram',
+        rest.tiles.TileHistogramView.as_view(),
+        name='image-histogram',
+    ),
+    path(
+        'api/large_image/sources',
+        rest.tiles.ListTileSourcesView.as_view(),
+        name='large-image-sources',
+    ),
 ] + router.urls

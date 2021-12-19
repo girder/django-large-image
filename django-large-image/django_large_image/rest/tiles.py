@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_large_image import utilities
 from django_large_image.models import Image
+import large_image
 from large_image.tilesource import FileTileSource
 from rest_framework.request import Request
 from rest_framework.response import Response
@@ -15,8 +16,17 @@ from rest_framework.views import APIView
 CACHE_TIMEOUT = 60 * 60 * 2
 
 
+class ListTileSourcesView(APIView):
+    def get(self, request: Request) -> Response:
+        large_image.tilesource.loadTileSources()
+        sources = large_image.tilesource.AvailableTileSources
+        return Response({k: str(v) for k, v in sources.items()})
+
+
 class BaseTileView(APIView):
-    def get_tile_source(self, request: Request, pk: int) -> FileTileSource:
+    def get_tile_source(
+        self, request: Request, pk: int, default_projection: str = 'EPSG:3857'
+    ) -> FileTileSource:
         """Return the built tile source."""
         # get image_entry from cache
         image_cache_key = f'large_image_tile:image_{pk}'
@@ -24,7 +34,7 @@ class BaseTileView(APIView):
             image_entry = get_object_or_404(Image, pk=pk)
             cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
 
-        projection = request.query_params.get('projection', 'EPSG:3857')
+        projection = request.query_params.get('projection', default_projection)
         band = int(request.query_params.get('band', 0))
         style = None
         if band:
@@ -176,3 +186,35 @@ class TileRegionPixelView(BaseTileView):
         )
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
+
+
+class TilePixelView(BaseTileView):
+    """Returns single pixel."""
+
+    def get(self, request: Request, pk: int, left: int, top: int) -> Response:
+        tile_source = self.get_tile_source(request, pk, default_projection=None)
+        metadata = tile_source.getPixel(region={'left': left, 'top': top, 'units': 'pixels'})
+        return Response(metadata)
+
+
+class TileHistogramView(BaseTileView):
+    """Returns histogram."""
+
+    def get(self, request: Request, pk: int) -> Response:
+        kwargs = dict(
+            onlyMinMax=request.query_params.get('onlyMinMax', False),
+            bins=int(request.query_params.get('bins', 256)),
+            density=request.query_params.get('density', False),
+            format=request.query_params.get('format', None),
+        )
+        tile_source = self.get_tile_source(request, pk, default_projection=None)
+        result = tile_source.histogram(**kwargs)
+        result = result['histogram']
+        for entry in result:
+            for key in {'bin_edges', 'hist', 'range'}:
+                if key in entry:
+                    entry[key] = [float(val) for val in list(entry[key])]
+            for key in {'min', 'max', 'samples'}:
+                if key in entry:
+                    entry[key] = float(entry[key])
+        return Response(result)
