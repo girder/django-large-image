@@ -1,3 +1,10 @@
+# Django Large Image
+
+Models and endpoints for working with large images in Django -- specifically
+geared towards geospatial tile serving.
+
+*DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
+
 - [-] endpoint or method to make / unmake a Django file field into a large_image item
 - [x] endpoints for metadata (/tiles, /tiles/internal_metadata)
 - [x] endpoints for serving tiles (/tiles/zxy, /tiles/fzxy)
