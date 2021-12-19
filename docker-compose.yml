@@ -8,11 +8,6 @@ services:
     ports:
       - ${DOCKER_POSTGRES_PORT-5432}:5432
 
-  rabbitmq:
-    image: rabbitmq:management
-    ports:
-      - ${DOCKER_RABBITMQ_PORT-5672}:5672
-
   minio:
     image: minio/minio:latest
     # When run with a TTY, minio prints credentials on startup

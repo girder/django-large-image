@@ -1,4 +1,5 @@
 """Base classes for raster dataset entries."""
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django_extensions.db.models import TimeStampedModel
 
@@ -24,11 +25,14 @@ class Image(TimeStampedModel):
         if not related:
             raise Exception('No related file source models')
         for name in related:
-            obj = getattr(self, name)
-            if obj:
-                if not hasattr(obj, 'get_image_local_path'):
-                    raise Exception('Related model does not implement `get_image_local_path`')
-                return obj.get_image_local_path()
+            try:
+                obj = getattr(self, name)
+                if obj:
+                    if not hasattr(obj, 'get_image_local_path'):
+                        raise Exception('Related model does not implement `get_image_local_path`')
+                    return obj.get_image_local_path()
+            except ObjectDoesNotExist:
+                pass
         raise Exception('No related model records for this Image entry')
 
 
