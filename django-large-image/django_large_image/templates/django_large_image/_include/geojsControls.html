@@ -1,0 +1,19 @@
+{% load static %}
+{% block viewer_controls %}
+
+<div class="geojsControls">
+  <div id="basemapTool" class="basemapTool">
+    <label for="basemapDropdown">Choose a basemap:</label>
+    <select id="basemapDropdown" onChange='changeBasemap();'>
+      <option>-- none --</option>
+    </select>
+  </div>
+  <div class="slidecontainer" id="opacityTool">
+    <label for="rasterOpacityRange">Raster Layer Opacity: </label>
+    <input type="range" min="1" max="100" value="100" class="slider" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)">
+  </div>
+</div>
+<script src="{% static 'django_large_image/js/geojsControls.js' %}"></script>
+
+
+{% endblock %}

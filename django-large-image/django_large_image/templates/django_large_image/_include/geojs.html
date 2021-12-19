@@ -1,0 +1,11 @@
+{% load static %}
+{% block empty_viewer %}
+<script src="https://d3js.org/d3-color.v2.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geojs/1.4.3/geo.min.js"></script>
+<!-- Include our custom styles for the Cesium Viewer -->
+<link rel="stylesheet" type="text/css" href="{% static 'django_large_image/styles/geojs.css' %}">
+<div id="map"></div>
+<!-- Load the script to initialize the viewer -->
+<script src="{% static 'django_large_image/js/geojs.js' %}"></script>
+{% endblock %}

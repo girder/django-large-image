@@ -1,0 +1,39 @@
+version: '3'
+services:
+  django:
+    build:
+      context: .
+      dockerfile: ./dev/django.Dockerfile
+    command: ["./manage.py", "runserver", "0.0.0.0:8000"]
+    # Log printing via Rich is enhanced by a TTY
+    tty: true
+    env_file: ./dev/.env.docker-compose
+    volumes:
+      - .:/opt/django-project
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio
+
+  celery:
+    build:
+      context: .
+      dockerfile: ./dev/django.Dockerfile
+    command: [
+      "celery",
+      "--app", "example.celery",
+      "worker",
+      "--loglevel", "INFO",
+      "--without-heartbeat"
+    ]
+    # Docker Compose does not set the TTY width, which causes Celery errors
+    tty: false
+    env_file: ./dev/.env.docker-compose
+    volumes:
+      - .:/opt/django-project
+    depends_on:
+      - postgres
+      - rabbitmq
+      - minio

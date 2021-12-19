@@ -1,0 +1,2 @@
+# Include any data files such as templates or static assets in the source distribution
+graft example

@@ -1,0 +1,104 @@
+<script>
+  var host = window.location.protocol + "//" + window.location.host;
+  var tileUrl = `${host}/api/large_image/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
+
+  function insertWindowUrlParam(key, value) {
+    if (history.pushState) {
+      let searchParams = new URLSearchParams(window.location.search);
+      if (value === undefined) {
+        searchParams.delete(key);
+      } else {
+        searchParams.set(key, value);
+      }
+      let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+      window.history.pushState({
+        path: newurl
+      }, '', newurl);
+    }
+  }
+
+  function updateTileUrlOption(option, value) {
+    const url = new URL(tileUrl);
+    const urlParams = new URLSearchParams(window.location.search);
+    var searchParams = url.searchParams;
+    if (value === undefined) {
+      searchParams.delete(option);
+    } else {
+      searchParams.set(option, value);
+    }
+    const tileFormatEncoded = '/%7Bz%7D/%7Bx%7D/%7By%7D.';
+    const tileFormat = '/{z}/{x}/{y}.';
+    tileUrl = url.toString().replace(tileFormatEncoded, tileFormat);
+    insertWindowUrlParam(option, value);
+  }
+
+  const windowSearch = new URLSearchParams(window.location.search);
+  const windowSearchParams = Object.fromEntries(windowSearch.entries());
+  for (const [option, value] of Object.entries(windowSearchParams)) {
+    updateTileUrlOption(option, value);
+  }
+
+  // MUST implement updateTileLayer()
+</script>
+
+<div class="geojsControls">
+  {% include 'django_large_image/_include/geojs.html' %}
+  {% include 'django_large_image/_include/geojsControls.html' %}
+</div>
+
+
+<script>
+  tileLayer.idleAfter = 'all';
+  tileLayer.visible(true);
+  tileLayer.url(tileUrl)
+
+  function updateTileLayer() {
+    tileLayer.url(tileUrl)
+  }
+
+  function updateTilesOpacity(e, value) {
+    value = Number(value) / 100.0;
+    tileLayer.opacity(value);
+  }
+
+
+  fetch(`${host}/api/large_image/${imageId}/tiles?projection=EPSG:3857`)
+    .then(response => response.json())
+    .then(data => {
+      var extents = data["bounds"];
+      setBounds(extents, false)
+
+      // Make sure regions outside the extent of the raster do not load null tiles
+      //   this relieves strain on the tile server
+      tileLayer.isValid = (index) => {
+        const tileBounds = tileLayer.gcsTileBounds(index);
+        return tileBounds.left <= extents.xmax &&
+          tileBounds.right >= extents.xmin &&
+          tileBounds.top >= extents.ymin &&
+          tileBounds.bottom <= extents.ymax;
+      }
+
+      var boxjson = {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [extents.xmin, extents.ymin],
+            [extents.xmin, extents.ymax],
+            [extents.xmax, extents.ymax],
+            [extents.xmax, extents.ymin],
+            [extents.xmin, extents.ymin]
+          ]
+        ]
+      };
+
+      reader.read(boxjson, (features) => {
+        features[0].style({
+            strokeColor: 'red',
+            fill: false
+          })
+          .draw();
+      });
+
+
+    });
+</script>
