@@ -1,7 +1,7 @@
 {% load static %}
 {% block viewer_controls %}
 
-<div class="geojsControls">
+<div class="geojsControls" id="geojsControls">
   <div id="basemapTool" class="basemapTool">
     <label for="basemapDropdown">Choose a basemap:</label>
     <select id="basemapDropdown" onChange='changeBasemap();'>
@@ -15,5 +15,9 @@
 </div>
 <script src="{% static 'django_large_image/js/geojsControls.js' %}"></script>
 
+<script>
+  var geojsControls = ui.createWidget('dom', {position: {left: 20, top: 20}});
+  geojsControls.canvas().appendChild(document.getElementById("geojsControls"))
+</script>
 
 {% endblock %}
