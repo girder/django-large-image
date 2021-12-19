@@ -3,7 +3,9 @@ FROM python:3.8-slim
 # * psycopg2
 RUN apt-get update && \
     apt-get install --no-install-recommends --yes \
-        libpq-dev gcc libc6-dev && \
+        libpq-dev gcc libc6-dev \
+        graphviz \
+        libgraphviz-dev && \
     rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -16,8 +18,8 @@ ENV PYTHONUNBUFFERED 1
 COPY ./django-large-image/setup.py /opt/django-project/django-large-image/setup.py
 COPY ./setup.py /opt/django-project/setup.py
 
-RUN pip install --find-links https://girder.github.io/large_image_wheels --editable /opt/django-project/django-large-image[dev,colormaps]
-RUN pip install --editable /opt/django-project[dev]
+RUN pip install --editable /opt/django-project/django-large-image[dev,colormaps]
+RUN pip install --find-links https://girder.github.io/large_image_wheels --editable /opt/django-project[dev]
 
 # Use a directory name which will never be an import name, as isort considers this as first-party.
 WORKDIR /opt/django-project
