@@ -1,4 +1,4 @@
-name: RGD Module Tests
+name: Tests
 on:
   pull_request:
   push:
