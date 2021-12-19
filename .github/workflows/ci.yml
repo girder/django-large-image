@@ -1,4 +1,4 @@
-name: ci
+name: RGD Module Tests
 on:
   pull_request:
   push:
@@ -7,7 +7,22 @@ on:
   schedule:
     - cron: "0 0 * * *"
 jobs:
-  test:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install tox
+        run: |
+          pip install --upgrade pip
+          pip install tox
+      - name: Run linting
+        run: |
+          tox -e lint
+  check-migrations-graph:
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -17,16 +32,12 @@ jobs:
           POSTGRES_PASSWORD: postgres
         ports:
           - 5432:5432
-      rabbitmq:
-        image: rabbitmq:management
-        ports:
-          - 5672:5672
       minio:
         # This image does not require any command arguments (which GitHub Actions don't support)
         image: bitnami/minio:latest
         env:
-          MINIO_ROOT_USER: minioAccessKey
-          MINIO_ROOT_PASSWORD: minioSecretKey
+          MINIO_ACCESS_KEY: minioAccessKey
+          MINIO_SECRET_KEY: minioSecretKey
         ports:
           - 9000:9000
     steps:
@@ -39,11 +50,22 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install tox
-      - name: Run tests
+      - name: Install graphviz
         run: |
-          tox
+          sudo apt update
+          sudo apt-get install --no-install-recommends --yes graphviz libgraphviz-dev
+      - name: Run check migrations and graph models
+        run: |
+          tox -e check-migrations
+          tox -e graph-models
         env:
           DJANGO_DATABASE_URL: postgres://postgres:postgres@localhost:5432/django
           DJANGO_MINIO_STORAGE_ENDPOINT: localhost:9000
           DJANGO_MINIO_STORAGE_ACCESS_KEY: minioAccessKey
           DJANGO_MINIO_STORAGE_SECRET_KEY: minioSecretKey
+          DJANGO_STORAGE_BUCKET_NAME: django-storage
+      - name: Upload model graphs
+        uses: actions/upload-artifact@v2
+        with:
+          name: graphs
+          path: .tox/graphs/*.png
