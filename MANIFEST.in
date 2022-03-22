@@ -1,2 +1,3 @@
 # Include any data files such as templates or static assets in the source distribution
-graft example
+graft django_large_image/static
+graft django_large_image/templates

@@ -11,7 +11,7 @@ else:
     long_description = ''
 
 setup(
-    name='example',
+    name='django-large-image',
     version='0.1.0',
     description='',
     long_description=long_description,
@@ -36,34 +36,17 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[
-        'django>=3.2',
-        'django-allauth',
-        'django-configurations[database,email]',
+        'django~=3.2',
         'django-extensions',
-        'django-filter',
-        'django-oauth-toolkit<1.6.0',
+        'django-girder-utils',
         'djangorestframework',
         'drf-yasg',
-        # Production-only
-        'django-composed-configuration[prod]>=0.18',
-        'django-s3-file-field[boto3]',
-        'gunicorn',
-        'django-large-image',
-        'large-image-source-gdal>=1.9.0',
-        'large-image-source-pil>=1.9.0',
+        'large-image>=1.9.0',
     ],
     extras_require={
-        'dev': [
-            'django-composed-configuration[dev]>=0.18',
-            'django-debug-toolbar',
-            'django-s3-file-field[minio]',
-            'ipython',
-            'tox',
-        ],
-        'graph': [
-            'pygraphviz',
-            'pyparsing',
-            'pydot',
+        'colormaps': [
+            'matplotlib',
+            'cmocean',
         ],
     },
 )

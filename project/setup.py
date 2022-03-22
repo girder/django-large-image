@@ -2,7 +2,7 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-readme_file = Path(__file__).parent.parent / 'README.md'
+readme_file = Path(__file__).parent / 'README.md'
 if readme_file.exists():
     with readme_file.open() as f:
         long_description = f.read()
@@ -11,7 +11,7 @@ else:
     long_description = ''
 
 setup(
-    name='django-large-image',
+    name='example',
     version='0.1.0',
     description='',
     long_description=long_description,
@@ -37,16 +37,33 @@ setup(
     include_package_data=True,
     install_requires=[
         'django>=3.2',
+        'django-allauth',
+        'django-configurations[database,email]',
         'django-extensions',
-        'django-girder-utils',
+        'django-filter',
+        'django-oauth-toolkit<1.6.0',
         'djangorestframework',
         'drf-yasg',
-        'large-image>=1.9.0',
+        # Production-only
+        'django-composed-configuration[prod]>=0.18',
+        'django-s3-file-field[boto3]',
+        'gunicorn',
+        'django-large-image',
+        'large-image-source-gdal>=1.9.0',
+        'large-image-source-pil>=1.9.0',
     ],
     extras_require={
-        'colormaps': [
-            'matplotlib',
-            'cmocean',
+        'dev': [
+            'django-composed-configuration[dev]>=0.18',
+            'django-debug-toolbar',
+            'django-s3-file-field[minio]',
+            'ipython',
+            'tox',
+        ],
+        'graph': [
+            'pygraphviz',
+            'pyparsing',
+            'pydot',
         ],
     },
 )
