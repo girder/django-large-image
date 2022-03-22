@@ -18,7 +18,7 @@ register_converter(FloatUrlParameterConverter, 'float')
 
 urlpatterns = [
     path(
-        'api/large_image/sources',
+        'api/large-image/sources',
         rest.tiles.ListTileSourcesView.as_view(),
         name='large-image-sources',
     ),

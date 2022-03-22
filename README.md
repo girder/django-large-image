@@ -5,6 +5,8 @@ geared towards geospatial tile serving.
 
 *DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
 
+![swagger-spec](./doc/swagger.png)
+
 ## Implementation
 
 We are working to port Kitware's [large-image](https://github.com/girder/large_image)
@@ -86,7 +88,7 @@ from example.core.viewsets import ImageFileDetailView
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
-router.register(r'api/large_image', ImageFileDetailView, basename='large-image')
+router.register(r'api/large-image', ImageFileDetailView, basename='large-image')
 
 urlpatterns = [
   path('', include('django_large_image.urls')),
