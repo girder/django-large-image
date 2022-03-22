@@ -1,8 +1,8 @@
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django_large_image.rest import LargeImageView
+from example.core import models
 from rest_framework import mixins, viewsets
 
-from example.core import models
+from django_large_image.rest import LargeImageView
 
 
 class ImageFileDetailView(

@@ -1,8 +1,7 @@
 from django.urls import path
-from rest_framework.routers import SimpleRouter
-
 from example.core import views
 from example.core.viewsets import ImageFileDetailView, S3ImageFileDetailView
+from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
 router.register(r'api/large_image', ImageFileDetailView, basename='large-image')

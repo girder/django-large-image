@@ -1,5 +1,4 @@
 from django.views.generic import DetailView
-
 from example.core import models
 
 

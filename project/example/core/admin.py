@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from example.core.models import ImageFile, S3ImageFile
 
 

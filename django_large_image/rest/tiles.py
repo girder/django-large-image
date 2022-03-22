@@ -5,7 +5,6 @@ from pathlib import PurePath
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
-from django_large_image import utilities
 from drf_yasg import openapi
 from drf_yasg.utils import swagger_auto_schema
 import large_image
@@ -14,6 +13,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from django_large_image import utilities
 
 CACHE_TIMEOUT = 60 * 60 * 2
 
