@@ -1,1 +1,1 @@
-from . import tiles, viewsets  # noqa
+from .tiles import LargeImageView  # noqa

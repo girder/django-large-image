@@ -12,7 +12,6 @@ class DjangoLargeImageConfig(AppConfig):
     verbose_name = 'Django Large Image: Django Large Image'
 
     def ready(self):
-        import django_large_image.signals  # noqa: F401
 
         # Set up memcached with large_image
         if hasattr(settings, 'MEMCACHED_URL') and settings.MEMCACHED_URL:

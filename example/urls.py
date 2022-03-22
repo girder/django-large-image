@@ -22,6 +22,7 @@ urlpatterns = [
     path('api/docs/redoc/', schema_view.with_ui('redoc'), name='docs-redoc'),
     path('api/docs/swagger/', schema_view.with_ui('swagger'), name='docs-swagger'),
     path('', include('django_large_image.urls')),
+    path('', include('example.core.urls')),
 ]
 
 urlpatterns += [

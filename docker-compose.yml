@@ -7,6 +7,8 @@ services:
       POSTGRES_PASSWORD: postgres
     ports:
       - ${DOCKER_POSTGRES_PORT-5432}:5432
+    volumes:
+      - dbdata:/var/lib/postgresql/data
 
   minio:
     image: minio/minio:latest
@@ -19,3 +21,10 @@ services:
     ports:
       - ${DOCKER_MINIO_PORT-9000}:9000
       - ${DOCKER_MINIO_CONSOLE_PORT-9001}:9001
+    volumes:
+      - fsdata:/data
+
+
+volumes:
+  dbdata:
+  fsdata:

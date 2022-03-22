@@ -1,19 +1,40 @@
 import json
+from pathlib import PurePath
 
-from django.core.cache import cache
+# from django.core.cache import cache
 from django.http import HttpResponse
-from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from django_large_image import utilities
-from django_large_image.models import Image
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 import large_image
 from large_image.tilesource import FileTileSource
+from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 CACHE_TIMEOUT = 60 * 60 * 2
+
+z_param = openapi.Parameter(
+    'z', openapi.IN_PATH, description="zoom level", type=openapi.TYPE_INTEGER
+)
+x_param = openapi.Parameter('x', openapi.IN_PATH, description="x", type=openapi.TYPE_INTEGER)
+y_param = openapi.Parameter('y', openapi.IN_PATH, description="y", type=openapi.TYPE_INTEGER)
+band_param = openapi.Parameter(
+    'band', openapi.IN_PATH, description="band index", type=openapi.TYPE_INTEGER
+)
+left_param = openapi.Parameter(
+    'left', openapi.IN_PATH, description="left", type=openapi.TYPE_NUMBER
+)
+right_param = openapi.Parameter(
+    'right', openapi.IN_PATH, description="right", type=openapi.TYPE_NUMBER
+)
+top_param = openapi.Parameter('top', openapi.IN_PATH, description="top", type=openapi.TYPE_NUMBER)
+bottom_param = openapi.Parameter(
+    'bottom', openapi.IN_PATH, description="bottom", type=openapi.TYPE_NUMBER
+)
 
 
 class ListTileSourcesView(APIView):
@@ -23,16 +44,30 @@ class ListTileSourcesView(APIView):
         return Response({k: str(v) for k, v in sources.items()})
 
 
-class BaseTileView(APIView):
-    def get_tile_source(
+class LargeImageView(APIView):
+    FILE_FIELD_NAME = None
+
+    def _get_path(self, pk: int):
+        # Get FileField using FILE_FIELD_NAME
+        field_file = getattr(self.get_object(), self.FILE_FIELD_NAME)
+        # Get local file path
+        field_file_basename = PurePath(field_file.name).name
+        directory = utilities.get_cache_dir() / f'f-{pk}'
+        directory.mkdir(parents=True, exist_ok=True)
+        path = directory / field_file_basename
+        # Checkout file locally - or configure VSI
+        return utilities.field_file_to_local_path(field_file, path)
+
+    def _get_tile_source(
         self, request: Request, pk: int, default_projection: str = 'EPSG:3857'
     ) -> FileTileSource:
         """Return the built tile source."""
         # get image_entry from cache
-        image_cache_key = f'large_image_tile:image_{pk}'
-        if (image_entry := cache.get(image_cache_key, None)) is None:
-            image_entry = get_object_or_404(Image, pk=pk)
-            cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
+        # image_cache_key = f'large_image_tile:image_{pk}'
+        # if (image_entry := cache.get(image_cache_key, None)) is None:
+        #     image_entry = get_object_or_404(Image, pk=pk)
+        #     cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
+        path = self._get_path(pk)
 
         projection = request.query_params.get('projection', default_projection)
         band = int(request.query_params.get('band', 0))
@@ -52,14 +87,15 @@ class BaseTileView(APIView):
             if nodata:
                 style['nodata'] = nodata
             style = json.dumps(style)
-        return utilities.get_tilesource_from_image(image_entry, projection, style=style)
+        return utilities.get_tilesource_from_image(path, projection, style=style)
 
-
-class TileMetadataView(BaseTileView):
-    """Returns tile metadata."""
-
-    def get(self, request: Request, pk: int) -> Response:
-        tile_source = self.get_tile_source(request, pk)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns tile metadata.',
+    )
+    @action(detail=True)
+    def metadata(self, request: Request, pk: int) -> Response:
+        tile_source = self._get_tile_source(request, pk)
         metadata = tile_source.getMetadata()
         metadata.setdefault('geospatial', False)
         if metadata['geospatial']:
@@ -67,12 +103,15 @@ class TileMetadataView(BaseTileView):
             metadata['bounds'] = bounds
         return Response(metadata)
 
-
-class TileInternalMetadataView(BaseTileView):
     """Returns additional known metadata about the tile source."""
 
-    def get(self, request: Request, pk: int) -> Response:
-        tile_source = self.get_tile_source(request, pk)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns additional known metadata about the tile source.',
+    )
+    @action(detail=True)
+    def internal_metadata(self, request: Request, pk: int) -> Response:
+        tile_source = self._get_tile_source(request, pk)
         metadata = tile_source.getInternalMetadata()
         metadata.setdefault('geospatial', False)
         if metadata['geospatial']:
@@ -80,24 +119,30 @@ class TileInternalMetadataView(BaseTileView):
             metadata['bounds'] = bounds
         return Response(metadata)
 
-
-class TileView(BaseTileView):
-    """Returns tile binary."""
-
     @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        tile_source = self.get_tile_source(request, pk)
-        tile_binary = tile_source.getTile(x, y, z)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns tile image.',
+        manual_parameters=[z_param, x_param, y_param],
+    )
+    @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
+    def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
+        tile_source = self._get_tile_source(request, pk)
+        tile_binary = tile_source.getTile(int(x), int(y), int(z))
         mime_type = tile_source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
-
-class TileCornersView(BaseTileView):
-    """Returns bounds of a tile for a given x, y, z index."""
-
-    def get(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        tile_source = self.get_tile_source(request, pk)
-        xmin, ymin, xmax, ymax = tile_source.getTileCorners(z, x, y)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns bounds of a tile for a given x, y, z index.',
+        manual_parameters=[z_param, x_param, y_param],
+    )
+    @action(
+        detail=True, methods=['get'], url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+)/corners'
+    )
+    def tile_corners(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
+        tile_source = self._get_tile_source(request, pk)
+        xmin, ymin, xmax, ymax = tile_source.getTileCorners(int(z), int(x), int(y))
         metadata = {
             'xmin': xmin,
             'xmax': xmax,
@@ -107,51 +152,63 @@ class TileCornersView(BaseTileView):
         }
         return Response(metadata)
 
-
-class TileThumnailView(BaseTileView):
-    """Returns tile thumbnail."""
-
     @method_decorator(cache_page(CACHE_TIMEOUT))
-    def get(self, request: Request, pk: int) -> HttpResponse:
-        tile_source = self.get_tile_source(request, pk)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns thumbnail of full image.',
+    )
+    @action(detail=True)
+    def thumbnail(self, request: Request, pk: int) -> HttpResponse:
+        tile_source = self._get_tile_source(request, pk)
         thumb_data, mime_type = tile_source.getThumbnail(encoding='PNG')
         return HttpResponse(thumb_data, content_type=mime_type)
 
-
-class TileBandInfoView(BaseTileView):
-    """Returns band information."""
-
-    def get(self, request: Request, pk: int) -> Response:
-        tile_source = self.get_tile_source(request, pk)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns bands information.',
+    )
+    @action(detail=True)
+    def bands(self, request: Request, pk: int) -> Response:
+        tile_source = self._get_tile_source(request, pk)
         metadata = tile_source.getBandInformation()
         return Response(metadata)
 
-
-class TileSingleBandInfoView(BaseTileView):
-    """Returns single band information."""
-
-    def get(self, request: Request, pk: int, band: int) -> Response:
-        tile_source = self.get_tile_source(request, pk)
-        metadata = tile_source.getOneBandInformation(band)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns single band information.',
+        manual_parameters=[
+            band_param,
+        ],
+    )
+    @action(detail=True, url_path=r'band/(?P<band>\w+)')
+    def band(self, request: Request, pk: int, band: int) -> Response:
+        tile_source = self._get_tile_source(request, pk)
+        metadata = tile_source.getOneBandInformation(int(band))
         return Response(metadata)
 
-
-class TileRegionView(BaseTileView):
-    """Returns region tile binary from world coordinates in given EPSG.
-
-    Note
-    ----
-    Use the `units` query parameter to inidicate the projection of the given
-    coordinates. This can be different than the `projection` parameter used
-    to open the tile source. `units` defaults to `EPSG:4326` for geospatial
-    images, otherwise, must use `pixels`.
-
-    """
-
-    def get(
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns region tile binary from world coordinates in given EPSG.',
+        manual_parameters=[left_param, right_param, bottom_param, top_param],
+    )
+    @action(
+        detail=True,
+        url_path=r'region/(?P<left>\w+)/(?P<right>\w+)/(?P<bottom>\w+)/(?P<top>\w+)/region.tif',
+    )
+    def region(
         self, request: Request, pk: int, left: float, right: float, bottom: float, top: float
     ) -> HttpResponse:
-        tile_source = self.get_tile_source(request, pk)
+        """Returns region tile binary from world coordinates in given EPSG.
+
+        Note
+        ----
+        Use the `units` query parameter to inidicate the projection of the given
+        coordinates. This can be different than the `projection` parameter used
+        to open the tile source. `units` defaults to `EPSG:4326` for geospatial
+        images, otherwise, must use `pixels`.
+
+        """
+        tile_source = self._get_tile_source(request, pk)
         units = request.query_params.get('units', None)
         encoding = request.query_params.get('encoding', None)
         path, mime_type = utilities.get_region(
@@ -169,27 +226,32 @@ class TileRegionView(BaseTileView):
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
 
-
-class TilePixelView(BaseTileView):
-    """Returns single pixel."""
-
-    def get(self, request: Request, pk: int, left: int, top: int) -> Response:
-        tile_source = self.get_tile_source(request, pk, default_projection=None)
-        metadata = tile_source.getPixel(region={'left': left, 'top': top, 'units': 'pixels'})
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns single pixel.',
+        manual_parameters=[left_param, top_param],
+    )
+    @action(detail=True, url_path=r'pixel/(?P<left>\w+)/(?P<top>\w+)')
+    def pixel(self, request: Request, pk: int, left: int, top: int) -> Response:
+        tile_source = self._get_tile_source(request, pk, default_projection=None)
+        metadata = tile_source.getPixel(
+            region={'left': int(left), 'top': int(top), 'units': 'pixels'}
+        )
         return Response(metadata)
 
-
-class TileHistogramView(BaseTileView):
-    """Returns histogram."""
-
-    def get(self, request: Request, pk: int) -> Response:
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns histogram',
+    )
+    @action(detail=True)
+    def histogram(self, request: Request, pk: int) -> Response:
         kwargs = dict(
             onlyMinMax=request.query_params.get('onlyMinMax', False),
             bins=int(request.query_params.get('bins', 256)),
             density=request.query_params.get('density', False),
             format=request.query_params.get('format', None),
         )
-        tile_source = self.get_tile_source(request, pk, default_projection=None)
+        tile_source = self._get_tile_source(request, pk, default_projection=None)
         result = tile_source.histogram(**kwargs)
         result = result['histogram']
         for entry in result:
