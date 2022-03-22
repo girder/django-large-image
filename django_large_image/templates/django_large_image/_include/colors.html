@@ -20,7 +20,7 @@
   var bandDropdown = document.getElementById('bandChoice');
   var colorsMin = document.getElementById('mincolor');
   var colorsMax = document.getElementById('maxcolor');
-  const bands = JSON.parse('{{ bands|tojson }}')
+  var bands;
 
   if (windowSearchParams['min']) {
     colorsMin.value = windowSearchParams['min']
@@ -29,21 +29,28 @@
     colorsMax.value = windowSearchParams['max']
   }
 
-  for (const [source, values] of Object.entries(bands)) {
-    const interp = values['interpretation']
-    var newOption = document.createElement('option');
-    newOption.value = source;
-    newOption.text = interp ? `${source}: ${interp}` : source;
-    bandDropdown.appendChild(newOption)
-  }
-  if (windowSearchParams['band']) {
-    bandDropdown.value = windowSearchParams['band'] ? windowSearchParams['band'] : '-- none --';
-    colorsSubGroup.style.display = 'block';
-  }
+  fetch(`${host}/${baseEndpoint}/${imageId}/bands`).then(response => {
+    response.json().then(data => {
+      bands = data;
+      for (const [source, values] of Object.entries(bands)) {
+        const interp = values['interpretation']
+        var newOption = document.createElement('option');
+        newOption.value = source;
+        newOption.text = interp ? `${source}: ${interp}` : source;
+        bandDropdown.appendChild(newOption)
+      }
+      if (windowSearchParams['band']) {
+        bandDropdown.value = windowSearchParams['band'] ? windowSearchParams['band'] : '-- none --';
+        colorsSubGroup.style.display = 'block';
+      }
+    });
+  })
 
-  fetch(`${host}/colors`)
+
+  fetch(`${host}/api/large-image/colormaps`)
     .then(response => response.json())
     .then(data => {
+      console.log(data);
       for (const [source, indices] of Object.entries(data)) {
         for (const index in indices) {
           const option = data[source][index];

@@ -1,6 +1,6 @@
 <script>
   var host = window.location.protocol + "//" + window.location.host;
-  var tileUrl = `${host}/api/large_image/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
+  var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
 
   function insertWindowUrlParam(key, value) {
     if (history.pushState) {
@@ -37,68 +37,57 @@
   for (const [option, value] of Object.entries(windowSearchParams)) {
     updateTileUrlOption(option, value);
   }
-
-  // MUST implement updateTileLayer()
 </script>
 
 <div class="wrapper">
-  {% include 'django_large_image/_include/geojs.html' %}
-  {% include 'django_large_image/_include/geojsControls.html' %}
+  {% include 'django_large_image/_include/cesium.html' %}
+  <div class="slidecontainer" id="opacityTool">
+    <label for="rasterOpacityRange">Raster Layer Opacity: </label>
+    <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
+    <br />
+    {% include 'django_large_image/_include/colors.html' %}
+  </div>
 </div>
 
 
 <script>
-  tileLayer.idleAfter = 'all';
-  tileLayer.visible(true);
-  tileLayer.url(tileUrl)
+  var tileProvider;
+  var tileLayer;
+  var layers = viewer.scene.imageryLayers;
+  var rectangle;
 
   function updateTileLayer() {
-    tileLayer.url(tileUrl)
+    layers.remove(tileLayer)
+
+    tileProvider = new Cesium.UrlTemplateImageryProvider({
+      url: tileUrl,
+      subdomains: null,
+      rectangle: rectangle,
+    });
+    tileLayer = layers.addImageryProvider(tileProvider);
   }
 
-  function updateTilesOpacity(e, value) {
-    value = Number(value) / 100.0;
-    tileLayer.opacity(value);
-  }
-
-
-  fetch(`${host}/api/large_image/${imageId}/tiles?projection=EPSG:3857`)
+  console.log(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
+  fetch(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
     .then(response => response.json())
     .then(data => {
       var extents = data["bounds"];
-      setBounds(extents, false)
+      console.log(extents)
+      rectangle = Cesium.Rectangle.fromDegrees(extents.xmin, extents.ymin, extents.xmax, extents.ymax)
 
-      // Make sure regions outside the extent of the raster do not load null tiles
-      //   this relieves strain on the tile server
-      tileLayer.isValid = (index) => {
-        const tileBounds = tileLayer.gcsTileBounds(index);
-        return tileBounds.left <= extents.xmax &&
-          tileBounds.right >= extents.xmin &&
-          tileBounds.top >= extents.ymin &&
-          tileBounds.bottom <= extents.ymax;
-      }
+      updateTileLayer(); // initial call to add tile layer
 
-      var boxjson = {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [extents.xmin, extents.ymin],
-            [extents.xmin, extents.ymax],
-            [extents.xmax, extents.ymax],
-            [extents.xmax, extents.ymin],
-            [extents.xmin, extents.ymin]
-          ]
-        ]
-      };
-
-      reader.read(boxjson, (features) => {
-        features[0].style({
-            strokeColor: 'red',
-            fill: false
-          })
-          .draw();
+      viewer.camera.flyTo({
+        destination: rectangle,
       });
-
-
     });
+
+
+  function updateTilesOpacity(e, value) {
+    value = Number(value) / 100.0;
+    tileLayer.alpha = value;
+  }
+
+  Cesium.Camera.DEFAULT_VIEW_RECTANGLE = rectangle;
+  Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 </script>

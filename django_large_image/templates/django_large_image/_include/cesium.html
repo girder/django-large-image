@@ -1,0 +1,25 @@
+{% load static %}
+{% block cesium %}
+<!-- Include the CesiumJS JavaScript and CSS files -->
+<script src="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Cesium.js"></script>
+<link href="https://cesium.com/downloads/cesiumjs/releases/1.87.1/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+
+<!-- Include our custom styles for the Cesium Viewer -->
+<link rel="stylesheet" type="text/css" href="{% static 'django_large_image/styles/cesium.css' %}">
+
+<!-- Make the vwidget div -->
+<div id="cesiumContainer"></div>
+
+<script>
+  // Set the Cesium Ion token to `null` to avoid warnings
+  const userCesiumToken = "{{ cesium_token }}";
+  if (userCesiumToken) {
+    Cesium.Ion.defaultAccessToken = "{{ cesium_token }}";
+  }
+</script>
+
+<!-- Load the script to initialize the viewer -->
+<script src="{% static 'django_large_image/js/cesium.js' %}"></script>
+
+</div>
+{% endblock cesium %}

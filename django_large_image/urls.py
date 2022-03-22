@@ -22,4 +22,9 @@ urlpatterns = [
         rest.tiles.ListTileSourcesView.as_view(),
         name='large-image-sources',
     ),
+    path(
+        'api/large-image/colormaps',
+        rest.tiles.ListColormapsView.as_view(),
+        name='large-image-colormaps',
+    ),
 ]
