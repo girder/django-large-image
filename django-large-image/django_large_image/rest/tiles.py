@@ -11,6 +11,7 @@ from drf_yasg.utils import swagger_auto_schema
 import large_image
 from large_image.tilesource import FileTileSource
 from rest_framework.decorators import action
+from rest_framework.renderers import TemplateHTMLRenderer
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
