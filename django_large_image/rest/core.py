@@ -19,6 +19,11 @@ class BaseLargeImageView(APIView):
     USE_VSI: bool = False
 
     def _get_path(self, pk: int):
+        """Return path on disk to image file (or VSI str).
+
+        This can be overridden downstream to implement custom FUSE, etc.,
+        interfaces.
+        """
         # Get FileField using FILE_FIELD_NAME
         field_file = getattr(self.get_object(), self.FILE_FIELD_NAME)
         # Get local file path
