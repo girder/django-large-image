@@ -122,13 +122,13 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 - [x] Support for S3FileField
 - [x] Ship an easily extensible SSR template for tile viewing with CesiumJS
 - [x] Support for using file URLs with GDAL's VSI
+- [x] Provide OpenAPI documentation in swagger
 
 ### Phase 2
 
 - [ ] Refactor/prototpye RGD's ChecksumFile model as a FieldFile subclass
 - [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
 - [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
-- [ ] Handle Float URL parameters or switching some endpoints to take query parameters
 - [ ] Provide some sort of endpoint to check if an image is a valid COG
 
 ### Phase 3 and onward
