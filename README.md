@@ -22,6 +22,9 @@ to provide tile serving endpoints out of the box.
 use cases for `FileField` and `S3FileField`. We are working to also support
 GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster).
 
+This module ships with a pre-built HTML tempate for rendering geospatial tiles
+with CesiumJS.
+
 ### Usage
 
 To use the mixin classes provided here, create a model, serializer, and view in
@@ -124,7 +127,6 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 - [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
 - [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
 - [ ] Handle Float URL parameters or switching some endpoints to take query parameters
-- [ ] Better handle colormaps and nicities
 - [ ] Provide some sort of endpoint to check if an image is a valid COG
 
 ### Phase 3 and onward
