@@ -3,9 +3,8 @@ from drf_yasg import openapi
 projection = openapi.Parameter(
     'projection',
     openapi.IN_QUERY,
-    description='The projection in which to open the image.',
+    description='The projection in which to open the image (default `EPSG:3857`).',
     type=openapi.TYPE_STRING,
-    default='EPSG:3857',
 )
 
 z = openapi.Parameter('z', openapi.IN_PATH, description='zoom level', type=openapi.TYPE_INTEGER)

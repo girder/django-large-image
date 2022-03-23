@@ -51,6 +51,7 @@ setup(
         'django-large-image',
         'large-image-source-gdal>=1.9.0',
         'large-image-source-pil>=1.9.0',
+        'large-image-source-ometiff>=1.9.0',
         'pooch',
     ],
     extras_require={

@@ -5,7 +5,8 @@ RUN apt-get update && \
     apt-get install --no-install-recommends --yes \
         libpq-dev gcc libc6-dev \
         graphviz \
-        libgraphviz-dev && \
+        libgraphviz-dev \
+        && \
     rm -rf /var/lib/apt/lists/*
 
 ENV PYTHONDONTWRITEBYTECODE 1

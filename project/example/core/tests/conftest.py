@@ -45,3 +45,11 @@ def non_geo_image() -> models.ImageFile:
         file__filename='afie_1.jpg',
         file__from_path=datastore.fetch('afie_1.jpg'),
     )
+
+
+@pytest.fixture
+def ome_image() -> models.ImageFile:
+    return ImageFileFactory(
+        file__filename='HTA9_1_BA_F_ROI02.ome.tif',
+        file__from_path=datastore.fetch('HTA9_1_BA_F_ROI02.ome.tif'),
+    )

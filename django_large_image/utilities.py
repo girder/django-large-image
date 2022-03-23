@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+import logging
 import os
 import pathlib
 import shutil
@@ -16,6 +17,8 @@ try:
     from minio_storage.storage import MinioStorage
 except ImportError:
     MinioStorage = None
+
+logger = logging.getLogger(__name__)
 
 
 @contextmanager
@@ -37,18 +40,19 @@ def patch_internal_presign(f: FieldFile):
         and getattr(settings, 'MINIO_STORAGE_MEDIA_URL', None) is not None
     ):
         original_base_url = f.storage.base_url
-        try:
-            f.storage.base_url = None
-            yield
-        finally:
-            f.storage.base_url = original_base_url
-        return
+        if f.storage.base_url is not None:
+            try:
+                f.storage.base_url = None
+                yield
+            finally:
+                f.storage.base_url = original_base_url
+            return
     yield
 
 
 def get_temp_dir():
     path = pathlib.Path(
-        getattr(settings, 'RGD_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'rgd'))
+        getattr(settings, 'DATA_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'django-large-image'))
     )
     path.mkdir(parents=True, exist_ok=True)
     return path
@@ -94,13 +98,16 @@ def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
             # it is already at a stable path on disk.
             # We must symlink it into the desired path
             os.symlink(file_obj.name, dest_path)
+            logger.debug('Performing symlink')
             return dest_path
         else:
             # When file_obj is actually a subclass of File, it only provides a Python
             # file-like object API. So, it must be copied to a stable path.
+            logger.debug('copying file...')
             if dest_path.exists():
                 # WARNING: this is probably not thread safe
                 #  S3FF is fundamentally incompatible with tile serving
+                logger.debug('...Found existing')
                 return dest_path
             with open(dest_path, 'wb') as dest_stream:
                 shutil.copyfileobj(file_obj, dest_stream)

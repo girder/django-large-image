@@ -42,7 +42,8 @@ class BaseLargeImageView(APIView):
         if use_vsi:
             with utilities.patch_internal_presign(field_file):
                 # Grab URL and pass back VSI path
-                return utilities.make_vsi(field_file.url)
+                vsi = utilities.make_vsi(field_file.url)
+            return vsi
         # Checkout file locally
         return utilities.field_file_to_local_path(field_file)
 
@@ -86,5 +87,5 @@ class BaseLargeImageView(APIView):
                     request, self.get_path(pk, use_vsi=True), default_projection=default_projection
                 )
             except TileSourceFileNotFoundError:
-                pass
+                logger.error('VSI failed')
         return self._open_image(request, self.get_path(pk), default_projection=default_projection)

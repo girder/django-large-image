@@ -20,6 +20,7 @@ registry = {
     'envi_rgbsmall_bip.img': 'sha512:eff9dcc3f5fdae898132ccb908ee0c13725f2b8178871b2c158ffe6f3306ba1408da59fde9228df6ed7ef9b1b720805a3fb5df4545eb80c640d221a7ee697a31',
     'IHTest_202009_Path3_Step5_BBXSWIR_12deg_DistStA.hdr': 'sha512:d8e11e23d81f397a895d8e302258805082fec9358d44baa63c971c56aecfc725fa0458ff86f2aa64c23c3461dd60d287c28af687393af853d2c1d2b4513163fa',
     'IHTest_202009_Path3_Step5_BBXSWIR_12deg_DistStA.raw': 'sha512:8cb5a57c37c87e8a45d51a6d5e5b072a488b79ade82dcfc227473dd60a66cd5fb980a84b59e7541ed5cbfac52605d84ed0b8f055b8da7223d420d69faafe6abd',
+    'HTA9_1_BA_F_ROI02.ome.tif': 'sha512:e30b2c307538107b905e1ff7f674a1fca0ee298df0280fcad411a4adf69d684a34b6b9c1a516054e7f54b8a2b60c886b3874fce28e7cd90e14c3dac2a9a210ef',
 }
 
 
