@@ -15,6 +15,7 @@ from composed_configuration import (
 class ExampleMixin(ConfigMixin):
     WSGI_APPLICATION = 'example.wsgi.application'
     ROOT_URLCONF = 'example.urls'
+    CELERY_BROKER_URL = None
 
     BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
