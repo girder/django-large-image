@@ -7,8 +7,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from django_large_image import utilities
+from django_large_image.rest import params
 from django_large_image.rest.core import CACHE_TIMEOUT, BaseLargeImageView
-from django_large_image.rest.params import bottom_param, left_param, right_param, top_param
 
 
 class Data(BaseLargeImageView):
@@ -16,6 +16,7 @@ class Data(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns thumbnail of full image.',
+        manual_parameters=[params.projection] + params.STYLE,
     )
     @action(detail=True)
     def thumbnail(self, request: Request, pk: int) -> HttpResponse:
@@ -26,15 +27,13 @@ class Data(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns region tile binary from world coordinates in given EPSG.',
-        manual_parameters=[left_param, right_param, bottom_param, top_param],
+        manual_parameters=[params.projection] + params.REGION,
     )
     @action(
         detail=True,
-        url_path=r'region/(?P<left>\w+)/(?P<right>\w+)/(?P<bottom>\w+)/(?P<top>\w+)/region.tif',
+        url_path=r'region.tif',
     )
-    def region(
-        self, request: Request, pk: int, left: float, right: float, bottom: float, top: float
-    ) -> HttpResponse:
+    def region(self, request: Request, pk: int) -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
         Note
@@ -48,6 +47,10 @@ class Data(BaseLargeImageView):
         tile_source = self._get_tile_source(request, pk)
         units = request.query_params.get('units', None)
         encoding = request.query_params.get('encoding', None)
+        left = float(request.query_params.get('left'))
+        right = float(request.query_params.get('right'))
+        top = float(request.query_params.get('top'))
+        bottom = float(request.query_params.get('bottom'))
         path, mime_type = utilities.get_region(
             tile_source,
             left,
@@ -66,10 +69,12 @@ class Data(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns single pixel.',
-        manual_parameters=[left_param, top_param],
+        manual_parameters=[params.projection, params.left, params.top] + params.STYLE,
     )
-    @action(detail=True, url_path=r'pixel/(?P<left>\w+)/(?P<top>\w+)')
-    def pixel(self, request: Request, pk: int, left: int, top: int) -> Response:
+    @action(detail=True)
+    def pixel(self, request: Request, pk: int) -> Response:
+        left = float(request.query_params.get('left'))
+        top = float(request.query_params.get('top'))
         tile_source = self._get_tile_source(request, pk, default_projection=None)
         metadata = tile_source.getPixel(
             region={'left': int(left), 'top': int(top), 'units': 'pixels'}
@@ -79,10 +84,12 @@ class Data(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns histogram',
+        manual_parameters=[params.projection] + params.HISTOGRAM,
     )
     @action(detail=True)
     def histogram(self, request: Request, pk: int) -> Response:
         kwargs = dict(
+            # TODO: add openapi params for these
             onlyMinMax=request.query_params.get('onlyMinMax', False),
             bins=int(request.query_params.get('bins', 256)),
             density=request.query_params.get('density', False),

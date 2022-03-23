@@ -6,8 +6,8 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from django_large_image.rest import params
 from django_large_image.rest.core import CACHE_TIMEOUT, BaseLargeImageView
-from django_large_image.rest.params import x_param, y_param, z_param
 
 
 class Tiles(BaseLargeImageView):
@@ -15,7 +15,7 @@ class Tiles(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns tile image.',
-        manual_parameters=[z_param, x_param, y_param],
+        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
     )
     @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
     def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
@@ -27,7 +27,7 @@ class Tiles(BaseLargeImageView):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns bounds of a tile for a given x, y, z index.',
-        manual_parameters=[z_param, x_param, y_param],
+        manual_parameters=[params.projection, params.z, params.x, params.y],
     )
     @action(
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+)/corners'

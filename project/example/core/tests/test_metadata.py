@@ -47,7 +47,7 @@ def test_bands(authenticated_api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_band(authenticated_api_client, image_file_geotiff):
-    response = authenticated_api_client.get(f'/api/large-image/{image_file_geotiff.pk}/band/1')
+    response = authenticated_api_client.get(f'/api/large-image/{image_file_geotiff.pk}/band?band=1')
     assert response.status_code == 200
     band = response.data
     assert band['interpretation']

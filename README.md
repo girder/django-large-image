@@ -1,5 +1,7 @@
 # django-large-image
 
+[![codecov](https://codecov.io/gh/ResonantGeoData/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/ResonantGeoData/django-large-image)
+
 Abstract endpoints for working with large images in Django -- specifically
 geared towards geospatial tile serving.
 

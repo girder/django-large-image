@@ -18,7 +18,9 @@ def test_histogram(authenticated_api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_pixel(authenticated_api_client, image_file_geotiff):
-    response = authenticated_api_client.get(f'/api/large-image/{image_file_geotiff.pk}/pixel/0/0')
+    response = authenticated_api_client.get(
+        f'/api/large-image/{image_file_geotiff.pk}/pixel?left=0&top=0'
+    )
     assert response.status_code == 200
     data = response.data
     assert 'bands' in data
