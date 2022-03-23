@@ -14,6 +14,7 @@ class ImageFileDetailView(
     queryset = models.ImageFile.objects.all()
     serializer_class = models.ImageFileSerializer
     FILE_FIELD_NAME = 'file'
+    USE_VSI = True
 
 
 class S3ImageFileDetailView(
@@ -25,3 +26,4 @@ class S3ImageFileDetailView(
     queryset = models.S3ImageFile.objects.all()
     serializer_class = models.S3ImageFileSerializer
     FILE_FIELD_NAME = 'file'
+    USE_VSI = True

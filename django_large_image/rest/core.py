@@ -15,7 +15,8 @@ CACHE_TIMEOUT = 60 * 60 * 2
 
 
 class BaseLargeImageView(APIView):
-    FILE_FIELD_NAME = None
+    FILE_FIELD_NAME: str = None
+    USE_VSI: bool = False
 
     def _get_path(self, pk: int):
         # Get FileField using FILE_FIELD_NAME
@@ -26,7 +27,7 @@ class BaseLargeImageView(APIView):
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / field_file_basename
         # Checkout file locally - or configure VSI
-        return utilities.field_file_to_local_path(field_file, path)
+        return utilities.field_file_to_local_path(field_file, path, self.USE_VSI)
 
     def _get_tile_source(
         self, request: Request, pk: int, default_projection: str = 'EPSG:3857'

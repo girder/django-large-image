@@ -116,7 +116,7 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 - [x] Support for django's FileFeild
 - [x] Support for S3FileField
 - [x] Ship an easily extensible SSR template for tile viewing with CesiumJS
-- [ ] Support for using file URLs with GDAL's VSI
+- [x] Support for using file URLs with GDAL's VSI
 
 ### Phase 2
 
