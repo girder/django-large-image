@@ -14,4 +14,6 @@ urlpatterns = [
         views.S3ImageFileDetailView.as_view(),
         name='s3-image-file-detail',
     ),
+    path('', views.ImageFileListView.as_view(), name='image-list'),
+    path('s3', views.ImageFileListView.as_view(), name='s3-image-list'),
 ] + router.urls

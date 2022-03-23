@@ -1,0 +1,8 @@
+<h1>Image Files</h1>
+<ul>
+{% for object in object_list %}
+    <li><a href="{% url 'image-file-detail' object.pk %}">Image {{ object.pk }}</a></li>
+{% empty %}
+    <li>No images yet.</li>
+{% endfor %}
+</ul>

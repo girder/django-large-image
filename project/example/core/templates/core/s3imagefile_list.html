@@ -1,0 +1,8 @@
+<h1>S3 Image Files</h1>
+<ul>
+{% for object in object_list %}
+    <li><a href="{% url 's3-image-file-detail' object.pk %}">S3 Image {{ object.pk }}</a></li>
+{% empty %}
+    <li>No images yet.</li>
+{% endfor %}
+</ul>
