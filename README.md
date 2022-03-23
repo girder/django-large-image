@@ -1,13 +1,15 @@
 # django-large-image
 
+[![PyPI](https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white)](https://pypi.org/project/django-large-image/)
 [![codecov](https://codecov.io/gh/ResonantGeoData/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/ResonantGeoData/django-large-image)
+[![Tests](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml)
 
 Abstract endpoints for working with large images in Django -- specifically
 geared towards geospatial tile serving.
 
 *DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
 
-![swagger-spec](./doc/swagger.png)
+![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png)
 
 ## Implementation
 
