@@ -55,12 +55,10 @@ def test_band(authenticated_api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_metadata_ome(authenticated_api_client, ome_image):
-    response = authenticated_api_client.get(
-        f'/api/large-image/{ome_image.pk}/metadata'
-    )
+    response = authenticated_api_client.get(f'/api/large-image/{ome_image.pk}/metadata')
     assert response.status_code == 200
     metadata = response.data
-    assert metadata['levels'] == 4
+    assert metadata['levels'] == 6
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']
     assert metadata['tileWidth'] == metadata['tileHeight']

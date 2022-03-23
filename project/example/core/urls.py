@@ -14,6 +14,14 @@ urlpatterns = [
         views.S3ImageFileDetailView.as_view(),
         name='s3-image-file-detail',
     ),
+    path(
+        'large-image/<int:pk>/viewer', views.ImageFileViewerView.as_view(), name='image-file-viewer'
+    ),
+    path(
+        'large-image/s3/<int:pk>/viewer',
+        views.S3ImageFileViewerView.as_view(),
+        name='s3-image-file-viewer',
+    ),
     path('', views.ImageFileListView.as_view(), name='image-list'),
     path('s3', views.S3ImageFileListView.as_view(), name='s3-image-list'),
 ] + router.urls

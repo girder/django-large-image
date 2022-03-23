@@ -75,7 +75,7 @@ class Data(BaseLargeImageView):
     def pixel(self, request: Request, pk: int) -> Response:
         left = float(request.query_params.get('left'))
         top = float(request.query_params.get('top'))
-        tile_source = self._get_tile_source(request, pk, default_projection=None)
+        tile_source = self._get_tile_source(request, pk)
         metadata = tile_source.getPixel(
             region={'left': int(left), 'top': int(top), 'units': 'pixels'}
         )
@@ -95,7 +95,7 @@ class Data(BaseLargeImageView):
             density=request.query_params.get('density', False),
             format=request.query_params.get('format', None),
         )
-        tile_source = self._get_tile_source(request, pk, default_projection=None)
+        tile_source = self._get_tile_source(request, pk)
         result = tile_source.histogram(**kwargs)
         result = result['histogram']
         for entry in result:

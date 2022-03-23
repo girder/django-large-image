@@ -52,7 +52,9 @@ def patch_internal_presign(f: FieldFile):
 
 def get_temp_dir():
     path = pathlib.Path(
-        getattr(settings, 'DATA_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'django-large-image'))
+        getattr(
+            settings, 'DATA_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'django-large-image')
+        )
     )
     path.mkdir(parents=True, exist_ok=True)
     return path

@@ -50,7 +50,6 @@
   fetch(`${host}/api/large-image/colormaps`)
     .then(response => response.json())
     .then(data => {
-      console.log(data);
       for (const [source, indices] of Object.entries(data)) {
         for (const index in indices) {
           const option = data[source][index];

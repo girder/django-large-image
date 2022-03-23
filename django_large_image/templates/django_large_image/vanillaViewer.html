@@ -1,0 +1,9 @@
+{% extends "django_large_image/base.html" %}
+{% block content %}
+<script>
+  var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
+</script>
+
+{% include 'django_large_image/_include/geojs.html' %}
+
+{% endblock content %}

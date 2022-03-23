@@ -2,7 +2,7 @@
 <a href="{% url 'image-list' %}">Standard Images</a>
 <ul>
 {% for object in object_list %}
-    <li><a href="{% url 's3-image-file-detail' object.pk %}">S3 Image {{ object.pk }}</a></li>
+    <li>Image {{ object.pk }}: <a href="{% url 's3-image-file-detail' object.pk %}">Geospatial</a> or <a href="{% url 's3-image-file-viewer' object.pk %}">Vanilla</a></li>
 {% empty %}
     <li>No images yet.</li>
 {% endfor %}

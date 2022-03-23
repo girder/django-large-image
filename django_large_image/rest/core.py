@@ -67,14 +67,12 @@ class BaseLargeImageView(APIView):
             style = json.dumps(style)
         return style
 
-    def _open_image(self, request: Request, path: str, default_projection: str = 'EPSG:3857'):
-        projection = request.query_params.get('projection', default_projection)
+    def _open_image(self, request: Request, path: str):
+        projection = request.query_params.get('projection', None)
         style = self._get_style(request)
         return utilities.get_tilesource_from_image(path, projection, style=style)
 
-    def _get_tile_source(
-        self, request: Request, pk: int, default_projection: str = 'EPSG:3857'
-    ) -> FileTileSource:
+    def _get_tile_source(self, request: Request, pk: int) -> FileTileSource:
         """Return the built tile source."""
         # get image_entry from cache
         # image_cache_key = f'large_image_tile:image_{pk}'
@@ -83,9 +81,7 @@ class BaseLargeImageView(APIView):
         #     cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
         if self.USE_VSI:
             try:
-                return self._open_image(
-                    request, self.get_path(pk, use_vsi=True), default_projection=default_projection
-                )
+                return self._open_image(request, self.get_path(pk, use_vsi=True))
             except TileSourceFileNotFoundError:
                 logger.error('VSI failed')
-        return self._open_image(request, self.get_path(pk), default_projection=default_projection)
+        return self._open_image(request, self.get_path(pk))

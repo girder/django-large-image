@@ -1,45 +1,9 @@
-<script>
-  var host = window.location.protocol + "//" + window.location.host;
-  var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
+{% extends "django_large_image/base.html" %}
+{% block content %}
+  <script>
+    var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
+  </script>
 
-  function insertWindowUrlParam(key, value) {
-    if (history.pushState) {
-      let searchParams = new URLSearchParams(window.location.search);
-      if (value === undefined) {
-        searchParams.delete(key);
-      } else {
-        searchParams.set(key, value);
-      }
-      let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
-      window.history.pushState({
-        path: newurl
-      }, '', newurl);
-    }
-  }
-
-  function updateTileUrlOption(option, value) {
-    const url = new URL(tileUrl);
-    const urlParams = new URLSearchParams(window.location.search);
-    var searchParams = url.searchParams;
-    if (value === undefined) {
-      searchParams.delete(option);
-    } else {
-      searchParams.set(option, value);
-    }
-    const tileFormatEncoded = '/%7Bz%7D/%7Bx%7D/%7By%7D.';
-    const tileFormat = '/{z}/{x}/{y}.';
-    tileUrl = url.toString().replace(tileFormatEncoded, tileFormat);
-    insertWindowUrlParam(option, value);
-  }
-
-  const windowSearch = new URLSearchParams(window.location.search);
-  const windowSearchParams = Object.fromEntries(windowSearch.entries());
-  for (const [option, value] of Object.entries(windowSearchParams)) {
-    updateTileUrlOption(option, value);
-  }
-</script>
-
-<div class="wrapper">
   {% include 'django_large_image/_include/cesium.html' %}
   <div class="slidecontainer" id="opacityTool">
     <label for="rasterOpacityRange">Raster Layer Opacity: </label>
@@ -47,7 +11,6 @@
     <br />
     {% include 'django_large_image/_include/colors.html' %}
   </div>
-</div>
 
 
 <script>
@@ -67,12 +30,10 @@
     tileLayer = layers.addImageryProvider(tileProvider);
   }
 
-  console.log(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
   fetch(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
     .then(response => response.json())
     .then(data => {
       var extents = data["bounds"];
-      console.log(extents)
       rectangle = Cesium.Rectangle.fromDegrees(extents.xmin, extents.ymin, extents.xmax, extents.ymax)
 
       updateTileLayer(); // initial call to add tile layer
@@ -91,3 +52,4 @@
   Cesium.Camera.DEFAULT_VIEW_RECTANGLE = rectangle;
   Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
 </script>
+{% endblock content %}

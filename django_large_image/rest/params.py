@@ -3,7 +3,7 @@ from drf_yasg import openapi
 projection = openapi.Parameter(
     'projection',
     openapi.IN_QUERY,
-    description='The projection in which to open the image (default `EPSG:3857`).',
+    description='The projection in which to open the image (try `EPSG:3857`).',
     type=openapi.TYPE_STRING,
 )
 

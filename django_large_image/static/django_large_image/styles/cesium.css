@@ -12,16 +12,3 @@
   position: absolute;
   z-index: 10;
 }
-
-.slidecontainer {
-  background-color: #DCDCDC;
-  padding: 2px;
-  border: 1px solid #000;
-  text-align: left;
-  border-radius: 10px;
-  position: absolute;
-  opacity: 0.75;
-  z-index: 11;
-  bottom: 5px;
-  right: 5px;
-}
