@@ -19,7 +19,7 @@ jobs:
           python-version: "3.8"
       - name: Build Weel
         run: |
-          pip install wheel
+          pip install wheel twine
           python setup.py sdist bdist_wheel
       - name: Make index
         uses: banesullivan/create-pip-index-action@main
