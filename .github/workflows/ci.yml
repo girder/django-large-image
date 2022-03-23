@@ -34,10 +34,10 @@ jobs:
           - 5432:5432
       minio:
         # This image does not require any command arguments (which GitHub Actions don't support)
-        image: bitnami/minio:latest
+        image: bitnami/minio:2022.3.5-debian-10-r3
         env:
-          MINIO_ACCESS_KEY: minioAccessKey
-          MINIO_SECRET_KEY: minioSecretKey
+          MINIO_ROOT_USER: minioAccessKey
+          MINIO_ROOT_PASSWORD: minioSecretKey
         ports:
           - 9000:9000
     steps:
@@ -81,10 +81,10 @@ jobs:
           - 5432:5432
       minio:
         # This image does not require any command arguments (which GitHub Actions don't support)
-        image: bitnami/minio:latest
+        image: bitnami/minio:2022.3.5-debian-10-r3
         env:
-          MINIO_ACCESS_KEY: minioAccessKey
-          MINIO_SECRET_KEY: minioSecretKey
+          MINIO_ROOT_USER: minioAccessKey
+          MINIO_ROOT_PASSWORD: minioSecretKey
         ports:
           - 9000:9000
     steps:
