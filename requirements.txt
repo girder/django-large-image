@@ -1,0 +1,5 @@
+# This is for Heroku demo deployment
+--find-links https://girder.github.io/large_image_wheels
+GDAL
+-e .[colormaps]
+-e ./project
