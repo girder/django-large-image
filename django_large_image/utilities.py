@@ -46,6 +46,20 @@ def patch_internal_presign(f: FieldFile):
     yield
 
 
+def get_temp_dir():
+    path = pathlib.Path(
+        getattr(settings, 'RGD_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'rgd'))
+    )
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def get_cache_dir():
+    path = pathlib.Path(get_temp_dir(), 'file_cache')
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
 def make_vsi(url: str, **options):
     if str(url).startswith('s3://'):
         s3_path = url.replace('s3://', '')
@@ -61,18 +75,18 @@ def make_vsi(url: str, **options):
     return vsi
 
 
-def field_file_to_local_path(
-    field_file: FieldFile, path: str, use_vsi: bool = False
-) -> pathlib.Path:
+def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
     """Download entire FieldFile to disk location.
 
     This overrides `girder_utils.field_file_to_local_path` to download file to
     local path without a context manager. Cleanup must be handled by caller.
 
     """
-    dest_path = pathlib.Path(path)
+    field_file_basename = pathlib.PurePath(field_file.name).name
+    directory = get_cache_dir() / f'{type(field_file.instance).__name__}-{field_file.instance.pk}'
+    dest_path = directory / field_file_basename
+
     dest_path.parent.mkdir(parents=True, exist_ok=True)
-    the_path = pathlib.Path(dest_path)
     with field_file.open('rb'):
         file_obj: File = field_file.file
         if type(file_obj) is File:
@@ -80,12 +94,8 @@ def field_file_to_local_path(
             # it is already at a stable path on disk.
             # We must symlink it into the desired path
             os.symlink(file_obj.name, dest_path)
-            return the_path
+            return dest_path
         else:
-            if use_vsi:
-                with patch_internal_presign(field_file):
-                    # Grab URL and pass back VSI path
-                    return make_vsi(field_file.url)
             # When file_obj is actually a subclass of File, it only provides a Python
             # file-like object API. So, it must be copied to a stable path.
             if dest_path.exists():
@@ -95,7 +105,7 @@ def field_file_to_local_path(
             with open(dest_path, 'wb') as dest_stream:
                 shutil.copyfileobj(file_obj, dest_stream)
                 dest_stream.flush()
-            return the_path
+            return dest_path
 
 
 def get_or_create_no_commit(model: Any, defaults: dict = None, **kwargs):
@@ -106,20 +116,6 @@ def get_or_create_no_commit(model: Any, defaults: dict = None, **kwargs):
             defaults = {}
         defaults.update(kwargs)
         return model(**defaults), True
-
-
-def get_temp_dir():
-    path = pathlib.Path(
-        getattr(settings, 'RGD_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'rgd'))
-    )
-    path.mkdir(parents=True, exist_ok=True)
-    return path
-
-
-def get_cache_dir():
-    path = pathlib.Path(get_temp_dir(), 'file_cache')
-    path.mkdir(parents=True, exist_ok=True)
-    return path
 
 
 def get_tilesource_from_image(

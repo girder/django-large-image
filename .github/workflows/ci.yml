@@ -69,3 +69,50 @@ jobs:
         with:
           name: graphs
           path: .tox/graphs/*.png
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_DB: django
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+      minio:
+        # This image does not require any command arguments (which GitHub Actions don't support)
+        image: bitnami/minio:latest
+        env:
+          MINIO_ACCESS_KEY: minioAccessKey
+          MINIO_SECRET_KEY: minioSecretKey
+        ports:
+          - 9000:9000
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+      - name: Install tox
+        run: |
+          pip install --upgrade pip
+          pip install tox
+      - name: Run tests
+        run: |
+          tox -e test
+        env:
+          DJANGO_DATABASE_URL: postgres://postgres:postgres@localhost:5432/django
+          DJANGO_MINIO_STORAGE_ENDPOINT: localhost:9000
+          DJANGO_MINIO_STORAGE_ACCESS_KEY: minioAccessKey
+          DJANGO_MINIO_STORAGE_SECRET_KEY: minioSecretKey
+          DJANGO_STORAGE_BUCKET_NAME: django-storage
+      - name: Stash coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: .coverage
+          path: project/coverage.xml
+      # - uses: codecov/codecov-action@v2
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: project/coverage.xml
+      #     verbose: true
