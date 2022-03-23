@@ -3,3 +3,4 @@
 GDAL
 -e .[colormaps]
 -e ./project
+celery
