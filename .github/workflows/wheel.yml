@@ -34,5 +34,5 @@ jobs:
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
         env:
           TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets[matrix.TWINE_PASSWORD_VAR] }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: twine upload --skip-existing dist/*
