@@ -111,8 +111,8 @@ jobs:
         with:
           name: .coverage
           path: project/coverage.xml
-      # - uses: codecov/codecov-action@v2
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     files: project/coverage.xml
-      #     verbose: true
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: project/coverage.xml
+          verbose: true

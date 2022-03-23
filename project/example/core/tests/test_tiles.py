@@ -1,23 +1,4 @@
 import pytest
-from rest_framework import status
-
-
-@pytest.mark.django_db(transaction=True)
-def test_swagger(authenticated_api_client):
-    response = authenticated_api_client.get('/swagger/?format=openapi')
-    assert status.is_success(response.status_code)
-
-
-@pytest.mark.django_db(transaction=True)
-def test_metadata(authenticated_api_client, image_file_geotiff):
-    response = authenticated_api_client.get(
-        f'/api/large-image/{image_file_geotiff.pk}/metadata?projection=EPSG:3857'
-    )
-    metadata = response.data
-    assert metadata['levels'] == 9
-    assert metadata['sizeX'] == metadata['sizeY']
-    assert metadata['tileWidth'] == metadata['tileHeight']
-    assert metadata['tileWidth'] == metadata['tileHeight']
 
 
 @pytest.mark.django_db(transaction=True)
@@ -30,10 +11,13 @@ def test_tile(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_thumbnail(authenticated_api_client, image_file_geotiff):
-    response = authenticated_api_client.get(f'/api/large-image/{image_file_geotiff.pk}/thumbnail')
+def test_tile_corners(authenticated_api_client, image_file_geotiff):
+    response = authenticated_api_client.get(
+        f'/api/large-image/{image_file_geotiff.pk}/tiles/1/0/0/corners'
+    )
     assert response.status_code == 200
-    assert response['Content-Type'] == 'image/png'
+    data = response.data
+    assert data['proj4']
 
 
 # @pytest.mark.django_db(transaction=True)

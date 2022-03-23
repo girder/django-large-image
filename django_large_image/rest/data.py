@@ -1,15 +1,28 @@
 from django.http import HttpResponse
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
 from django_large_image import utilities
-from django_large_image.rest.core import BaseLargeImageView
+from django_large_image.rest.core import CACHE_TIMEOUT, BaseLargeImageView
 from django_large_image.rest.params import bottom_param, left_param, right_param, top_param
 
 
 class Data(BaseLargeImageView):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns thumbnail of full image.',
+    )
+    @action(detail=True)
+    def thumbnail(self, request: Request, pk: int) -> HttpResponse:
+        tile_source = self._get_tile_source(request, pk)
+        thumb_data, mime_type = tile_source.getThumbnail(encoding='PNG')
+        return HttpResponse(thumb_data, content_type=mime_type)
+
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns region tile binary from world coordinates in given EPSG.',
