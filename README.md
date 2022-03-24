@@ -60,8 +60,14 @@ Miscellaneous:
 
 ## Installation
 
-In addition to adding `django-large-image` to your dependencies, you will need
-to add a `large-image` source module to your dependencies such as `large-image-source-gdal`. See [`large-image`](https://github.com/girder/large_image#installation)'s
+Out of the box, `django-large-image` only depends of the core `large-image`
+module, but you will need a `large-image-source-*` module in order for this
+to work. Most of our users probably want to work with geospatial images so we
+will focus on the `large-image-source-gdal` case, but it is worth noting that
+`large-image` has source modules for a wide variety of image formats
+(e.g., medical image formats for microscopy).
+
+See [`large-image`](https://github.com/girder/large_image#installation)'s
 installation instructions for more details.
 
 **Tip:* installing GDAL is notoriously difficult, so at Kitware we provide
@@ -79,12 +85,19 @@ pip install \
 
 ## Usage
 
-Out of the box, `django-large-image` only depends of the core `large-image`
-module, but you will need a `large-image-source-*` module in order for this
-to work. Most of our users probably want to work with geospatial images so we
-will focus on the `large-image-source-gdal` case, but it is worth noting that
-`large-image` has source modules for a wide variety of image formats
-(e.g., medical image formats for microscopy).
+Simply import and mixin the `LargeImageView` class to your existing
+`django-rest-framework` viewsets and specify the `FILE_FIELD_NAME` as the
+string name of the `FileField` in which your image data are saved.
+
+```py
+from django_large_image.rest import LargeImageView
+
+class MyModelViewset(viewsets.GenericViewSet, LargeImageView):
+  ...  # configuration for your model's viewset
+  FILE_FIELD_NAME = 'field_name'
+```
+
+And that's it!
 
 ### Example Code
 
@@ -99,6 +112,7 @@ from rest_framework import serializers
 
 
 class ImageFile(models.Model):
+    name = models.TextField()
     file = models.FileField()
 
 
@@ -117,10 +131,10 @@ from example.core.models import ImageFile
 
 @admin.register(ImageFile)
 class ImageFileAdmin(admin.ModelAdmin):
-    list_display = ('pk',)
+    list_display = ('pk', 'name')
 ```
 
-Then create the views, mixing in the `django-large-image` view class:
+Then create the viewset, mixing in the `django-large-image` view class:
 ```py
 viewsets.py
 ---
@@ -137,7 +151,9 @@ class ImageFileDetailView(
 ):
     queryset = models.ImageFile.objects.all()
     serializer_class = models.ImageFileSerializer
-    FILE_FIELD_NAME = 'file'  # the name of the image FileField on your model
+
+    # for `django-large-image`: the name of the image FileField on your model
+    FILE_FIELD_NAME = 'file'
 ```
 
 Then register the URLs:
@@ -150,13 +166,16 @@ from example.core.viewsets import ImageFileDetailView
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
-router.register(r'api/large-image', ImageFileDetailView, basename='large-image')
+router.register(r'api/large-image', ImageFileDetailView, basename='image-file')
 
 urlpatterns = [
-  path('', include('django_large_image.urls')),
+  path('', include('django_large_image.urls')),  # Some additional diagnostic URLs from django-large-image
 ] + router.urls
 
 ```
+
+Please note the example Django project in the `project/` directory of this
+repository that shows how to use `django-large-image`.
 
 ## Work Plan
 
