@@ -4,32 +4,89 @@
 [![codecov](https://codecov.io/gh/ResonantGeoData/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/ResonantGeoData/django-large-image)
 [![Tests](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml)
 
-Abstract endpoints for working with large images in Django -- specifically
-geared towards geospatial tile serving.
+*Created by Kitware, Inc.*
+
+`django-large-image` is an abstraction of [`large-image`](https://github.com/girder/large_image)
+for use with `django-rest-framework` providing view mixins for endpoints to
+work with large images in Django -- specifically geared towards geospatial and
+medical image tile serving.
 
 *DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
 
-![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png)
+| Swagger Documentation | Tiles Endpoint |
+|---|---|
+|![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/tiles_endpoint.png)|
 
-## Implementation
 
-We are working to port Kitware's [large-image](https://github.com/girder/large_image)
+## Overview
+
+This package ports Kitware's [large-image](https://github.com/girder/large_image)
 to Django by providing a set of abstract, mixin API view classes that will
 handle tile serving, fetching metadata from images, and extracting regions of
 interest.
 
-`django-large-image` is not currently an installable Django app, but rather
-a few classes that can be mixed into a Django project (or application)'s views
-to provide tile serving endpoints out of the box.
+`django-large-image` is an optionally installable Django app with
+a few classes that can be mixed into a Django project (or application)'s
+drf-based views to provide tile serving endpoints out of the box. Notably,
+`django-large-image` is designed to work specifically with `FileFeild`
+interfaces with development being tailored to Kitware's
+[`S3FileField`](https://github.com/girder/django-s3-file-field). We are working
+to also support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
+in the future
 
-`django-large-image` presently supports and FieldFile interface with validated
-use cases for `FileField` and `S3FileField`. We are working to also support
-GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster).
+This package ships with pre-made HTML templates for rendering geospatial image
+tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.com/OpenGeoscience/geojs).
 
-This module ships with a pre-built HTML tempate for rendering geospatial tiles
-with CesiumJS.
+### Features
 
-### Usage
+Rich set of RESTful endpoints to extract information from large image formats:
+- Image metadata (`/metadata`, `/internal_metadata`)
+- Tile serving (`/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`)
+- Region extraction (`/region.tif?left=v&right=v&top=v&bottom=v`)
+- Image thumbnails (`/thumbnail`)
+- Individual pixels (`/pixel?left=v&top=v`)
+- Band histograms (`/histogram`)
+
+Support for general FileFeild's or File URLs
+- Supports django's FileFeild
+- Supports [`S3FileField`](https://github.com/girder/django-s3-file-field)
+- Supports GDAL's [Virtual File System](https://gdal.org/user/virtual_file_systems.html) for `s3://`, `ftp://`, etc. URLs
+
+Miscellaneous:
+- caching - tile sources are cached for rapid file re-opening
+  - tiles and thumbnails are cached to prevent recreating these data on multiple requests
+- Easily extensible SSR templates for tile viewing with CesiumJS and GeoJS
+- OpenAPI documentation in swagger
+
+## Installation
+
+In addition to adding `django-large-image` to your dependencies, you will need
+to add a `large-image` source module to your dependencies such as `large-image-source-gdal`. See [`large-image`](https://github.com/girder/large_image#installation)'s
+installation instructions for more details.
+
+**Tip:* installing GDAL is notoriously difficult, so at Kitware we provide
+pre-built Python wheels with the GDAL binary bundled for easily installation in
+production environments. To install our GDAL wheel, use: `pip install --find-links https://girder.github.io/large_image_wheels GDAL`*
+
+
+```bash
+pip install \
+  --find-links https://girder.github.io/large_image_wheels \
+  django-large-image \
+  large-image-source-gdal
+```
+
+
+## Usage
+
+Out of the box, `django-large-image` only depends of the core `large-image`
+module, but you will need a `large-image-source-*` module in order for this
+to work. Most of our users probably want to work with geospatial images so we
+will focus on the `large-image-source-gdal` case, but it is worth noting that
+`large-image` has source modules for a wide variety of image formats
+(e.g., medical image formats for microscopy).
+
+### Example Code
 
 To use the mixin classes provided here, create a model, serializer, and view in
 your Django project like so:
