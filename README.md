@@ -124,7 +124,6 @@ Then create the views, mixing in the `django-large-image` view class:
 ```py
 viewsets.py
 ---
-from django.contrib.auth.mixins import LoginRequiredMixin
 from example.core import models
 from rest_framework import mixins, viewsets
 
@@ -132,7 +131,6 @@ from django_large_image.rest import LargeImageView
 
 
 class ImageFileDetailView(
-    LoginRequiredMixin,
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     LargeImageView,

@@ -1,29 +1,28 @@
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import DetailView, ListView
 from example.core import models
 
 
-class ImageFileDetailView(LoginRequiredMixin, DetailView):
+class ImageFileDetailView(DetailView):
     model = models.ImageFile
 
 
-class S3ImageFileDetailView(LoginRequiredMixin, DetailView):
+class S3ImageFileDetailView(DetailView):
     model = models.S3ImageFile
 
 
-class ImageFileViewerView(LoginRequiredMixin, DetailView):
+class ImageFileViewerView(DetailView):
     model = models.ImageFile
     template_name = 'core/imagefile_viewer.html'
 
 
-class S3ImageFileViewerView(LoginRequiredMixin, DetailView):
+class S3ImageFileViewerView(DetailView):
     model = models.S3ImageFile
     template_name = 'core/s3imagefile_viewer.html'
 
 
-class ImageFileListView(LoginRequiredMixin, ListView):
+class ImageFileListView(ListView):
     model = models.ImageFile
 
 
-class S3ImageFileListView(LoginRequiredMixin, ListView):
+class S3ImageFileListView(ListView):
     model = models.S3ImageFile

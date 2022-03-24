@@ -1,6 +1,5 @@
 from example.core import models
 from rest_framework import mixins, viewsets
-from rest_framework.permissions import IsAuthenticated
 
 from django_large_image.rest import LargeImageView
 
@@ -10,7 +9,6 @@ class ImageFileDetailView(
     viewsets.GenericViewSet,
     LargeImageView,
 ):
-    permission_classes = [IsAuthenticated]
     queryset = models.ImageFile.objects.all()
     serializer_class = models.ImageFileSerializer
     FILE_FIELD_NAME = 'file'
@@ -22,7 +20,6 @@ class S3ImageFileDetailView(
     viewsets.GenericViewSet,
     LargeImageView,
 ):
-    permission_classes = [IsAuthenticated]
     queryset = models.S3ImageFile.objects.all()
     serializer_class = models.S3ImageFileSerializer
     FILE_FIELD_NAME = 'file'
