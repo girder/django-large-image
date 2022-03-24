@@ -14,13 +14,19 @@
   <input id="mincolor" type="number" step="0.01" onChange='changeColors();'>
   <input id="maxcolor" type="number" step="0.01" onChange='changeColors();'>
 </div>
+<div>
+  <img id="thumbnail" />
+</div>
 <script>
   var colorsSubGroup = document.getElementById('colorsSubGroup');
   var colorsDropdown = document.getElementById('colors');
   var bandDropdown = document.getElementById('bandChoice');
   var colorsMin = document.getElementById('mincolor');
   var colorsMax = document.getElementById('maxcolor');
+  var thumbnail = document.getElementById('thumbnail');
   var bands;
+
+  thumbnail.src = thumbnailUrl;
 
   if (windowSearchParams['min']) {
     colorsMin.value = windowSearchParams['min']
@@ -74,6 +80,7 @@
     updateTileUrlOption('min', colorsMin.value);
     updateTileUrlOption('max', colorsMax.value);
     updateTileLayer();
+    thumbnail.src = thumbnailUrl;
   }
 
   function bandChange() {

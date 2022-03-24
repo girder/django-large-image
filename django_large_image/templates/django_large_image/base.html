@@ -6,6 +6,7 @@
   <link rel="stylesheet" type="text/css" href="{% static 'django_large_image/styles/style.css' %}">
   <script>
     var host = window.location.protocol + "//" + window.location.host;
+    var thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail`;
 
     function insertWindowUrlParam(key, value) {
       if (history.pushState) {
@@ -24,16 +25,19 @@
 
     function updateTileUrlOption(option, value) {
       const url = new URL(tileUrl);
-      const urlParams = new URLSearchParams(window.location.search);
-      var searchParams = url.searchParams;
+      const urlThumb = new URL(thumbnailUrl);
+      // const urlParams = new URLSearchParams(window.location.search);
       if (value === undefined) {
-        searchParams.delete(option);
+        url.searchParams.delete(option);
+        urlThumb.searchParams.delete(option);
       } else {
-        searchParams.set(option, value);
+        url.searchParams.set(option, value);
+        urlThumb.searchParams.set(option, value);
       }
       const tileFormatEncoded = '/%7Bz%7D/%7Bx%7D/%7By%7D.';
       const tileFormat = '/{z}/{x}/{y}.';
       tileUrl = url.toString().replace(tileFormatEncoded, tileFormat);
+      thumbnailUrl = urlThumb.toString();
       insertWindowUrlParam(option, value);
     }
 
