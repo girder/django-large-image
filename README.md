@@ -13,6 +13,10 @@ medical image tile serving.
 
 *DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
 
+| RGB Raster | Colormapped Raster Band |
+|---|---|
+| ![raster](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/raster.png) | ![raster-colormap](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/raster_colormap.png) |
+
 | Swagger Documentation | Tiles Endpoint |
 |---|---|
 |![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/tiles_endpoint.png)|
