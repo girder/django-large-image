@@ -41,7 +41,7 @@ setup(
         'django-configurations[database,email]',
         'django-extensions',
         'django-filter',
-        'django-oauth-toolkit<1.6.0',
+        'django-oauth-toolkit',
         'djangorestframework',
         'drf-yasg',
         # Production-only
