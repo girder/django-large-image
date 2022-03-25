@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from django_large_image import utilities
+from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.core import CACHE_TIMEOUT, BaseLargeImageView
 
@@ -20,8 +20,8 @@ class Data(BaseLargeImageView):
     )
     @action(detail=True)
     def thumbnail(self, request: Request, pk: int) -> HttpResponse:
-        tile_source = self._get_tile_source(request, pk)
-        thumb_data, mime_type = tile_source.getThumbnail(encoding='PNG')
+        source = self._get_tile_source(request, pk)
+        thumb_data, mime_type = source.getThumbnail(encoding='PNG')
         return HttpResponse(thumb_data, content_type=mime_type)
 
     @swagger_auto_schema(
@@ -44,15 +44,15 @@ class Data(BaseLargeImageView):
         images, otherwise, must use `pixels`.
 
         """
-        tile_source = self._get_tile_source(request, pk)
+        source = self._get_tile_source(request, pk)
         units = request.query_params.get('units', None)
         encoding = request.query_params.get('encoding', None)
         left = float(request.query_params.get('left'))
         right = float(request.query_params.get('right'))
         top = float(request.query_params.get('top'))
         bottom = float(request.query_params.get('bottom'))
-        path, mime_type = utilities.get_region(
-            tile_source,
+        path, mime_type = tilesource.get_region(
+            source,
             left,
             right,
             bottom,
@@ -75,8 +75,8 @@ class Data(BaseLargeImageView):
     def pixel(self, request: Request, pk: int) -> Response:
         left = float(request.query_params.get('left'))
         top = float(request.query_params.get('top'))
-        tile_source = self._get_tile_source(request, pk)
-        metadata = tile_source.getPixel(
+        source = self._get_tile_source(request, pk)
+        metadata = source.getPixel(
             region={'left': int(left), 'top': int(top), 'units': 'pixels'}
         )
         return Response(metadata)
@@ -95,8 +95,8 @@ class Data(BaseLargeImageView):
             density=request.query_params.get('density', False),
             format=request.query_params.get('format', None),
         )
-        tile_source = self._get_tile_source(request, pk)
-        result = tile_source.histogram(**kwargs)
+        source = self._get_tile_source(request, pk)
+        result = source.histogram(**kwargs)
         result = result['histogram']
         for entry in result:
             for key in {'bin_edges', 'hist', 'range'}:

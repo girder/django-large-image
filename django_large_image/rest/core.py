@@ -7,7 +7,7 @@ from large_image.tilesource import FileTileSource
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
-from django_large_image import utilities
+from django_large_image import tilesource, utilities
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class BaseLargeImageView(APIView):
     def _open_image(self, request: Request, path: str):
         projection = request.query_params.get('projection', None)
         style = self._get_style(request)
-        return utilities.get_tilesource_from_path(path, projection, style=style)
+        return tilesource.get_tilesource_from_path(path, projection, style=style)
 
     def _get_tile_source(self, request: Request, pk: int) -> FileTileSource:
         """Return the built tile source."""

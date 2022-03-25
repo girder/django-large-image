@@ -19,9 +19,9 @@ class Tiles(BaseLargeImageView):
     )
     @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
     def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        tile_source = self._get_tile_source(request, pk)
-        tile_binary = tile_source.getTile(int(x), int(y), int(z))
-        mime_type = tile_source.getTileMimeType()
+        source = self._get_tile_source(request, pk)
+        tile_binary = source.getTile(int(x), int(y), int(z))
+        mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
     @swagger_auto_schema(
@@ -33,13 +33,13 @@ class Tiles(BaseLargeImageView):
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+)/corners'
     )
     def tile_corners(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        tile_source = self._get_tile_source(request, pk)
-        xmin, ymin, xmax, ymax = tile_source.getTileCorners(int(z), int(x), int(y))
+        source = self._get_tile_source(request, pk)
+        xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
         metadata = {
             'xmin': xmin,
             'xmax': xmax,
             'ymin': ymin,
             'ymax': ymax,
-            'proj4': tile_source.getProj4String(),
+            'proj4': source.getProj4String(),
         }
         return Response(metadata)
