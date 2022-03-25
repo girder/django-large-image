@@ -8,6 +8,7 @@ def test_metadata(authenticated_api_client, image_file_geotiff):
     )
     assert response.status_code == 200
     metadata = response.data
+    assert metadata['geospatial']
     assert metadata['levels'] == 9
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']
@@ -21,6 +22,7 @@ def test_metadata_s3(authenticated_api_client, s3_image_file_geotiff):
     )
     assert response.status_code == 200
     metadata = response.data
+    assert metadata['geospatial']
     assert metadata['levels'] == 9
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']
@@ -34,6 +36,7 @@ def test_internal_metadata(authenticated_api_client, image_file_geotiff):
     )
     assert response.status_code == 200
     metadata = response.data
+    assert metadata['geospatial']
     assert metadata['driverLongName']
 
 
@@ -58,6 +61,7 @@ def test_metadata_ome(authenticated_api_client, ome_image):
     response = authenticated_api_client.get(f'/api/image-file/{ome_image.pk}/metadata')
     assert response.status_code == 200
     metadata = response.data
+    assert not metadata['geospatial']
     assert metadata['levels'] == 6
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']

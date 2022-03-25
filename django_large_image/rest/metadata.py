@@ -17,11 +17,7 @@ class MetaData(BaseLargeImageView):
     @action(detail=True)
     def metadata(self, request: Request, pk: int) -> Response:
         source = self._get_tile_source(request, pk)
-        metadata = source.getMetadata()
-        metadata.setdefault('geospatial', False)
-        if metadata['geospatial']:
-            bounds = tilesource.get_tile_bounds(source)
-            metadata['bounds'] = bounds
+        metadata = tilesource.get_metadata(source)
         return Response(metadata)
 
     """Returns additional known metadata about the tile source."""
@@ -34,11 +30,7 @@ class MetaData(BaseLargeImageView):
     @action(detail=True)
     def internal_metadata(self, request: Request, pk: int) -> Response:
         source = self._get_tile_source(request, pk)
-        metadata = source.getInternalMetadata()
-        metadata.setdefault('geospatial', False)
-        if metadata['geospatial']:
-            bounds = tilesource.get_tile_bounds(source)
-            metadata['bounds'] = bounds
+        metadata = tilesource.get_internal_metadata(source)
         return Response(metadata)
 
     @swagger_auto_schema(

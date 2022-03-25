@@ -76,9 +76,7 @@ class Data(BaseLargeImageView):
         left = float(request.query_params.get('left'))
         top = float(request.query_params.get('top'))
         source = self._get_tile_source(request, pk)
-        metadata = source.getPixel(
-            region={'left': int(left), 'top': int(top), 'units': 'pixels'}
-        )
+        metadata = source.getPixel(region={'left': int(left), 'top': int(top), 'units': 'pixels'})
         return Response(metadata)
 
     @swagger_auto_schema(
