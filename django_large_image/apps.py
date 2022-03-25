@@ -10,9 +10,9 @@ logger = logging.getLogger(__name__)
 class DjangoLargeImageConfig(AppConfig):
     name = 'django_large_image'
     verbose_name = 'Django Large Image: Django Large Image'
+    default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
-
         # Set up memcached with large_image
         if hasattr(settings, 'MEMCACHED_URL') and settings.MEMCACHED_URL:
             large_image.config.setConfig('cache_memcached_url', settings.MEMCACHED_URL)

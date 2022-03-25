@@ -4,7 +4,6 @@ import os
 import pathlib
 import shutil
 import tempfile
-from typing import Any
 from urllib.parse import urlencode
 
 from django.conf import settings
@@ -117,25 +116,15 @@ def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
             return dest_path
 
 
-def get_or_create_no_commit(model: Any, defaults: dict = None, **kwargs):
-    try:
-        return model.objects.get(**kwargs), False
-    except model.DoesNotExist:
-        if not defaults:
-            defaults = {}
-        defaults.update(kwargs)
-        return model(**defaults), True
-
-
-def get_tilesource_from_image(
+def get_tilesource_from_path(
     path: str, projection: str = None, style: str = None, encoding: str = 'PNG'
 ) -> FileTileSource:
     return large_image.open(str(path), projection=projection, style=style, encoding=encoding)
 
 
 @contextmanager
-def yeild_tilesource_from_image(path: str, projection: str = None) -> FileTileSource:
-    yield get_tilesource_from_image(path, projection)
+def yeild_tilesource_from_path(path: str, projection: str = None) -> FileTileSource:
+    yield get_tilesource_from_path(path, projection)
 
 
 def is_geospatial(tile_source: FileTileSource):
