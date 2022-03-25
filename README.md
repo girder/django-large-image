@@ -206,10 +206,15 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 
 ### Phase 2
 
-- [ ] Refactor/prototpye RGD's ChecksumFile model as a FieldFile subclass
-- [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
+- [ ] Handle band/component selection styling for tile serving and thumbnails
+  - e.g., use channels 3,7,5 for Red Green Blue
+  - endable linear/discrete color modes
 - [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
 - [ ] Provide some sort of endpoint to check if an image is a valid COG
+- [ ]
+- [ ] Create a secondary app with celery tasks for converting images to COG
+- [ ] Refactor/prototpye RGD's ChecksumFile model as a FieldFile subclass
+- [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
 
 ### Phase 3 and onward
 
