@@ -41,6 +41,7 @@ setup(
         'django-girder-utils',
         'djangorestframework',
         'drf-yasg',
+        'filelock',
         'large-image>=1.13.0',
     ],
     extras_require={
