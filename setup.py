@@ -41,7 +41,7 @@ setup(
         'django-girder-utils',
         'djangorestframework',
         'drf-yasg',
-        'large-image>=1.9.0',
+        'large-image>=1.13.0',
     ],
     extras_require={
         'colormaps': [
