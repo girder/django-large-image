@@ -16,11 +16,6 @@ def get_tilesource_from_path(
     return large_image.open(str(path), projection=projection, style=style, encoding=encoding)
 
 
-@contextmanager
-def yeild_tilesource_from_path(path: str, projection: str = None) -> FileTileSource:
-    yield get_tilesource_from_path(path, projection)
-
-
 def is_geospatial(source: FileTileSource):
     return source.getMetadata().get('geospatial', False)
 
