@@ -2,7 +2,9 @@ from django.http import HttpResponse
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
+from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.decorators import action
+from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -20,7 +22,10 @@ class Tiles(BaseLargeImageView):
     @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
     def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
         source = self._get_tile_source(request, pk)
-        tile_binary = source.getTile(int(x), int(y), int(z))
+        try:
+            tile_binary = source.getTile(int(x), int(y), int(z))
+        except TileSourceXYZRangeError as e:
+            raise APIException(e)
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
