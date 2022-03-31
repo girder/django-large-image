@@ -1,5 +1,4 @@
 """large-image utilities."""
-from contextlib import contextmanager
 import os
 import pathlib
 import tempfile
