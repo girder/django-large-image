@@ -16,9 +16,37 @@ def test_metadata(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
+def test_metadata_vsi(authenticated_api_client, image_file_geotiff):
+    response = authenticated_api_client.get(
+        f'/api/vsi-image-file/{image_file_geotiff.pk}/metadata?projection=EPSG:3857'
+    )
+    assert response.status_code == 200
+    metadata = response.data
+    assert metadata['geospatial']
+    assert metadata['levels'] == 9
+    assert metadata['sizeX'] == metadata['sizeY']
+    assert metadata['tileWidth'] == metadata['tileHeight']
+    assert metadata['tileWidth'] == metadata['tileHeight']
+
+
+@pytest.mark.django_db(transaction=True)
 def test_metadata_s3(authenticated_api_client, s3_image_file_geotiff):
     response = authenticated_api_client.get(
         f'/api/s3-image-file/{s3_image_file_geotiff.pk}/metadata?projection=EPSG:3857'
+    )
+    assert response.status_code == 200
+    metadata = response.data
+    assert metadata['geospatial']
+    assert metadata['levels'] == 9
+    assert metadata['sizeX'] == metadata['sizeY']
+    assert metadata['tileWidth'] == metadata['tileHeight']
+    assert metadata['tileWidth'] == metadata['tileHeight']
+
+
+@pytest.mark.django_db(transaction=True)
+def test_metadata_s3_vsi(authenticated_api_client, s3_image_file_geotiff):
+    response = authenticated_api_client.get(
+        f'/api/s3-vsi-image-file/{s3_image_file_geotiff.pk}/metadata?projection=EPSG:3857'
     )
     assert response.status_code == 200
     metadata = response.data

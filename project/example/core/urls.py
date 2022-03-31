@@ -1,11 +1,17 @@
 from django.urls import path
 from example.core import views
-from example.core.viewsets import ImageFileDetailView, S3ImageFileDetailView
+from example.core.viewsets import (
+    ImageFileDetailView,
+    S3ImageFileDetailView,
+    S3VSIImageFileDetailView,
+)
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
 router.register(r'api/image-file', ImageFileDetailView, basename='image-file')
+router.register(r'api/vsi-image-file', ImageFileDetailView, basename='vsi-image-file')
 router.register(r'api/s3-image-file', S3ImageFileDetailView, basename='s3-image-file')
+router.register(r'api/s3-vsi-image-file', S3VSIImageFileDetailView, basename='s3-vsi-image-file')
 
 urlpatterns = [
     path('image-file/<int:pk>/', views.ImageFileDetailView.as_view(), name='image-file-detail'),

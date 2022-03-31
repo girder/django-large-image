@@ -2,7 +2,6 @@ import json
 import logging
 
 # from django.core.cache import cache
-from large_image.exceptions import TileSourceFileNotFoundError
 from large_image.tilesource import FileTileSource
 from rest_framework.request import Request
 from rest_framework.views import APIView
@@ -16,36 +15,23 @@ CACHE_TIMEOUT = 60 * 60 * 2
 
 class BaseLargeImageView(APIView):
     FILE_FIELD_NAME: str = None
-    USE_VSI: bool = False
 
-    def get_path(self, pk: int, use_vsi: bool = False):
+    def get_field_file(self):
+        """Get FileField using FILE_FIELD_NAME."""
+        return getattr(self.get_object(), self.FILE_FIELD_NAME)
+
+    def get_path(self):
         """Return path on disk to image file (or VSI str).
 
         This can be overridden downstream to implement custom FUSE, etc.,
         interfaces.
 
-        Parameters
-        ----------
-        pk : int
-            Model instance primary key
-
-        use_vsi : bool, optional
-            A boolean to use GDALs VFS/VSI.
-
         Returns
         -------
-        str : The file path or vsi string to pass to large_image
+        str : The local file path to pass to large_image
 
         """
-        # Get FileField using FILE_FIELD_NAME
-        field_file = getattr(self.get_object(), self.FILE_FIELD_NAME)
-        if use_vsi:
-            with utilities.patch_internal_presign(field_file):
-                # Grab URL and pass back VSI path
-                vsi = utilities.make_vsi(field_file.url)
-            return vsi
-        # Checkout file locally
-        return utilities.field_file_to_local_path(field_file)
+        return utilities.field_file_to_local_path(self.get_field_file())
 
     def _get_style(self, request: Request):
         band = int(request.query_params.get('band', 0))
@@ -79,9 +65,4 @@ class BaseLargeImageView(APIView):
         # if (image_entry := cache.get(image_cache_key, None)) is None:
         #     image_entry = get_object_or_404(Image, pk=pk)
         #     cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
-        if self.USE_VSI:
-            try:
-                return self._open_image(request, self.get_path(pk, use_vsi=True))
-            except TileSourceFileNotFoundError:
-                logger.error('VSI failed')
-        return self._open_image(request, self.get_path(pk))
+        return self._open_image(request, self.get_path())
