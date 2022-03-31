@@ -12,7 +12,7 @@ else:
 
 setup(
     name='django-large-image',
-    version='0.2.1',
+    version='0.2.2',
     description='',
     long_description=long_description,
     long_description_content_type='text/markdown',

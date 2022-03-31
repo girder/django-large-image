@@ -1,6 +1,8 @@
 # flake8: noqa: F401
 from functools import wraps
 
+from rest_framework.request import Request
+
 from django_large_image import utilities
 from django_large_image.rest.data import Data
 from django_large_image.rest.metadata import MetaData
