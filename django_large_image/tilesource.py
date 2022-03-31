@@ -25,7 +25,7 @@ def is_geospatial(source: FileTileSource):
     return source.getMetadata().get('geospatial', False)
 
 
-def get_tile_bounds(
+def get_bounds(
     source: FileTileSource,
     projection: str = 'EPSG:4326',
 ):
@@ -41,7 +41,7 @@ def get_tile_bounds(
 def _metadata_helper(source: FileTileSource, metadata: dict):
     metadata.setdefault('geospatial', is_geospatial(source))
     if metadata['geospatial']:
-        metadata['bounds'] = get_tile_bounds(source)
+        metadata['bounds'] = get_bounds(source)
 
 
 def get_metadata(source: FileTileSource):
