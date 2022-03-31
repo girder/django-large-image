@@ -50,19 +50,19 @@ class BaseLargeImageView(APIView):
     def _get_style(self, request: Request):
         band = int(request.query_params.get('band', 0))
         style = None
-        if band:
+        if band:  # bands are 1-indexed
             style = {'band': band}
             bmin = request.query_params.get('min', None)
             bmax = request.query_params.get('max', None)
-            if bmin is not None:
+            if not utilities.param_nully(bmin):
                 style['min'] = bmin
-            if bmax is not None:
+            if not utilities.param_nully(bmax):
                 style['max'] = bmax
             palette = request.query_params.get('palette', None)
-            if palette:
+            if not utilities.param_nully(palette):
                 style['palette'] = palette
             nodata = request.query_params.get('nodata', None)
-            if nodata:
+            if not utilities.param_nully(nodata):
                 style['nodata'] = nodata
             style = json.dumps(style)
         return style

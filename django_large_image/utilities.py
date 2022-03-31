@@ -18,6 +18,13 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
+def param_nully(value):
+    """Helper method to determine null-like values."""
+    if isinstance(value, str):
+        value = value.lower()
+    return value in [None, '', 'undefined', 'none', 'no']
+
+
 @contextmanager
 def patch_internal_presign(f: FieldFile):
     """Create an environment where Minio-based `FieldFile`s construct a locally accessible presigned URL.
