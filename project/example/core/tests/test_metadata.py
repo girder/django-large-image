@@ -62,7 +62,6 @@ def test_metadata_ome(authenticated_api_client, ome_image):
     assert response.status_code == 200
     metadata = response.data
     assert not metadata['geospatial']
-    assert metadata['levels'] == 6
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']
     assert metadata['tileWidth'] == metadata['tileHeight']
