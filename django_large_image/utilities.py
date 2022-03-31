@@ -9,6 +9,7 @@ from urllib.parse import urlencode
 from django.conf import settings
 from django.core.files import File
 from django.db.models.fields.files import FieldFile
+from filelock import FileLock
 
 try:
     from minio_storage.storage import MinioStorage
@@ -85,37 +86,64 @@ def make_vsi(url: str, **options):
     return vsi
 
 
+def get_lock_dir():
+    path = pathlib.Path(get_temp_dir(), 'file_locks')
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def get_file_lock(path: pathlib.Path):
+    """Create a file lock under the lock directory."""
+    # Computes the hash using Pathlib's hash implementation on absolute path
+    sha = hash(path.absolute())
+    lock_path = pathlib.Path(get_lock_dir(), f'{sha}.lock')
+    lock = FileLock(lock_path)
+    return lock
+
+
+def get_file_safe_path(path: pathlib.Path):
+    """Mark the file/lock as safe to use."""
+    sha = hash(path.absolute())
+    return pathlib.Path(get_lock_dir(), f'{sha}.safe')
+
+
 def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
     """Download entire FieldFile to disk location.
 
     This overrides `girder_utils.field_file_to_local_path` to download file to
     local path without a context manager. Cleanup must be handled by caller.
 
+    This puts a file lock on the file to prevent concurrent access while
+    downloading.
+
     """
     field_file_basename = pathlib.PurePath(field_file.name).name
     directory = get_cache_dir() / f'{type(field_file.instance).__name__}-{field_file.instance.pk}'
     dest_path = directory / field_file_basename
 
-    dest_path.parent.mkdir(parents=True, exist_ok=True)
-    with field_file.open('rb'):
-        file_obj: File = field_file.file
-        if type(file_obj) is File:
-            # When file_obj is an actual File, (typically backed by FileSystemStorage),
-            # it is already at a stable path on disk.
-            # We must symlink it into the desired path
-            os.symlink(file_obj.name, dest_path)
-            logger.debug('Performing symlink')
-            return dest_path
-        else:
-            # When file_obj is actually a subclass of File, it only provides a Python
-            # file-like object API. So, it must be copied to a stable path.
-            logger.debug('copying file...')
-            if dest_path.exists():
-                # WARNING: this is probably not thread safe
-                #  S3FF is fundamentally incompatible with tile serving
-                logger.debug('...Found existing')
-                return dest_path
-            with open(dest_path, 'wb') as dest_stream:
-                shutil.copyfileobj(file_obj, dest_stream)
-                dest_stream.flush()
-            return dest_path
+    lock = get_file_lock(dest_path)
+    safe = get_file_safe_path(dest_path)
+
+    with lock.acquire():
+        if not safe.exists():
+            # file doesn't yet exist (or is corrupt) and we need to download it
+            dest_path.parent.mkdir(parents=True, exist_ok=True)
+            with field_file.open('rb'):
+                file_obj: File = field_file.file
+                if type(file_obj) is File:
+                    # When file_obj is an actual File, (typically backed by FileSystemStorage),
+                    # it is already at a stable path on disk.
+                    # We must symlink it into the desired path
+                    os.symlink(file_obj.name, dest_path)
+                    logger.debug('Performing symlink')
+                else:
+                    # When file_obj is actually a subclass of File, it only provides a Python
+                    # file-like object API. So, it must be copied to a stable path.
+                    logger.debug('copying file...')
+                    with open(dest_path, 'wb') as dest_stream:
+                        shutil.copyfileobj(file_obj, dest_stream)
+                        dest_stream.flush()
+            # Mark file as safe
+            logger.debug('Marking as safely downloaded...')
+            safe.touch()
+    return dest_path
