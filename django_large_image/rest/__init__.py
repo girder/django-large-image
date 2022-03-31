@@ -16,7 +16,7 @@ class LargeImageVSIViewMixin(LargeImageViewMixin):
     USE_VSI: bool = True
 
     @wraps(LargeImageViewMixin.get_path)
-    def get_path(self):
+    def get_path(self, request: Request, pk: int):
         """Wraps get_path with VSI support."""
         field_file = self.get_field_file()
         if self.USE_VSI:
@@ -26,4 +26,4 @@ class LargeImageVSIViewMixin(LargeImageViewMixin):
                 vsi = utilities.make_vsi(field_file.url)
             return vsi
         # Checkout file locally if no VSI
-        return LargeImageViewMixin.get_path(self)
+        return LargeImageViewMixin.get_path(self, request, pk)

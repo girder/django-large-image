@@ -20,7 +20,7 @@ class BaseLargeImageView(APIView):
         """Get FileField using FILE_FIELD_NAME."""
         return getattr(self.get_object(), self.FILE_FIELD_NAME)
 
-    def get_path(self):
+    def get_path(self, request: Request, pk: int):
         """Return path on disk to image file (or VSI str).
 
         This can be overridden downstream to implement custom FUSE, etc.,
@@ -60,9 +60,4 @@ class BaseLargeImageView(APIView):
 
     def _get_tile_source(self, request: Request, pk: int) -> FileTileSource:
         """Return the built tile source."""
-        # get image_entry from cache
-        # image_cache_key = f'large_image_tile:image_{pk}'
-        # if (image_entry := cache.get(image_cache_key, None)) is None:
-        #     image_entry = get_object_or_404(Image, pk=pk)
-        #     cache.set(image_cache_key, image_entry, CACHE_TIMEOUT)
-        return self._open_image(request, self.get_path())
+        return self._open_image(request, self.get_path(request, pk))
