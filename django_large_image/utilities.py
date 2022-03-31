@@ -19,7 +19,7 @@ logger = logging.getLogger(__name__)
 
 
 def param_nully(value):
-    """Helper method to determine null-like values."""
+    """Determine null-like values."""
     if isinstance(value, str):
         value = value.lower()
     return value in [None, '', 'undefined', 'none', 'no']
