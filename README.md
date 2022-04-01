@@ -57,10 +57,11 @@ Support for general FileFeild's or File URLs
 - Supports GDAL's [Virtual File System](https://gdal.org/user/virtual_file_systems.html) for `s3://`, `ftp://`, etc. URLs
 
 Miscellaneous:
-- caching - tile sources are cached for rapid file re-opening
+- Admin interface widget for viewing image tiles.
+- Caching - tile sources are cached for rapid file re-opening
   - tiles and thumbnails are cached to prevent recreating these data on multiple requests
 - Easily extensible SSR templates for tile viewing with CesiumJS and GeoJS
-- OpenAPI documentation in swagger
+- OpenAPI specification
 
 ## Installation
 
@@ -170,13 +171,34 @@ from example.core.viewsets import ImageFileDetailView
 from rest_framework.routers import SimpleRouter
 
 router = SimpleRouter(trailing_slash=False)
-router.register(r'api/large-image', ImageFileDetailView, basename='image-file')
+router.register(r'api/image-file', ImageFileDetailView, basename='image-file')
 
 urlpatterns = [
   path('', include('django_large_image.urls')),  # Some additional diagnostic URLs from django-large-image
 ] + router.urls
 
 ```
+
+You can also opt into an admin widget for you model:
+
+```html
+templates/admin/myapp/imagefile/change_form.html
+---
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+
+<script>
+  var baseEndpoint = 'api/image-file';
+</script>
+
+{% include 'admin/django_large_image/_include/geojs.html' %}
+
+{% endblock %}
+```
+
+![admin-interface](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/admin.png)
+
 
 Please note the example Django project in the `project/` directory of this
 repository that shows how to use `django-large-image`.
