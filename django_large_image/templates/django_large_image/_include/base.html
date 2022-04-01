@@ -45,5 +45,25 @@
   for (const [option, value] of Object.entries(windowSearchParams)) {
     updateTileUrlOption(option, value);
   }
+
+  function addToggleListener(uiToggle, uiContent, callback = null) {
+    uiToggle.addEventListener('click', function() {
+      this.classList.toggle('active');
+      var state = null;
+      if (uiContent.style.display === 'block') {
+        uiContent.style.display = 'none';
+        state = false;
+      } else {
+        uiContent.style.display = 'block';
+        state = true;
+      }
+      // Call the custom callback if given
+      if (callback != null) {
+        callback(state);
+      }
+    });
+    // Hide by default
+    uiContent.style.display = 'none';
+  }
 </script>
 {% endblock %}

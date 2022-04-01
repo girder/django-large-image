@@ -19,6 +19,20 @@
   margin: 0;
   opacity: 0.75;
   z-index: 15;
-  bottom: 5px;
+  bottom: 25px;
   right: 5px;
+}
+
+.collapsible {
+  background-color: #DCDCDC;
+  cursor: pointer;
+  padding: 2px;
+  border: none;
+  text-align: left;
+  outline: none;
+}
+
+/* Add a background color to the button if it is clicked on (add the .active class with JS), and when you move the mouse over it (hover) */
+.collapsible:hover {
+  background-color: #D3D3D3;
 }

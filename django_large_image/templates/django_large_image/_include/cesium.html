@@ -21,14 +21,7 @@
 <!-- Load the script to initialize the viewer -->
 <script src="{% static 'django_large_image/js/cesium.js' %}"></script>
 
-
-<div class="slidecontainer" id="opacityTool">
-  <label for="rasterOpacityRange">Raster Layer Opacity: </label>
-  <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
-  <br />
-  {% include 'django_large_image/_include/colors.html' %}
-</div>
-
+{% include 'django_large_image/_include/colors.html' %}
 
 <script>
   var tileProvider;
