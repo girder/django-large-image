@@ -4,9 +4,11 @@ from example.core.models import ImageFile, S3ImageFile
 
 @admin.register(ImageFile)
 class ImageFileAdmin(admin.ModelAdmin):
-    list_display = ('thumbnail', 'pk')
+    list_display_links = ('pk', 'thumbnail')
+    list_display = ('pk', 'thumbnail', 'metadata', 'internal_metadata')
 
 
 @admin.register(S3ImageFile)
 class S3ImageFileAdmin(admin.ModelAdmin):
-    list_display = ('thumbnail', 'pk')
+    list_display_links = ('pk', 'thumbnail')
+    list_display = ('pk', 'thumbnail', 'metadata', 'internal_metadata')

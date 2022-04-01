@@ -10,13 +10,33 @@ def thumbnail_html(url):
     return mark_safe(f'<img src="{url}" style="height:100px;"/>')
 
 
-class ImageFile(TimeStampedModel):
-    file = models.FileField()
+def a_html(url, label):
+    return mark_safe(f'<a href="{url}" target="_blank">{label}</a>')
 
+
+class Mixin:
     def thumbnail(self):
-        return thumbnail_html(reverse('image-file-thumbnail', args=[self.pk]))
+        return thumbnail_html(reverse(f'{self.url_name}-thumbnail', args=[self.pk]))
 
     thumbnail.allow_tags = True
+
+    def metadata(self):
+        return a_html(reverse(f'{self.url_name}-metadata', args=[self.pk]), 'metadata')
+
+    metadata.allow_tags = True
+
+    def internal_metadata(self):
+        return a_html(
+            reverse(f'{self.url_name}-internal-metadata', args=[self.pk]), 'internal metadata'
+        )
+
+    internal_metadata.allow_tags = True
+
+
+class ImageFile(TimeStampedModel, Mixin):
+    file = models.FileField()
+
+    url_name = 'image-file'
 
 
 class ImageFileSerializer(serializers.ModelSerializer):
@@ -25,13 +45,10 @@ class ImageFileSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class S3ImageFile(TimeStampedModel):
+class S3ImageFile(TimeStampedModel, Mixin):
     file = S3FileField()
 
-    def thumbnail(self):
-        return thumbnail_html(reverse('s3-image-file-thumbnail', args=[self.pk]))
-
-    thumbnail.allow_tags = True
+    url_name = 's3-image-file'
 
 
 class S3ImageFileSerializer(serializers.ModelSerializer):
