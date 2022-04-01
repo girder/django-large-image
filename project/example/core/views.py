@@ -22,7 +22,9 @@ class S3ImageFileViewerView(DetailView):
 
 class ImageFileListView(ListView):
     model = models.ImageFile
+    paginate_by = 20
 
 
 class S3ImageFileListView(ListView):
     model = models.S3ImageFile
+    paginate_by = 20
