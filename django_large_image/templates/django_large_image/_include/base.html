@@ -1,0 +1,49 @@
+{% load static %}
+{% block dli_base %}
+<link rel="stylesheet" type="text/css" href="{% static 'django_large_image/styles/style.css' %}">
+<script>
+  var host = window.location.protocol + "//" + window.location.host;
+  var thumbnailUrl = undefined;
+
+  // function insertWindowUrlParam(key, value) {
+  //   if (history.pushState) {
+  //     let searchParams = new URLSearchParams(window.location.search);
+  //     if (value === undefined) {
+  //       searchParams.delete(key);
+  //     } else {
+  //       searchParams.set(key, value);
+  //     }
+  //     let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
+  //     window.history.pushState({
+  //       path: newurl
+  //     }, '', newurl);
+  //   }
+  // }
+
+  function updateTileUrlOption(option, value) {
+    if (thumbnailUrl === undefined) {
+      thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail`;
+    }
+    const url = new URL(tileUrl);
+    const urlThumb = new URL(thumbnailUrl);
+    if (value === undefined) {
+      url.searchParams.delete(option);
+      urlThumb.searchParams.delete(option);
+    } else {
+      url.searchParams.set(option, value);
+      urlThumb.searchParams.set(option, value);
+    }
+    const tileFormatEncoded = '/%7Bz%7D/%7Bx%7D/%7By%7D.';
+    const tileFormat = '/{z}/{x}/{y}.';
+    tileUrl = url.toString().replace(tileFormatEncoded, tileFormat);
+    thumbnailUrl = urlThumb.toString();
+    // insertWindowUrlParam(option, value);
+  }
+
+  const windowSearch = new URLSearchParams(window.location.search);
+  const windowSearchParams = Object.fromEntries(windowSearch.entries());
+  for (const [option, value] of Object.entries(windowSearchParams)) {
+    updateTileUrlOption(option, value);
+  }
+</script>
+{% endblock %}

@@ -1,55 +1,11 @@
 {% extends "django_large_image/base.html" %}
 {% block content %}
-  <script>
-    var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
-  </script>
-
-  {% include 'django_large_image/_include/cesium.html' %}
-  <div class="slidecontainer" id="opacityTool">
-    <label for="rasterOpacityRange">Raster Layer Opacity: </label>
-    <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
-    <br />
-    {% include 'django_large_image/_include/colors.html' %}
-  </div>
-
-
 <script>
-  var tileProvider;
-  var tileLayer;
-  var layers = viewer.scene.imageryLayers;
-  var rectangle;
-
-  function updateTileLayer() {
-    layers.remove(tileLayer)
-
-    tileProvider = new Cesium.UrlTemplateImageryProvider({
-      url: tileUrl,
-      subdomains: null,
-      rectangle: rectangle,
-    });
-    tileLayer = layers.addImageryProvider(tileProvider);
-  }
-
-  fetch(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
-    .then(response => response.json())
-    .then(data => {
-      var extents = data["bounds"];
-      rectangle = Cesium.Rectangle.fromDegrees(extents.xmin, extents.ymin, extents.xmax, extents.ymax)
-
-      bandChange(); // initial call to add tile layer
-
-      viewer.camera.flyTo({
-        destination: rectangle,
-      });
-    });
-
-
-  function updateTilesOpacity(e, value) {
-    value = Number(value) / 100.0;
-    tileLayer.alpha = value;
-  }
-
-  Cesium.Camera.DEFAULT_VIEW_RECTANGLE = rectangle;
-  Cesium.Camera.DEFAULT_VIEW_FACTOR = 0;
+  var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
 </script>
+
+<div class="wrapper">
+  {% include 'django_large_image/_include/cesium.html' %}
+</div>
+
 {% endblock content %}

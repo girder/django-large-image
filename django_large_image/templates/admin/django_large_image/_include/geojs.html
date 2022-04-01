@@ -1,0 +1,16 @@
+{% block geojs_viewer %}
+
+{% if original.pk %}
+
+<div class="wrapper" style="width: 100%; height: 500px;">
+  {% include 'django_large_image/_include/base.html' %}
+  <script>
+    var imageId = {{ original.pk }};
+    var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
+  </script>
+  {% include 'django_large_image/_include/geojs.html' %}
+</div>
+
+{% endif %}
+
+{% endblock %}

@@ -3,14 +3,14 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geojs/1.4.3/geo.min.js"></script>
 
-  <div id="imageViewer" style="width: 100%; height: 100%;"></div>
+<div id="imageViewer" style="width: 100%; height: 100%; z-index: 10;"></div>
 
-  <div class="slidecontainer" id="opacityTool">
-    <label for="rasterOpacityRange">Raster Layer Opacity: </label>
-    <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
-    <br />
-    {% include 'django_large_image/_include/colors.html' %}
-  </div>
+<div class="slidecontainer" id="opacityTool">
+  <label for="rasterOpacityRange">Raster Layer Opacity: </label>
+  <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
+  <br />
+  {% include 'django_large_image/_include/colors.html' %}
+</div>
 
 <script>
   var containerRef = document.getElementById('imageViewer')
@@ -20,19 +20,83 @@
   fetch(`${host}/${baseEndpoint}/${imageId}/metadata`)
     .then(response => response.json())
     .then(tileinfo => {
-      const params = geo.util.pixelCoordinateParams(
-        '#imageViewer', tileinfo.sizeX, tileinfo.sizeY, tileinfo.tileWidth, tileinfo.tileHeight);
-      params.layer.url = tileUrl;
+      if (tileinfo['geospatial']) {
+        updateTileUrlOption('projection', 'EPSG:3857');
 
-      viewer = geo.map(params.map);
+        // Initialize the map
+        viewer = geo.map({
+          node: '#imageViewer',
+          clampBoundsX: true
+        })
+        var basemapLayer = viewer.createLayer('osm', {
+          source: 'osm',
+          gcs: 'EPSG:3857' // web mercator
+        });
 
-      viewer.zoomRange({
-        // do not set a min limit so that bounds clamping determines min
-        min: -Infinity,
-        max: 12,
-      });
+        function setBounds(extent, setMax = false) {
+          if (extent != undefined && extent.xmin != undefined) {
+            let xc = (extent.xmax - extent.xmin) * 0.2
+            let yc = (extent.ymax - extent.ymin) * 0.2
+            if (xc === 0) {
+              xc = 0.01
+            }
+            if (yc === 0) {
+              yc = 0.01
+            }
+            var bounds = {
+              left: Math.max(extent.xmin - xc, -180.0),
+              right: Math.min(extent.xmax + xc, 180.0),
+              top: Math.min(extent.ymax + yc, 89.9999),
+              bottom: Math.max(extent.ymin - yc, -89.9999)
+            }
+            viewer.bounds(bounds);
+            if (setMax) {
+              viewer.maxBounds(bounds)
+            } else {
+              viewer.zoom(viewer.zoom() - 0.25);
+            }
+          }
+        }
+        setBounds(tileinfo.bounds);
 
-      imageLayer = viewer.createLayer('osm', params.layer);
+        // Tile layer for showing rasters/images with large_image
+        imageLayer = viewer.createLayer('osm', {
+          keepLower: false,
+          attribution: '',
+          autoshareRenderer: false,
+        });
+
+        const dataset_bb = tileinfo.bounds;
+        imageLayer.isValid = (index) => {
+          const tileBounds = imageLayer.gcsTileBounds(index);
+          return tileBounds.left <= dataset_bb.xmax &&
+            tileBounds.right >= dataset_bb.xmin &&
+            tileBounds.top >= dataset_bb.ymin &&
+            tileBounds.bottom <= dataset_bb.ymax;
+        }
+        imageLayer.idleAfter = 'all';
+
+        // Increase zoom range from default of 16
+        viewer.zoomRange({
+          min: 0,
+          max: 20,
+        })
+      } else {
+        const params = geo.util.pixelCoordinateParams(
+          '#imageViewer', tileinfo.sizeX, tileinfo.sizeY, tileinfo.tileWidth, tileinfo.tileHeight);
+        params.layer.url = tileUrl;
+
+        viewer = geo.map(params.map);
+
+        viewer.zoomRange({
+          // do not set a min limit so that bounds clamping determines min
+          min: -Infinity,
+          max: 12,
+        });
+
+        imageLayer = viewer.createLayer('osm', params.layer);
+      }
+
 
       var ui = viewer.createLayer('ui');
       // Create a zoom slider widget

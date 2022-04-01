@@ -1,13 +1,6 @@
-html,
-body {
-  min-height: 100%;
-  padding: 0;
-  margin: 0;
-}
-
-#wrapper {
-  padding: 0 0;
-  position: absolute;
+.wrapper {
+  padding: 3 3;
+  position: relative;
   top: 0;
   bottom: 0;
   left: 0;
@@ -15,28 +8,17 @@ body {
   height: 100%;
 }
 
-#content {
-  min-height: 100%;
-}
-
-.offcanvas-header {
-  display: none;
-}
-
-p {
-  margin: 0;
-  padding: 0 0 1em 0;
-}
-
 .slidecontainer {
   background-color: #DCDCDC;
+  color: #000;
   padding: 2px;
   border: 1px solid #000;
   text-align: left;
   border-radius: 10px;
   position: absolute;
+  margin: 0;
   opacity: 0.75;
-  z-index: 11;
+  z-index: 15;
   bottom: 5px;
   right: 5px;
 }

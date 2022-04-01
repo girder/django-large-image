@@ -36,6 +36,7 @@ def _metadata_helper(source: FileTileSource, metadata: dict):
     metadata.setdefault('geospatial', is_geospatial(source))
     if metadata['geospatial']:
         metadata['bounds'] = get_bounds(source)
+        metadata['proj4'] = (source.getProj4String(),)
 
 
 def get_metadata(source: FileTileSource):
