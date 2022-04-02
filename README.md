@@ -4,12 +4,14 @@
 [![codecov](https://codecov.io/gh/ResonantGeoData/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/ResonantGeoData/django-large-image)
 [![Tests](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml)
 
-*Created by Kitware, Inc.*
+***Image tile serving in Django made easy***
 
 `django-large-image` is an abstraction of [`large-image`](https://github.com/girder/large_image)
 for use with `django-rest-framework` providing view mixins for endpoints to
 work with large images in Django -- specifically geared towards geospatial and
 medical image tile serving.
+
+*Created by Kitware, Inc.*
 
 ![admin-interface](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/admin.png)
 
