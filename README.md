@@ -88,7 +88,7 @@ pip install \
 
 ## Usage
 
-Simply install the app and mixin the `LargeImageView` class to your existing
+Simply install the app and mixin the `LargeImageViewMixin` class to your existing
 `django-rest-framework` viewsets and specify the `FILE_FIELD_NAME` as the
 string name of the `FileField` in which your image data are saved.
 
@@ -103,9 +103,9 @@ INSTALLED_APPS = [
 
 ```py
 # viewsets.py
-from django_large_image.rest import LargeImageView
+from django_large_image.rest import LargeImageViewMixin
 
-class MyModelViewset(viewsets.GenericViewSet, LargeImageView):
+class MyModelViewset(viewsets.GenericViewSet, LargeImageViewMixin):
   ...  # configuration for your model's viewset
   FILE_FIELD_NAME = 'field_name'
 ```
@@ -151,13 +151,13 @@ Then create the viewset, mixing in the `django-large-image` view class:
 from example.core import models
 from rest_framework import mixins, viewsets
 
-from django_large_image.rest import LargeImageView
+from django_large_image.rest import LargeImageViewMixin
 
 
 class ImageFileDetailView(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
-    LargeImageView,
+    LargeImageViewMixin,
 ):
     queryset = models.ImageFile.objects.all()
     serializer_class = models.ImageFileSerializer
@@ -206,8 +206,8 @@ repository that shows how to use `django-large-image` in a `girder-4` project.
 
 ### Customization
 
-The `LargeImageView` is modularly designed and able to be subclassed for your
-project's needs. While the provided `LargeImageView` handles
+The `LargeImageViewMixin` is modularly designed and able to be subclassed for your
+project's needs. While the provided `LargeImageViewMixin` handles
 `FileFeild`-interfaces, you can easily extend it to handle any mechanism of
 data storage.
 
