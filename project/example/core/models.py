@@ -55,3 +55,16 @@ class S3ImageFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = S3ImageFile
         fields = '__all__'
+
+
+class URLImageFile(models.Model, Mixin):
+    name = models.TextField()
+    url = models.TextField()
+
+    url_name = 'url-image-file'
+
+
+class URLImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = URLImageFile
+        fields = '__all__'

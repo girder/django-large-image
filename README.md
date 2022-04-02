@@ -11,13 +11,9 @@ for use with `django-rest-framework` providing view mixins for endpoints to
 work with large images in Django -- specifically geared towards geospatial and
 medical image tile serving.
 
-*DISCLAIMER:* this is a work in progress and is currently in an experimental phase.
+![admin-interface](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/admin.png)
 
-| RGB Raster | Colormapped Raster Band |
-|---|---|
-| ![raster](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/raster.png) | ![raster-colormap](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/raster_colormap.png) |
-
-| Swagger Documentation | Tiles Endpoint |
+| OpenAPI Documentation | Tiles Endpoint |
 |---|---|
 |![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/tiles_endpoint.png)|
 
@@ -90,11 +86,21 @@ pip install \
 
 ## Usage
 
-Simply import and mixin the `LargeImageView` class to your existing
+Simply install the app and mixin the `LargeImageView` class to your existing
 `django-rest-framework` viewsets and specify the `FILE_FIELD_NAME` as the
 string name of the `FileField` in which your image data are saved.
 
 ```py
+# settings.py
+INSTALLED_APPS = [
+    ...,
+    'django_large_image',
+]
+```
+
+
+```py
+# viewsets.py
 from django_large_image.rest import LargeImageView
 
 class MyModelViewset(viewsets.GenericViewSet, LargeImageView):
@@ -110,8 +116,7 @@ To use the mixin classes provided here, create a model, serializer, and view in
 your Django project like so:
 
 ```py
-models.py
----
+# models.py
 from django.db import models
 from rest_framework import serializers
 
@@ -128,8 +133,7 @@ class ImageFileSerializer(serializers.ModelSerializer):
 ```
 
 ```py
-admin.py
----
+# admin.py
 from django.contrib import admin
 from example.core.models import ImageFile
 
@@ -141,8 +145,7 @@ class ImageFileAdmin(admin.ModelAdmin):
 
 Then create the viewset, mixing in the `django-large-image` view class:
 ```py
-viewsets.py
----
+# viewsets.py
 from example.core import models
 from rest_framework import mixins, viewsets
 
@@ -164,8 +167,7 @@ class ImageFileDetailView(
 Then register the URLs:
 
 ```py
-urls.py
----
+# urls.py
 from django.urls import path
 from example.core.viewsets import ImageFileDetailView
 from rest_framework.routers import SimpleRouter
@@ -174,16 +176,15 @@ router = SimpleRouter(trailing_slash=False)
 router.register(r'api/image-file', ImageFileDetailView, basename='image-file')
 
 urlpatterns = [
-  path('', include('django_large_image.urls')),  # Some additional diagnostic URLs from django-large-image
+  path('', include('django_large_image.urls')),  # Additional diagnostic URLs from django-large-image
 ] + router.urls
 
 ```
 
-You can also opt into an admin widget for you model:
+You can also use an admin widget for your model:
 
 ```html
-templates/admin/myapp/imagefile/change_form.html
----
+<!-- templates/admin/myapp/imagefile/change_form.html -->
 {% extends "admin/change_form.html" %}
 
 {% block after_field_sets %}
@@ -197,62 +198,60 @@ templates/admin/myapp/imagefile/change_form.html
 {% endblock %}
 ```
 
-![admin-interface](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/admin.png)
-
-
 Please note the example Django project in the `project/` directory of this
-repository that shows how to use `django-large-image`.
+repository that shows how to use `django-large-image` in a `girder-4` project.
 
-## Work Plan
 
-Our primary goal is to get through phases 1 and 2, focusing on tile serving of
-large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
+### Customization
 
-### Phase 1
+The `LargeImageView` is modularly designed and able to be subclassed for your
+project's needs. While the provided `LargeImageView` handles
+`FileFeild`-interfaces, you can easily extend it to handle any mechanism of
+data storage.
 
-- [x] Abstract API View classes that can be mixed-in downstream to expose all available endpoints
-  - [x] endpoints for metadata (/tiles, /tiles/internal_metadata)
-  - [x] endpoints for serving tiles (/tiles/zxy, /tiles/fzxy)
-  - [x] cache management - tile sources should be cached so that we don't open a file for each tile
-  - [x] endpoint for regions
-  - [x] endpoint for thumbnails
-  - [x] thumbnail caching
-  - [x] endpoint for individual pixels
-  - [x] endpoint for histograms
-  - [x] some diagnostic and settings endpoints (list available sources, set whether to automatically use large_images and the size of small images that can be used)
-- [x] Support for django's FileFeild
-- [x] Support for S3FileField
-- [x] Ship an easily extensible SSR template for tile viewing with CesiumJS
-- [x] Support for using file URLs with GDAL's VSI
-- [x] Provide OpenAPI documentation in swagger
+In the following example, I will show how to use GDAL compatible VSI paths
+from a model that stores `s3://` or `https://` URLs.
 
-### Phase 2
+```py
+# model.py
+from django.db import models
+from rest_framework import serializers
 
-- [ ] Handle band/component selection styling for tile serving and thumbnails
-  - e.g., use channels 3,7,5 for Red Green Blue
-  - endable linear/discrete color modes
-- [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
-- [ ] Provide some sort of endpoint to check if an image is a valid COG
-- [ ] Create a secondary app with celery tasks for converting images to COG
-- [ ] Refactor/prototpye RGD's ChecksumFile model as a FieldFile subclass
-- [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
 
-### Phase 3 and onward
+class URLImageFile(models.Model):
+    name = models.TextField()
+    url = models.TextField()
 
-Incorporate more features from large-image.
 
-Things that would require implementing tasks with celery:
+class URLImageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = URLImageFile
+        fields = '__all__'
+```
 
-- [ ] ability to convert images via large_image_converter
-- [ ] async endpoint for regions
 
-Things I'm unsure about:
+```py
+# viewsets.py
+from example.core import models
+from rest_framework import mixins, viewsets
 
-- [ ] endpoints for associated images
-- [ ] ability to precache thumbnails (the thumbnail jobs endpoints)
-- [ ] endpoints for serving tiles in deepzoom format
+from django_large_image.rest import LargeImageViewMixin
+from django_large_image.utilities import make_vsi
 
-Things I think should be implemented downstream:
 
-- endpoint or method to make / unmake a Django file field into a large_image item
-- fuse-like ability to access filefields as os-level files (until implemented, s3 files will need to be pulled locally to serve them, which is inefficient)
+class URLLargeImageViewMixin(LargeImageViewMixin):
+    def get_path(self, request, pk):
+        object = self.get_object()
+        return make_vsi(object.url)
+
+
+class URLImageFileDetailView(
+    mixins.ListModelMixin,
+    viewsets.GenericViewSet,
+    URLLargeImageViewMixin,
+):
+    queryset = models.URLImageFile.objects.all()
+    serializer_class = models.URLImageFileSerializer
+```
+
+Here is a good test image: https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif
