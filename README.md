@@ -1,8 +1,8 @@
 # django-large-image
 
 [![PyPI](https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white)](https://pypi.org/project/django-large-image/)
-[![codecov](https://codecov.io/gh/ResonantGeoData/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/ResonantGeoData/django-large-image)
-[![Tests](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/ResonantGeoData/django-large-image/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/girder/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/girder/django-large-image)
+[![Tests](https://github.com/girder/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/girder/django-large-image/actions/workflows/ci.yml)
 
 ***Image tile serving in Django made easy***
 
@@ -13,11 +13,11 @@ medical image tile serving.
 
 *Created by Kitware, Inc.*
 
-![admin-interface](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/admin.png)
+![admin-interface](https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png)
 
 | OpenAPI Documentation | Tiles Endpoint |
 |---|---|
-|![swagger-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/ResonantGeoData/django-large-image/main/doc/tiles_endpoint.png)|
+|![swagger-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/tiles_endpoint.png)|
 
 
 ## Overview
