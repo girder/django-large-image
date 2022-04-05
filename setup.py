@@ -38,8 +38,6 @@ setup(
     include_package_data=True,
     install_requires=[
         'django',
-        'django-extensions',
-        'django-girder-utils',
         'djangorestframework',
         'drf-yasg',
         'filelock',
