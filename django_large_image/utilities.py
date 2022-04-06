@@ -23,7 +23,7 @@ def param_nully(value):
     """Determine null-like values."""
     if isinstance(value, str):
         value = value.lower()
-    return value in [None, '', 'undefined', 'none', 'no']
+    return value in [None, '', 'undefined', 'none']
 
 
 @contextmanager
