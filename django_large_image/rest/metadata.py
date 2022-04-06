@@ -16,7 +16,7 @@ class MetaData(BaseLargeImageView):
     )
     @action(detail=True)
     def metadata(self, request: Request, pk: int) -> Response:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         metadata = tilesource.get_metadata(source)
         return Response(metadata)
 
@@ -29,7 +29,7 @@ class MetaData(BaseLargeImageView):
     )
     @action(detail=True)
     def internal_metadata(self, request: Request, pk: int) -> Response:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         metadata = tilesource.get_internal_metadata(source)
         return Response(metadata)
 
@@ -40,7 +40,7 @@ class MetaData(BaseLargeImageView):
     )
     @action(detail=True)
     def bands(self, request: Request, pk: int) -> Response:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         metadata = source.getBandInformation()
         return Response(metadata)
 
@@ -55,6 +55,6 @@ class MetaData(BaseLargeImageView):
     @action(detail=True)
     def band(self, request: Request, pk: int) -> Response:
         band = int(request.query_params.get('band', 1))
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         metadata = source.getOneBandInformation(band)
         return Response(metadata)

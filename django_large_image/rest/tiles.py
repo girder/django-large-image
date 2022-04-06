@@ -21,7 +21,7 @@ class Tiles(BaseLargeImageView):
     )
     @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
     def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         try:
             tile_binary = source.getTile(int(x), int(y), int(z))
         except TileSourceXYZRangeError as e:
@@ -38,7 +38,7 @@ class Tiles(BaseLargeImageView):
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+)/corners'
     )
     def tile_corners(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
         metadata = {
             'xmin': xmin,

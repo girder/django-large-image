@@ -1,16 +1,34 @@
 # flake8: noqa: F401
 from functools import wraps
 
+from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from django_large_image import utilities
+from django_large_image.rest.core import BaseLargeImageView
 from django_large_image.rest.data import Data
 from django_large_image.rest.metadata import MetaData
 from django_large_image.rest.standalone import ListColormapsView, ListTileSourcesView
 from django_large_image.rest.tiles import Tiles
 
 
-class LargeImageViewMixin(Data, MetaData, Tiles):
+class FileFieldBaseLargeImageView(BaseLargeImageView):
+    FILE_FIELD_NAME: str = None
+
+    def get_field_file(self):
+        """Get `FileField` using `FILE_FIELD_NAME`."""
+        try:
+            return getattr(self.get_object(), self.FILE_FIELD_NAME)
+        except (AttributeError, TypeError):
+            # Raise 500 server error
+            raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
+
+    @wraps(BaseLargeImageView.get_path)
+    def get_path(self, request: Request, pk: int):
+        return utilities.field_file_to_local_path(self.get_field_file())
+
+
+class LargeImageViewMixin(Data, MetaData, Tiles, FileFieldBaseLargeImageView):
     pass
 
 

@@ -20,7 +20,7 @@ class Data(BaseLargeImageView):
     )
     @action(detail=True)
     def thumbnail(self, request: Request, pk: int) -> HttpResponse:
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         thumb_data, mime_type = source.getThumbnail(encoding='PNG')
         return HttpResponse(thumb_data, content_type=mime_type)
 
@@ -44,7 +44,7 @@ class Data(BaseLargeImageView):
         images, otherwise, must use `pixels`.
 
         """
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         units = request.query_params.get('units', None)
         encoding = request.query_params.get('encoding', None)
         left = float(request.query_params.get('left'))
@@ -75,7 +75,7 @@ class Data(BaseLargeImageView):
     def pixel(self, request: Request, pk: int) -> Response:
         left = float(request.query_params.get('left'))
         top = float(request.query_params.get('top'))
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         metadata = source.getPixel(region={'left': int(left), 'top': int(top), 'units': 'pixels'})
         return Response(metadata)
 
@@ -93,7 +93,7 @@ class Data(BaseLargeImageView):
             density=request.query_params.get('density', False),
             format=request.query_params.get('format', None),
         )
-        source = self._get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk)
         result = source.histogram(**kwargs)
         result = result['histogram']
         for entry in result:
