@@ -1,8 +1,8 @@
 import json
 import logging
 
-# from django.core.cache import cache
 from large_image.tilesource import FileTileSource
+from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 from rest_framework.views import APIView
 
@@ -17,8 +17,12 @@ class BaseLargeImageView(APIView):
     FILE_FIELD_NAME: str = None
 
     def get_field_file(self):
-        """Get FileField using FILE_FIELD_NAME."""
-        return getattr(self.get_object(), self.FILE_FIELD_NAME)
+        """Get `FileField` using `FILE_FIELD_NAME`."""
+        try:
+            return getattr(self.get_object(), self.FILE_FIELD_NAME)
+        except (AttributeError, TypeError):
+            # Raise 500 server error
+            raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
 
     def get_path(self, request: Request, pk: int):
         """Return path on disk to image file (or VSI str).
