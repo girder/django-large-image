@@ -5,7 +5,7 @@ from django_large_image.rest import LargeImageViewSetMixin, LargeImageVSIViewSet
 from django_large_image.utilities import make_vsi
 
 
-class ImageFileDetailView(
+class ImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     LargeImageViewSetMixin,
@@ -15,7 +15,7 @@ class ImageFileDetailView(
     FILE_FIELD_NAME = 'file'
 
 
-class VSIImageFileDetailView(
+class VSIImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     LargeImageViewSetMixin,
@@ -25,7 +25,7 @@ class VSIImageFileDetailView(
     FILE_FIELD_NAME = 'file'
 
 
-class S3ImageFileDetailView(
+class S3ImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     LargeImageViewSetMixin,
@@ -35,7 +35,7 @@ class S3ImageFileDetailView(
     FILE_FIELD_NAME = 'file'
 
 
-class S3VSIImageFileDetailView(
+class S3VSIImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     LargeImageVSIViewSetMixin,
@@ -51,7 +51,7 @@ class S3URLLargeImageViewMixin(LargeImageViewSetMixin):
         return make_vsi(object.url)
 
 
-class URLImageFileDetailView(
+class URLImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
     S3URLLargeImageViewMixin,
