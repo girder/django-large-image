@@ -4,7 +4,7 @@ from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.decorators import action
-from rest_framework.exceptions import APIException
+from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -25,7 +25,7 @@ class Tiles(BaseLargeImageView):
         try:
             tile_binary = source.getTile(int(x), int(y), int(z))
         except TileSourceXYZRangeError as e:
-            raise APIException(e)
+            raise ValidationError(e)
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
