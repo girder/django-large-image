@@ -5,14 +5,17 @@ from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from django_large_image import utilities
-from django_large_image.rest.base import BaseLargeImageView
 from django_large_image.rest.data import Data
 from django_large_image.rest.metadata import MetaData
 from django_large_image.rest.standalone import ListColormapsView, ListTileSourcesView
 from django_large_image.rest.tiles import Tiles
 
 
-class FileFieldBaseLargeImageView(BaseLargeImageView):
+class BaseLargeImageViewMixin(Data, MetaData, Tiles):
+    pass
+
+
+class LargeImageViewMixin(BaseLargeImageViewMixin):
     FILE_FIELD_NAME: str = None
 
     def get_field_file(self):
@@ -23,13 +26,9 @@ class FileFieldBaseLargeImageView(BaseLargeImageView):
             # Raise 500 server error
             raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
 
-    @wraps(BaseLargeImageView.get_path)
+    @wraps(BaseLargeImageViewMixin.get_path)
     def get_path(self, request: Request, pk: int):
         return utilities.field_file_to_local_path(self.get_field_file())
-
-
-class LargeImageViewMixin(Data, MetaData, Tiles, FileFieldBaseLargeImageView):
-    pass
 
 
 class LargeImageVSIViewMixin(LargeImageViewMixin):
