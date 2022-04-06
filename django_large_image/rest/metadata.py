@@ -5,10 +5,10 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource
 from django_large_image.rest import params
-from django_large_image.rest.base import BaseLargeImageView
+from django_large_image.rest.base import LargeImageViewMixinBase
 
 
-class MetaData(BaseLargeImageView):
+class MetaDataMixin(LargeImageViewMixinBase):
     @swagger_auto_schema(
         method='GET',
         operation_summary='Returns tile metadata.',

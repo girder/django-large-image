@@ -9,10 +9,10 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 
 from django_large_image.rest import params
-from django_large_image.rest.base import CACHE_TIMEOUT, BaseLargeImageView
+from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewMixinBase
 
 
-class Tiles(BaseLargeImageView):
+class TilesMixin(LargeImageViewMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',

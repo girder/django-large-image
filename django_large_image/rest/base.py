@@ -3,7 +3,6 @@ import logging
 
 from large_image.tilesource import FileTileSource
 from rest_framework.request import Request
-from rest_framework.views import APIView
 
 from django_large_image import tilesource, utilities
 
@@ -12,7 +11,7 @@ logger = logging.getLogger(__name__)
 CACHE_TIMEOUT = 60 * 60 * 2
 
 
-class BaseLargeImageView(APIView):
+class LargeImageViewMixinBase:
     def get_path(self, request: Request, pk: int):
         """Return path on disk to image file (or VSI str).
 
