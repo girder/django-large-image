@@ -3,6 +3,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
+from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 
@@ -61,8 +62,9 @@ class Data(BaseLargeImageView):
             encoding,
         )
         if not path:
-            # TODO: should this raise error status?
-            return HttpResponse(b'', content_type=mime_type)
+            raise ValidationError(
+                'No output generated, check that the bounds of your ROI overlap source imagery and that your `projection` and `units` are correct.'
+            )
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
 
