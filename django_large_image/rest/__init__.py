@@ -5,7 +5,7 @@ from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
 from django_large_image import utilities
-from django_large_image.rest.core import BaseLargeImageView
+from django_large_image.rest.base import BaseLargeImageView
 from django_large_image.rest.data import Data
 from django_large_image.rest.metadata import MetaData
 from django_large_image.rest.standalone import ListColormapsView, ListTileSourcesView

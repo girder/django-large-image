@@ -5,7 +5,7 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource
 from django_large_image.rest import params
-from django_large_image.rest.core import BaseLargeImageView
+from django_large_image.rest.base import BaseLargeImageView
 
 
 class MetaData(BaseLargeImageView):
