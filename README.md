@@ -30,7 +30,7 @@ interest.
 `django-large-image` is an optionally installable Django app with
 a few classes that can be mixed into a Django project (or application)'s
 drf-based views to provide tile serving endpoints out of the box. Notably,
-`django-large-image` is designed to work specifically with `FileFeild`
+`django-large-image` is designed to work specifically with `FileField`
 interfaces with development being tailored to Kitware's
 [`S3FileField`](https://github.com/girder/django-s3-file-field). We are working
 to also support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
@@ -49,8 +49,8 @@ Rich set of RESTful endpoints to extract information from large image formats:
 - Individual pixels (`/pixel?left=v&top=v`)
 - Band histograms (`/histogram`)
 
-Support for general FileFeild's or File URLs
-- Supports django's FileFeild
+Support for general FileField's or File URLs
+- Supports django's FileField
 - Supports [`S3FileField`](https://github.com/girder/django-s3-file-field)
 - Supports GDAL's [Virtual File System](https://gdal.org/user/virtual_file_systems.html) for `s3://`, `ftp://`, etc. URLs
 
@@ -224,7 +224,7 @@ repository that shows how to use `django-large-image` in a `girder-4` project.
 
 The `BaseLargeImageViewMixin` is modularly designed and able to be subclassed
 for your project's needs. While the provided `LargeImageViewSetMixin` handles
-`FileFeild`-interfaces, you can easily extend its base class,
+`FileField`-interfaces, you can easily extend its base class,
 `BaseLargeImageViewMixin`, to handle any mechanism of data storage in any
 APIView.
 

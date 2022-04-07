@@ -15,7 +15,7 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
   - [x] endpoint for individual pixels
   - [x] endpoint for histograms
   - [x] some diagnostic and settings endpoints (list available sources, set whether to automatically use large_images and the size of small images that can be used)
-- [x] Support for django's FileFeild
+- [x] Support for django's FileField
 - [x] Support for S3FileField
 - [x] Ship an easily extensible SSR template for tile viewing with CesiumJS
 - [x] Support for using file URLs with GDAL's VSI
