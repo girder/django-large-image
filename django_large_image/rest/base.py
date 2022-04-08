@@ -26,23 +26,31 @@ class LargeImageViewSetMixinBase:
         raise NotImplementedError
 
     def get_style(self, request: Request):
-        band = int(request.query_params.get('band', 0))
-        style = None
-        if band:  # bands are 1-indexed
-            style = {'band': band}
-            bmin = request.query_params.get('min', None)
-            bmax = request.query_params.get('max', None)
-            if not utilities.param_nully(bmin):
-                style['min'] = bmin
-            if not utilities.param_nully(bmax):
-                style['max'] = bmax
-            palette = request.query_params.get('palette', None)
-            if not utilities.param_nully(palette):
-                style['palette'] = palette
-            nodata = request.query_params.get('nodata', None)
-            if not utilities.param_nully(nodata):
-                style['nodata'] = nodata
-            style = json.dumps(style)
+        data = utilities.get_request_body_as_dict(request)
+        # Check if sytle is in request data
+        if 'style' in data:
+            style = data['style']
+            if isinstance(style, dict):
+                style = json.dumps(style)
+        # else, fallback to supported query parameters
+        else:
+            band = int(request.query_params.get('band', 0))
+            style = None
+            if band:  # bands are 1-indexed
+                style = {'band': band}
+                bmin = request.query_params.get('min', None)
+                bmax = request.query_params.get('max', None)
+                if not utilities.param_nully(bmin):
+                    style['min'] = bmin
+                if not utilities.param_nully(bmax):
+                    style['max'] = bmax
+                palette = request.query_params.get('palette', None)
+                if not utilities.param_nully(palette):
+                    style['palette'] = palette
+                nodata = request.query_params.get('nodata', None)
+                if not utilities.param_nully(nodata):
+                    style['nodata'] = nodata
+                style = json.dumps(style)
         return style
 
     def open_image(self, request: Request, path: str, encoding: str = None):
