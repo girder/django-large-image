@@ -5,13 +5,16 @@ import tempfile
 
 import large_image
 from large_image.tilesource import FileTileSource
+from rest_framework.exceptions import ValidationError
 
 from django_large_image import utilities
 
 
 def get_tilesource_from_path(
-    path: str, projection: str = None, style: str = None, encoding: str = 'PNG'
+    path: str, projection: str = None, style: str = None, encoding: str = None
 ) -> FileTileSource:
+    if encoding is None:
+        encoding = 'PNG'
     return large_image.open(str(path), projection=projection, style=style, encoding=encoding)
 
 
@@ -95,3 +98,14 @@ def get_region(
     top, bottom = min(top, bottom), max(top, bottom)
     region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
     return _get_region(source, region, encoding)
+
+
+def format_to_encoding(format: str) -> str:
+    """Translate format extension (e.g., `tiff`) to encoding (e.g., `TILED`)."""
+    if format is None:
+        return 'PNG'
+    if format.lower() not in ['tif', 'tiff', 'png', 'jpeg', 'jpg']:
+        raise ValidationError(f'Format `{format}` is not valid. Try `png`, `jpeg`, or `tif`')
+    if format.lower() in ['tif', 'tiff']:
+        return 'TILED'
+    return format.upper()  # jpeg, png

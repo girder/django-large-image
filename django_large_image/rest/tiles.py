@@ -8,26 +8,57 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 
+from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewSetMixinBase
 
 
 class TilesMixin(LargeImageViewSetMixinBase):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary='Returns tile image.',
-        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
-    )
-    @action(detail=True, url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+).png')
-    def tile(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
-        source = self.get_tile_source(request, pk)
+    def tile(
+        self, request: Request, pk: int, x: int, y: int, z: int, format: str = None
+    ) -> HttpResponse:
+        encoding = tilesource.format_to_encoding(format)
+        source = self.get_tile_source(request, pk, encoding=encoding)
         try:
-            tile_binary = source.getTile(int(x), int(y), int(z))
+            tile_binary = source.getTile(int(x), int(y), int(z), encoding=encoding)
         except TileSourceXYZRangeError as e:
             raise ValidationError(e)
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns tile image as a PNG.',
+        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
+    )
+    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
+    def tile_png(
+        self,
+        request: Request,
+        pk: int,
+        x: int,
+        y: int,
+        z: int,
+    ) -> HttpResponse:
+        return self.tile(request, pk, x, y, z, format='png')
+
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns tile image as a JPEG.',
+        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
+    )
+    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
+    def tile_jpeg(
+        self,
+        request: Request,
+        pk: int,
+        x: int,
+        y: int,
+        z: int,
+    ) -> HttpResponse:
+        return self.tile(request, pk, x, y, z, format='jpeg')
 
     @swagger_auto_schema(
         method='GET',
@@ -35,7 +66,7 @@ class TilesMixin(LargeImageViewSetMixinBase):
         manual_parameters=[params.projection, params.z, params.x, params.y],
     )
     @action(
-        detail=True, methods=['get'], url_path=r'tiles/(?P<z>\w+)/(?P<x>\w+)/(?P<y>\w+)/corners'
+        detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )
     def tile_corners(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
         source = self.get_tile_source(request, pk)

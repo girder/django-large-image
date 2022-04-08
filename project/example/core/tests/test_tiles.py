@@ -8,6 +8,15 @@ def test_tile(authenticated_api_client, image_file_geotiff):
     )
     assert response.status_code == 200
     assert response['Content-Type'] == 'image/png'
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/tiles/1/0/0.jpeg?projection=EPSG:3857'
+    )
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'image/jpeg'
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/tiles/100/0/0.png'
+    )
+    assert response.status_code == 400
 
 
 @pytest.mark.django_db(transaction=True)

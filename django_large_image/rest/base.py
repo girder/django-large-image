@@ -45,11 +45,11 @@ class LargeImageViewSetMixinBase:
             style = json.dumps(style)
         return style
 
-    def open_image(self, request: Request, path: str):
+    def open_image(self, request: Request, path: str, encoding: str = None):
         projection = request.query_params.get('projection', None)
         style = self.get_style(request)
-        return tilesource.get_tilesource_from_path(path, projection, style=style)
+        return tilesource.get_tilesource_from_path(path, projection, style=style, encoding=encoding)
 
-    def get_tile_source(self, request: Request, pk: int) -> FileTileSource:
+    def get_tile_source(self, request: Request, pk: int, encoding: str = None) -> FileTileSource:
         """Return the built tile source."""
-        return self.open_image(request, self.get_path(request, pk))
+        return self.open_image(request, self.get_path(request, pk), encoding=encoding)

@@ -13,28 +13,33 @@ from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewSetMixinBa
 
 
 class DataMixin(LargeImageViewSetMixinBase):
+    def thumbnail(self, request: Request, pk: int, format: str = None) -> HttpResponse:
+        encoding = tilesource.format_to_encoding(format)
+        source = self.get_tile_source(request, pk, encoding=encoding)
+        thumb_data, mime_type = source.getThumbnail(encoding=encoding)
+        return HttpResponse(thumb_data, content_type=mime_type)
+
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns thumbnail of full image.',
+        operation_summary='Returns thumbnail of full image as PNG.',
         manual_parameters=[params.projection] + params.STYLE,
     )
-    @action(detail=True)
-    def thumbnail(self, request: Request, pk: int) -> HttpResponse:
-        source = self.get_tile_source(request, pk)
-        thumb_data, mime_type = source.getThumbnail(encoding='PNG')
-        return HttpResponse(thumb_data, content_type=mime_type)
+    @action(detail=True, url_path='thumbnail.png')
+    def thumbnail_png(self, request: Request, pk: int) -> HttpResponse:
+        return self.thumbnail(request, pk, format='png')
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns region tile binary from world coordinates in given EPSG.',
-        manual_parameters=[params.projection] + params.REGION,
+        operation_summary='Returns thumbnail of full image as JPEG.',
+        manual_parameters=[params.projection] + params.STYLE,
     )
-    @action(
-        detail=True,
-        url_path=r'region.tif',
-    )
-    def region(self, request: Request, pk: int) -> HttpResponse:
+    @action(detail=True, url_path='thumbnail.jpeg')
+    def thumbnail_jpeg(self, request: Request, pk: int) -> HttpResponse:
+        return self.thumbnail(request, pk, format='jpeg')
+
+    def region(self, request: Request, pk: int, format: str = None) -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
         Note
@@ -47,7 +52,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         """
         source = self.get_tile_source(request, pk)
         units = request.query_params.get('units', None)
-        encoding = request.query_params.get('encoding', None)
+        encoding = tilesource.format_to_encoding(format)
         left = float(request.query_params.get('left'))
         right = float(request.query_params.get('right'))
         top = float(request.query_params.get('top'))
@@ -67,6 +72,42 @@ class DataMixin(LargeImageViewSetMixinBase):
             )
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
+
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns region tile binary from world coordinates in given EPSG as a tiled tif image.',
+        manual_parameters=[params.projection] + params.REGION,
+    )
+    @action(
+        detail=True,
+        url_path=r'region.tif',
+    )
+    def region_tif(self, request: Request, pk: int) -> HttpResponse:
+        return self.region(request, pk, format='tif')
+
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns region tile binary from world coordinates in given EPSG as a png image.',
+        manual_parameters=[params.projection] + params.REGION,
+    )
+    @action(
+        detail=True,
+        url_path=r'region.png',
+    )
+    def region_png(self, request: Request, pk: int) -> HttpResponse:
+        return self.region(request, pk, format='png')
+
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary='Returns region tile binary from world coordinates in given EPSG as a jpeg image.',
+        manual_parameters=[params.projection] + params.REGION,
+    )
+    @action(
+        detail=True,
+        url_path=r'region.jpeg',
+    )
+    def region_jpeg(self, request: Request, pk: int) -> HttpResponse:
+        return self.region(request, pk, format='jpeg')
 
     @swagger_auto_schema(
         method='GET',

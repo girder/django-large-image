@@ -45,7 +45,7 @@ Rich set of RESTful endpoints to extract information from large image formats:
 - Image metadata (`/metadata`, `/internal_metadata`)
 - Tile serving (`/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`)
 - Region extraction (`/region.tif?left=v&right=v&top=v&bottom=v`)
-- Image thumbnails (`/thumbnail`)
+- Image thumbnails (`/thumbnail.png`)
 - Individual pixels (`/pixel?left=v&top=v`)
 - Band histograms (`/histogram`)
 

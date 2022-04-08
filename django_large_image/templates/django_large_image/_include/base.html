@@ -22,7 +22,7 @@
 
   function updateTileUrlOption(option, value) {
     if (thumbnailUrl === undefined) {
-      thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail`;
+      thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail.png`;
     }
     const url = new URL(tileUrl);
     const urlThumb = new URL(thumbnailUrl);

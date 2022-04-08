@@ -65,15 +65,8 @@ units = openapi.Parameter(
     type=openapi.TYPE_STRING,
     default='EPSG:4326',
 )
-encoding = openapi.Parameter(
-    'encoding',
-    openapi.IN_QUERY,
-    description='The encoding of the output image.',
-    type=openapi.TYPE_STRING,
-    default='TILED',
-)
 
-REGION = [left, right, top, bottom, units, encoding]
+REGION = [left, right, top, bottom, units]
 
 # Histogram Parameters
 only = openapi.Parameter(
