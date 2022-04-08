@@ -222,10 +222,10 @@ repository that shows how to use `django-large-image` in a `girder-4` project.
 
 ### Customization
 
-The `BaseLargeImageViewMixin` is modularly designed and able to be subclassed
+The `BaseLargeImageViewSetMixin` is modularly designed and able to be subclassed
 for your project's needs. While the provided `LargeImageViewSetMixin` handles
 `FileField`-interfaces, you can easily extend its base class,
-`BaseLargeImageViewMixin`, to handle any mechanism of data storage in any
+`BaseLargeImageViewSetMixin`, to handle any mechanism of data storage in any
 APIView.
 
 In the following example, I will show how to use GDAL compatible VSI paths
@@ -254,11 +254,11 @@ class URLImageFileSerializer(serializers.ModelSerializer):
 from example.core import models
 from rest_framework import mixins, viewsets
 
-from django_large_image.rest import BaseLargeImageViewMixin
+from django_large_image.rest import BaseLargeImageViewSetMixin
 from django_large_image.utilities import make_vsi
 
 
-class URLLargeImageViewSetMixin(BaseLargeImageViewMixin):
+class URLLargeImageViewSetMixin(BaseLargeImageViewSetMixin):
     def get_path(self, request, pk):
         object = self.get_object()
         return make_vsi(object.url)

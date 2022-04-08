@@ -3,6 +3,7 @@ from functools import wraps
 
 from rest_framework.exceptions import APIException
 from rest_framework.request import Request
+from rest_framework.viewsets import ViewSet
 
 from django_large_image import utilities
 from django_large_image.rest.data import DataMixin
@@ -11,8 +12,8 @@ from django_large_image.rest.standalone import ListColormapsView, ListTileSource
 from django_large_image.rest.tiles import TilesMixin
 
 
-class BaseLargeImageViewMixin(DataMixin, MetaDataMixin, TilesMixin):
-    """Abstract class for large-image endpoints.
+class BaseLargeImageViewSetMixin(DataMixin, MetaDataMixin, TilesMixin):
+    """Abstract mixin class for large-image endpoints in viewsets.
 
     Subclasses must implement `get_path()`:
 
@@ -27,7 +28,23 @@ class BaseLargeImageViewMixin(DataMixin, MetaDataMixin, TilesMixin):
     pass
 
 
-class LargeImageViewSetMixin(BaseLargeImageViewMixin):
+class LargeImageViewSet(ViewSet, BaseLargeImageViewSetMixin):
+    """Abstract class for large-image endpoints as a viewset.
+
+    Subclasses must implement `get_path()`:
+
+    .. code:: python
+
+        def get_path(self, request: Request, pk: int):
+            instance = Model.objects.get(pk=pk)
+            return instance.file.name
+
+    """
+
+    pass
+
+
+class LargeImageViewSetMixin(BaseLargeImageViewSetMixin):
     """Mixin specifically for ViewSets that have a file field on the mdoel.
 
     Define `FILE_FIELD_NAME` as the string name of the file field on the
@@ -46,7 +63,7 @@ class LargeImageViewSetMixin(BaseLargeImageViewMixin):
             # Raise 500 server error
             raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
 
-    @wraps(BaseLargeImageViewMixin.get_path)
+    @wraps(BaseLargeImageViewSetMixin.get_path)
     def get_path(self, request: Request, pk: int):
         return utilities.field_file_to_local_path(self.get_field_file())
 

@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 CACHE_TIMEOUT = 60 * 60 * 2
 
 
-class LargeImageViewMixinBase:
+class LargeImageViewSetMixinBase:
     def get_path(self, request: Request, pk: int):
         """Return path on disk to image file (or VSI str).
 
