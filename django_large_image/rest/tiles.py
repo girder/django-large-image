@@ -15,7 +15,7 @@ from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewSetMixinBa
 
 class TilesMixin(LargeImageViewSetMixinBase):
     def tile(
-        self, request: Request, pk: int, x: int, y: int, z: int, format: str = None
+        self, request: Request, x: int, y: int, z: int, pk: int = None, format: str = None
     ) -> HttpResponse:
         encoding = tilesource.format_to_encoding(format)
         source = self.get_tile_source(request, pk, encoding=encoding)
@@ -36,12 +36,12 @@ class TilesMixin(LargeImageViewSetMixinBase):
     def tile_png(
         self,
         request: Request,
-        pk: int,
         x: int,
         y: int,
         z: int,
+        pk: int = None,
     ) -> HttpResponse:
-        return self.tile(request, pk, x, y, z, format='png')
+        return self.tile(request, x, y, z, pk=pk, format='png')
 
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
@@ -53,12 +53,12 @@ class TilesMixin(LargeImageViewSetMixinBase):
     def tile_jpeg(
         self,
         request: Request,
-        pk: int,
         x: int,
         y: int,
         z: int,
+        pk: int = None,
     ) -> HttpResponse:
-        return self.tile(request, pk, x, y, z, format='jpeg')
+        return self.tile(request, x, y, z, pk=pk, format='jpeg')
 
     @swagger_auto_schema(
         method='GET',
@@ -68,7 +68,9 @@ class TilesMixin(LargeImageViewSetMixinBase):
     @action(
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )
-    def tile_corners(self, request: Request, pk: int, x: int, y: int, z: int) -> HttpResponse:
+    def tile_corners(
+        self, request: Request, x: int, y: int, z: int, pk: int = None
+    ) -> HttpResponse:
         source = self.get_tile_source(request, pk)
         xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
         metadata = {

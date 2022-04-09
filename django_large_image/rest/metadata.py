@@ -15,7 +15,7 @@ class MetaDataMixin(LargeImageViewSetMixinBase):
         manual_parameters=[params.projection],
     )
     @action(detail=True)
-    def metadata(self, request: Request, pk: int) -> Response:
+    def metadata(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk)
         metadata = tilesource.get_metadata(source)
         return Response(metadata)
@@ -28,7 +28,7 @@ class MetaDataMixin(LargeImageViewSetMixinBase):
         manual_parameters=[params.projection],
     )
     @action(detail=True)
-    def internal_metadata(self, request: Request, pk: int) -> Response:
+    def internal_metadata(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk)
         metadata = tilesource.get_internal_metadata(source)
         return Response(metadata)
@@ -39,7 +39,7 @@ class MetaDataMixin(LargeImageViewSetMixinBase):
         manual_parameters=[params.projection],
     )
     @action(detail=True)
-    def bands(self, request: Request, pk: int) -> Response:
+    def bands(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk)
         metadata = source.getBandInformation()
         return Response(metadata)
@@ -53,7 +53,7 @@ class MetaDataMixin(LargeImageViewSetMixinBase):
         ],
     )
     @action(detail=True)
-    def band(self, request: Request, pk: int) -> Response:
+    def band(self, request: Request, pk: int = None) -> Response:
         band = int(request.query_params.get('band', 1))
         source = self.get_tile_source(request, pk)
         metadata = source.getOneBandInformation(band)

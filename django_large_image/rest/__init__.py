@@ -19,7 +19,7 @@ class BaseLargeImageViewSetMixin(DataMixin, MetaDataMixin, TilesMixin):
 
     .. code:: python
 
-        def get_path(self, request: Request, pk: int):
+        def get_path(self, request: Request, pk: int = None):
             instance = Model.objects.get(pk=pk)
             return instance.file.name
 
@@ -35,7 +35,7 @@ class LargeImageViewSet(ViewSet, BaseLargeImageViewSetMixin):
 
     .. code:: python
 
-        def get_path(self, request: Request, pk: int):
+        def get_path(self, request: Request, pk: int = None):
             instance = Model.objects.get(pk=pk)
             return instance.file.name
 
@@ -64,7 +64,7 @@ class LargeImageViewSetMixin(BaseLargeImageViewSetMixin):
             raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
 
     @wraps(BaseLargeImageViewSetMixin.get_path)
-    def get_path(self, request: Request, pk: int):
+    def get_path(self, request: Request, pk: int = None):
         return utilities.field_file_to_local_path(self.get_field_file())
 
 
@@ -72,7 +72,7 @@ class LargeImageVSIViewSetMixin(LargeImageViewSetMixin):
     USE_VSI: bool = True
 
     @wraps(LargeImageViewSetMixin.get_path)
-    def get_path(self, request: Request, pk: int):
+    def get_path(self, request: Request, pk: int = None):
         """Wraps get_path with VSI support."""
         field_file = self.get_field_file()
         if self.USE_VSI:

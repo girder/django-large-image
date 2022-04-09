@@ -12,7 +12,7 @@ CACHE_TIMEOUT = 60 * 60 * 2
 
 
 class LargeImageViewSetMixinBase:
-    def get_path(self, request: Request, pk: int):
+    def get_path(self, request: Request, pk: int = None):
         """Return path on disk to image file (or VSI str).
 
         This can be overridden downstream to implement custom FUSE, etc.,
@@ -58,6 +58,8 @@ class LargeImageViewSetMixinBase:
         style = self.get_style(request)
         return tilesource.get_tilesource_from_path(path, projection, style=style, encoding=encoding)
 
-    def get_tile_source(self, request: Request, pk: int, encoding: str = None) -> FileTileSource:
+    def get_tile_source(
+        self, request: Request, pk: int = None, encoding: str = None
+    ) -> FileTileSource:
         """Return the built tile source."""
         return self.open_image(request, self.get_path(request, pk), encoding=encoding)
