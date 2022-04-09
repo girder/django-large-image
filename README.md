@@ -7,7 +7,7 @@
 ***Image tile serving in Django made easy***
 
 `django-large-image` is an abstraction of [`large-image`](https://github.com/girder/large_image)
-for use with `django-rest-framework` providing view mixins for endpoints to
+for use with `django-rest-framework` providing viewset mixins for endpoints to
 work with large images in Django -- specifically geared towards geospatial and
 medical image tile serving.
 
@@ -23,7 +23,7 @@ medical image tile serving.
 ## Overview
 
 This package ports Kitware's [large-image](https://github.com/girder/large_image)
-to Django by providing a set of abstract, mixin API view classes that will
+to Django by providing a set of abstract, mixin API viewset classes that will
 handle tile serving, fetching metadata from images, and extracting regions of
 interest.
 
@@ -130,8 +130,8 @@ And that's it!
 
 ### Example Code
 
-To use the mixin classes provided here, create a model, serializer, and view in
-your Django project like so:
+To use the mixin classes provided here, create a model, serializer, and viewset
+in your Django project like so:
 
 ```py
 # models.py
@@ -161,7 +161,7 @@ class ImageFileAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name')
 ```
 
-Then create the viewset, mixing in the `django-large-image` view class:
+Then create the viewset, mixing in the `django-large-image` viewset class:
 ```py
 # viewsets.py
 from example.core import models
