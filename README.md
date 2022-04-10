@@ -27,9 +27,9 @@ to Django by providing a set of abstract, mixin API viewset classes that will
 handle tile serving, fetching metadata from images, and extracting regions of
 interest.
 
-`django-large-image` is an optionally installable Django app with
+`django-large-image` is an installable Django app with
 a few classes that can be mixed into a Django project (or application)'s
-drf-based views to provide tile serving endpoints out of the box. Notably,
+drf-based viewsets to provide tile serving endpoints out of the box. Notably,
 `django-large-image` is designed to work specifically with `FileField`
 interfaces with development being tailored to Kitware's
 [`S3FileField`](https://github.com/girder/django-s3-file-field). We are working
@@ -89,9 +89,8 @@ pip install \
 
 ## Usage
 
-Simply install the app and mixin the `LargeImageViewSetMixin` class to your
-existing `django-rest-framework` viewsets and specify the `FILE_FIELD_NAME` as
-the string name of the `FileField` in which your image data are saved.
+Simply install the app and mixin one of the mixing classes to your
+existing `django-rest-framework` viewset.
 
 ```py
 # settings.py
@@ -101,11 +100,24 @@ INSTALLED_APPS = [
 ]
 ```
 
+The following are the provided mixin classes and their use case:
+
+- `LargeImageMixin`: for use with a standard, non-detail `ViewSet`. Users must implement `get_path()`
+- `LargeImageDetailMixin`: for use with a detail viewset like `GenericViewSet`. Users must implement `get_path()`
+- `LargeImageFileDetailMixin`: (most commonly used) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data.
+- `LargeImageVSIFileDetailMixin`: (geospatial) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data that is intended to be read with GDAL. This will access the data over GDAL's Virtual File System interface (a VSI path).
+
+Most users will want to use `LargeImageFileDetailMixin` and so the following
+example demonstrate how to use it:
+
+Specify the `FILE_FIELD_NAME` as the string name of the `FileField` in which
+your image data are saved on the associated model.
+
 ```py
 # viewsets.py
-from django_large_image.rest import LargeImageViewSetMixin
+from django_large_image.rest import LargeImageFileDetailMixin
 
-class MyModelViewSet(viewsets.GenericViewSet, LargeImageViewSetMixin):
+class MyModelViewSet(viewsets.GenericViewSet, LargeImageFileDetailMixin):
   ...  # configuration for your model's viewset
   FILE_FIELD_NAME = 'field_name'
 ```
@@ -167,13 +179,13 @@ Then create the viewset, mixing in the `django-large-image` viewset class:
 from example.core import models
 from rest_framework import mixins, viewsets
 
-from django_large_image.rest import LargeImageViewSetMixin
+from django_large_image.rest import LargeImageFileDetailMixin
 
 
 class ImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
-    LargeImageViewSetMixin,
+    LargeImageFileDetailMixin,
 ):
     queryset = models.ImageFile.objects.all()
     serializer_class = models.ImageFileSerializer
@@ -222,11 +234,11 @@ repository that shows how to use `django-large-image` in a `girder-4` project.
 
 ### Customization
 
-The `BaseLargeImageViewSetMixin` is modularly designed and able to be subclassed
-for your project's needs. While the provided `LargeImageViewSetMixin` handles
+The mixin classes modularly designed and able to be subclassed
+for your project's needs. While the provided `LargeImageFileDetailMixin` handles
 `FileField`-interfaces, you can easily extend its base class,
-`BaseLargeImageViewSetMixin`, to handle any mechanism of data storage in any
-APIView.
+`LargeImageDetailMixin`, to handle any mechanism of data storage in your
+detail-oriented viewset.
 
 In the following example, I will show how to use GDAL compatible VSI paths
 from a model that stores `s3://` or `https://` URLs.
@@ -254,12 +266,12 @@ class URLImageFileSerializer(serializers.ModelSerializer):
 from example.core import models
 from rest_framework import mixins, viewsets
 
-from django_large_image.rest import BaseLargeImageViewSetMixin
+from django_large_image.rest import LargeImageDetailMixin
 from django_large_image.utilities import make_vsi
 
 
-class URLLargeImageViewSetMixin(BaseLargeImageViewSetMixin):
-    def get_path(self, request, pk):
+class URLLargeImageMixin(LargeImageDetailMixin):
+    def get_path(self, request, pk=None):
         object = self.get_object()
         return make_vsi(object.url)
 
@@ -267,10 +279,40 @@ class URLLargeImageViewSetMixin(BaseLargeImageViewSetMixin):
 class URLImageFileDetailViewSet(
     mixins.ListModelMixin,
     viewsets.GenericViewSet,
-    URLLargeImageViewSetMixin,
+    URLLargeImageMixin,
 ):
     queryset = models.URLImageFile.objects.all()
     serializer_class = models.URLImageFileSerializer
 ```
 
 Here is a good test image: https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif
+
+
+#### Non-Detail ViewSets
+
+The `LargeImageMixin` provides a mixin interface for non-detail viewsets (no
+associated model or primary key required). This can be particularly useful if
+your viewset has custom logic to retrieve the desired data.
+
+For example, you may want a viewset that gets the data path as a URL embedded
+in the request's query parameters. To do this, you can make a standard ViewSet
+with the `LargeImageMixin` like so:
+
+```py
+# viewsets.py
+from rest_framework import viewsets
+from rest_framework.exceptions import ValidationError
+
+from django_large_image.rest import LargeImageMixin
+from django_large_image.utilities import make_vsi
+
+
+class URLLargeImageViewSet(viewsets.ViewSet, LargeImageMixin):
+    def get_path(self, request, pk=None):
+        try:
+            url = request.query_params.get('url')
+        except KeyError:
+            raise ValidationError('url must be defined as a query parameter.')
+        return make_vsi(url)
+
+```

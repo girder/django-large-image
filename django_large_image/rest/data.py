@@ -9,10 +9,10 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource
 from django_large_image.rest import params
-from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewSetMixinBase
+from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
 
-class DataMixin(LargeImageViewSetMixinBase):
+class DataMixin(LargeImageMixinBase):
     def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
         encoding = tilesource.format_to_encoding(format)
         source = self.get_tile_source(request, pk, encoding=encoding)
@@ -25,7 +25,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns thumbnail of full image as PNG.',
         manual_parameters=[params.projection] + params.STYLE,
     )
-    @action(detail=True, url_path='thumbnail.png')
+    @action(detail=False, url_path='thumbnail.png')
     def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
         return self.thumbnail(request, pk, format='png')
 
@@ -35,7 +35,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns thumbnail of full image as JPEG.',
         manual_parameters=[params.projection] + params.STYLE,
     )
-    @action(detail=True, url_path='thumbnail.jpeg')
+    @action(detail=False, url_path='thumbnail.jpeg')
     def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
         return self.thumbnail(request, pk, format='jpeg')
 
@@ -78,10 +78,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns region tile binary from world coordinates in given EPSG as a tiled tif image.',
         manual_parameters=[params.projection] + params.REGION,
     )
-    @action(
-        detail=True,
-        url_path=r'region.tif',
-    )
+    @action(detail=False, url_path=r'region.tif')
     def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
         return self.region(request, pk, format='tif')
 
@@ -90,10 +87,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns region tile binary from world coordinates in given EPSG as a png image.',
         manual_parameters=[params.projection] + params.REGION,
     )
-    @action(
-        detail=True,
-        url_path=r'region.png',
-    )
+    @action(detail=False, url_path=r'region.png')
     def region_png(self, request: Request, pk: int = None) -> HttpResponse:
         return self.region(request, pk, format='png')
 
@@ -102,10 +96,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns region tile binary from world coordinates in given EPSG as a jpeg image.',
         manual_parameters=[params.projection] + params.REGION,
     )
-    @action(
-        detail=True,
-        url_path=r'region.jpeg',
-    )
+    @action(detail=False, url_path=r'region.jpeg')
     def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
         return self.region(request, pk, format='jpeg')
 
@@ -114,7 +105,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns single pixel.',
         manual_parameters=[params.projection, params.left, params.top] + params.STYLE,
     )
-    @action(detail=True)
+    @action(detail=False)
     def pixel(self, request: Request, pk: int = None) -> Response:
         left = float(request.query_params.get('left'))
         top = float(request.query_params.get('top'))
@@ -127,7 +118,7 @@ class DataMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns histogram',
         manual_parameters=[params.projection] + params.HISTOGRAM,
     )
-    @action(detail=True)
+    @action(detail=False)
     def histogram(self, request: Request, pk: int = None) -> Response:
         kwargs = dict(
             # TODO: add openapi params for these
@@ -147,3 +138,33 @@ class DataMixin(LargeImageViewSetMixinBase):
                 if key in entry:
                     entry[key] = float(entry[key])
         return Response(result)
+
+
+class DataDetailMixin(DataMixin):
+    @action(detail=True, url_path='thumbnail.png')
+    def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
+        return super().thumbnail_png(request, pk)
+
+    @action(detail=True, url_path='thumbnail.jpeg')
+    def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
+        return super().thumbnail_jpeg(request, pk)
+
+    @action(detail=True, url_path=r'region.tif')
+    def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
+        return super().region_tif(request, pk)
+
+    @action(detail=True, url_path=r'region.png')
+    def region_png(self, request: Request, pk: int = None) -> HttpResponse:
+        return super().region_png(request, pk)
+
+    @action(detail=True, url_path=r'region.jpeg')
+    def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
+        return super().region_jpeg(request, pk)
+
+    @action(detail=True)
+    def pixel(self, request: Request, pk: int = None) -> Response:
+        return super().pixel(request, pk)
+
+    @action(detail=True)
+    def histogram(self, request: Request, pk: int = None) -> Response:
+        return super().histogram(request, pk)

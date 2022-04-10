@@ -10,10 +10,10 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource
 from django_large_image.rest import params
-from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageViewSetMixinBase
+from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
 
-class TilesMixin(LargeImageViewSetMixinBase):
+class TilesMixin(LargeImageMixinBase):
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, format: str = None
     ) -> HttpResponse:
@@ -32,7 +32,7 @@ class TilesMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns tile image as a PNG.',
         manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
     )
-    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
+    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
     def tile_png(
         self,
         request: Request,
@@ -49,7 +49,7 @@ class TilesMixin(LargeImageViewSetMixinBase):
         operation_summary='Returns tile image as a JPEG.',
         manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
     )
-    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
+    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
     def tile_jpeg(
         self,
         request: Request,
@@ -66,7 +66,7 @@ class TilesMixin(LargeImageViewSetMixinBase):
         manual_parameters=[params.projection, params.z, params.x, params.y],
     )
     @action(
-        detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
+        detail=False, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )
     def tile_corners(
         self, request: Request, x: int, y: int, z: int, pk: int = None
@@ -81,3 +81,35 @@ class TilesMixin(LargeImageViewSetMixinBase):
             'proj4': source.getProj4String(),
         }
         return Response(metadata)
+
+
+class TilesDetailMixin(TilesMixin):
+    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
+    def tile_png(
+        self,
+        request: Request,
+        x: int,
+        y: int,
+        z: int,
+        pk: int = None,
+    ) -> HttpResponse:
+        return super().tile_png(request, x, y, z, pk)
+
+    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
+    def tile_jpeg(
+        self,
+        request: Request,
+        x: int,
+        y: int,
+        z: int,
+        pk: int = None,
+    ) -> HttpResponse:
+        return super().tile_jpeg(request, x, y, z, pk)
+
+    @action(
+        detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
+    )
+    def tile_corners(
+        self, request: Request, x: int, y: int, z: int, pk: int = None
+    ) -> HttpResponse:
+        return super().tile_corners(request, x, y, z, pk)

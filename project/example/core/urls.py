@@ -5,6 +5,7 @@ from example.core.viewsets import (
     S3ImageFileDetailViewSet,
     S3VSIImageFileDetailViewSet,
     URLImageFileDetailViewSet,
+    URLLargeImageViewSet,
 )
 from rest_framework.routers import SimpleRouter
 
@@ -14,6 +15,7 @@ router.register(r'api/vsi-image-file', ImageFileDetailViewSet, basename='vsi-ima
 router.register(r'api/s3-image-file', S3ImageFileDetailViewSet, basename='s3-image-file')
 router.register(r'api/s3-vsi-image-file', S3VSIImageFileDetailViewSet, basename='s3-vsi-image-file')
 router.register(r'api/url-image-file', URLImageFileDetailViewSet, basename='url-image-file')
+router.register(r'api/url-param', URLLargeImageViewSet, basename='url-param')
 
 urlpatterns = [
     path('image-file/<int:pk>/', views.ImageFileDetailView.as_view(), name='image-file-detail'),

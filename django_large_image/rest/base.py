@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 CACHE_TIMEOUT = 60 * 60 * 2
 
 
-class LargeImageViewSetMixinBase:
+class LargeImageMixinBase:
     def get_path(self, request: Request, pk: int = None):
         """Return path on disk to image file (or VSI str).
 
@@ -23,7 +23,7 @@ class LargeImageViewSetMixinBase:
         str : The local file path to pass to large_image
 
         """
-        raise NotImplementedError
+        raise NotImplementedError('You must implement `get_path` on your viewset.')
 
     def get_style(self, request: Request):
         data = utilities.get_request_body_as_dict(request)
