@@ -22,7 +22,7 @@ medical image tile serving.
 
 ## Overview
 
-This package ports Kitware's [large-image](https://github.com/girder/large_image)
+This package brings Kitware's [large-image](https://github.com/girder/large_image)
 to Django by providing a set of abstract, mixin API viewset classes that will
 handle tile serving, fetching metadata from images, and extracting regions of
 interest.
