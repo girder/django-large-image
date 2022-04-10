@@ -26,10 +26,10 @@ class LargeImageMixinBase:
         raise NotImplementedError('You must implement `get_path` on your viewset.')
 
     def get_style(self, request: Request):
-        data = utilities.get_request_body_as_dict(request)
-        # Check if sytle is in request data
-        if 'style' in data:
-            style = data['style']
+        body = utilities.get_request_body_as_dict(request)
+        # Check if sytle is in request body
+        if 'style' in body:
+            style = body['style']
             if isinstance(style, dict):
                 style = json.dumps(style)
         # else, fallback to supported query parameters
