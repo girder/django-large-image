@@ -42,8 +42,14 @@ nodata = openapi.Parameter(
     description='The value to map as no data (often made transparent).',
     type=openapi.TYPE_NUMBER,
 )
+scheme = openapi.Parameter(
+    'scheme',
+    openapi.IN_QUERY,
+    description='This is either ``linear`` (the default) or ``discrete``. If a palette is specified, ``linear`` uses a piecewise linear interpolation, and ``discrete`` uses exact colors from the palette with the range of the data mapped into the specified number of colors (e.g., a palette with two colors will split exactly halfway between the min and max values).',
+    type=openapi.TYPE_STRING,
+)
 
-STYLE = [palette, band, vmin, vmax, nodata]
+STYLE = [palette, band, vmin, vmax, nodata, scheme]
 
 # Region Parameters
 left = openapi.Parameter(
@@ -63,7 +69,6 @@ units = openapi.Parameter(
     openapi.IN_QUERY,
     description='The projection/units of the region coordinates.',
     type=openapi.TYPE_STRING,
-    default='EPSG:4326',
 )
 
 REGION = [left, right, top, bottom, units]

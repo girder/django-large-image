@@ -44,12 +44,17 @@ class LargeImageMixinBase:
                     style['min'] = bmin
                 if not utilities.param_nully(bmax):
                     style['max'] = bmax
-                palette = request.query_params.get('palette', None)
+                palette = request.query_params.get(
+                    'palette', request.query_params.get('cmap', None)
+                )
                 if not utilities.param_nully(palette):
                     style['palette'] = palette
                 nodata = request.query_params.get('nodata', None)
                 if not utilities.param_nully(nodata):
                     style['nodata'] = nodata
+                scheme = request.query_params.get('scheme', None)
+                if not utilities.param_nully:
+                    style['scheme'] = scheme
                 style = json.dumps(style)
         return style
 

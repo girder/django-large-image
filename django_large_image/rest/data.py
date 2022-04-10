@@ -11,6 +11,15 @@ from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
+thumbnail_summary = 'Returns thumbnail of full image.'
+thumbnail_parameters = [params.projection] + params.STYLE
+region_summary = 'Returns region tile binary.'
+region_parameters = [params.projection] + params.REGION
+pixel_summary = 'Returns single pixel.'
+pixel_parameters = [params.projection, params.left, params.top] + params.STYLE
+histogram_summary = 'Returns histogram'
+histogram_parameters = [params.projection] + params.HISTOGRAM
+
 
 class DataMixin(LargeImageMixinBase):
     def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
@@ -22,8 +31,8 @@ class DataMixin(LargeImageMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns thumbnail of full image as PNG.',
-        manual_parameters=[params.projection] + params.STYLE,
+        operation_summary=thumbnail_summary,
+        manual_parameters=thumbnail_parameters,
     )
     @action(detail=False, url_path='thumbnail.png')
     def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
@@ -32,8 +41,8 @@ class DataMixin(LargeImageMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns thumbnail of full image as JPEG.',
-        manual_parameters=[params.projection] + params.STYLE,
+        operation_summary=thumbnail_summary,
+        manual_parameters=thumbnail_parameters,
     )
     @action(detail=False, url_path='thumbnail.jpeg')
     def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
@@ -75,8 +84,8 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns region tile binary from world coordinates in given EPSG as a tiled tif image.',
-        manual_parameters=[params.projection] + params.REGION,
+        operation_summary=region_summary,
+        manual_parameters=region_parameters,
     )
     @action(detail=False, url_path=r'region.tif')
     def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
@@ -84,8 +93,8 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns region tile binary from world coordinates in given EPSG as a png image.',
-        manual_parameters=[params.projection] + params.REGION,
+        operation_summary=region_summary,
+        manual_parameters=region_parameters + params.STYLE,
     )
     @action(detail=False, url_path=r'region.png')
     def region_png(self, request: Request, pk: int = None) -> HttpResponse:
@@ -93,8 +102,8 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns region tile binary from world coordinates in given EPSG as a jpeg image.',
-        manual_parameters=[params.projection] + params.REGION,
+        operation_summary=region_summary,
+        manual_parameters=region_parameters + params.STYLE,
     )
     @action(detail=False, url_path=r'region.jpeg')
     def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
@@ -102,8 +111,8 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns single pixel.',
-        manual_parameters=[params.projection, params.left, params.top] + params.STYLE,
+        operation_summary=pixel_summary,
+        manual_parameters=pixel_parameters,
     )
     @action(detail=False)
     def pixel(self, request: Request, pk: int = None) -> Response:
@@ -115,8 +124,8 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns histogram',
-        manual_parameters=[params.projection] + params.HISTOGRAM,
+        operation_summary=histogram_summary,
+        manual_parameters=histogram_parameters,
     )
     @action(detail=False)
     def histogram(self, request: Request, pk: int = None) -> Response:
@@ -141,30 +150,67 @@ class DataMixin(LargeImageMixinBase):
 
 
 class DataDetailMixin(DataMixin):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=thumbnail_summary,
+        manual_parameters=thumbnail_parameters,
+    )
     @action(detail=True, url_path='thumbnail.png')
     def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
         return super().thumbnail_png(request, pk)
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=thumbnail_summary,
+        manual_parameters=thumbnail_parameters,
+    )
     @action(detail=True, url_path='thumbnail.jpeg')
     def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
         return super().thumbnail_jpeg(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=region_summary,
+        manual_parameters=region_parameters,
+    )
     @action(detail=True, url_path=r'region.tif')
     def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
         return super().region_tif(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=region_summary,
+        manual_parameters=region_parameters + params.STYLE,
+    )
     @action(detail=True, url_path=r'region.png')
     def region_png(self, request: Request, pk: int = None) -> HttpResponse:
         return super().region_png(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=region_summary,
+        manual_parameters=region_parameters + params.STYLE,
+    )
     @action(detail=True, url_path=r'region.jpeg')
     def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
         return super().region_jpeg(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=pixel_summary,
+        manual_parameters=pixel_parameters,
+    )
     @action(detail=True)
     def pixel(self, request: Request, pk: int = None) -> Response:
         return super().pixel(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=histogram_summary,
+        manual_parameters=histogram_parameters,
+    )
     @action(detail=True)
     def histogram(self, request: Request, pk: int = None) -> Response:
         return super().histogram(request, pk)

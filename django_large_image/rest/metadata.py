@@ -7,12 +7,21 @@ from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import LargeImageMixinBase
 
+metadata_summary = 'Returns tile metadata.'
+metadata_parameters = [params.projection]
+internal_metadata_summary = 'Returns additional known metadata about the tile source.'
+internal_metadata_parameters = [params.projection]
+bands_summary = 'Returns bands information.'
+bands_parameters = [params.projection]
+band_summary = 'Returns single band information.'
+band_parameters = [params.projection, params.band]
+
 
 class MetaDataMixin(LargeImageMixinBase):
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns tile metadata.',
-        manual_parameters=[params.projection],
+        operation_summary=metadata_summary,
+        manual_parameters=metadata_parameters,
     )
     @action(detail=False)
     def metadata(self, request: Request, pk: int = None) -> Response:
@@ -22,8 +31,8 @@ class MetaDataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns additional known metadata about the tile source.',
-        manual_parameters=[params.projection],
+        operation_summary=internal_metadata_summary,
+        manual_parameters=internal_metadata_parameters,
     )
     @action(detail=False)
     def internal_metadata(self, request: Request, pk: int = None) -> Response:
@@ -33,8 +42,8 @@ class MetaDataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns bands information.',
-        manual_parameters=[params.projection],
+        operation_summary=bands_summary,
+        manual_parameters=bands_parameters,
     )
     @action(detail=False)
     def bands(self, request: Request, pk: int = None) -> Response:
@@ -44,11 +53,8 @@ class MetaDataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns single band information.',
-        manual_parameters=[
-            params.projection,
-            params.band,
-        ],
+        operation_summary=bands_summary,
+        manual_parameters=band_parameters,
     )
     @action(detail=False)
     def band(self, request: Request, pk: int = None) -> Response:
@@ -59,18 +65,38 @@ class MetaDataMixin(LargeImageMixinBase):
 
 
 class MetaDataDetailMixin(MetaDataMixin):
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=metadata_summary,
+        manual_parameters=metadata_parameters,
+    )
     @action(detail=True)
     def metadata(self, request: Request, pk: int = None) -> Response:
         return super().metadata(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=internal_metadata_summary,
+        manual_parameters=internal_metadata_parameters,
+    )
     @action(detail=True)
     def internal_metadata(self, request: Request, pk: int = None) -> Response:
         return super().internal_metadata(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=bands_summary,
+        manual_parameters=bands_parameters,
+    )
     @action(detail=True)
     def bands(self, request: Request, pk: int = None) -> Response:
         return super().bands(request, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=bands_summary,
+        manual_parameters=band_parameters,
+    )
     @action(detail=True)
     def band(self, request: Request, pk: int = None) -> Response:
         return super().band(request, pk)

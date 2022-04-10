@@ -12,6 +12,11 @@ from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
+tile_summary = 'Returns tile image binary.'
+tile_parameters = [params.projection, params.z, params.x, params.y] + params.STYLE
+tile_corners_summary = 'Returns bounds of a tile for a given x, y, z index.'
+tile_corners_parameters = [params.projection, params.z, params.x, params.y]
+
 
 class TilesMixin(LargeImageMixinBase):
     def tile(
@@ -29,8 +34,8 @@ class TilesMixin(LargeImageMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns tile image as a PNG.',
-        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
+        operation_summary=tile_summary,
+        manual_parameters=tile_parameters,
     )
     @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
     def tile_png(
@@ -46,8 +51,8 @@ class TilesMixin(LargeImageMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns tile image as a JPEG.',
-        manual_parameters=[params.projection, params.z, params.x, params.y] + params.STYLE,
+        operation_summary=tile_summary,
+        manual_parameters=tile_parameters,
     )
     @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
     def tile_jpeg(
@@ -62,8 +67,8 @@ class TilesMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary='Returns bounds of a tile for a given x, y, z index.',
-        manual_parameters=[params.projection, params.z, params.x, params.y],
+        operation_summary=tile_corners_summary,
+        manual_parameters=tile_corners_parameters,
     )
     @action(
         detail=False, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
@@ -84,6 +89,11 @@ class TilesMixin(LargeImageMixinBase):
 
 
 class TilesDetailMixin(TilesMixin):
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_summary,
+        manual_parameters=tile_parameters,
+    )
     @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
     def tile_png(
         self,
@@ -95,6 +105,11 @@ class TilesDetailMixin(TilesMixin):
     ) -> HttpResponse:
         return super().tile_png(request, x, y, z, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_summary,
+        manual_parameters=tile_parameters,
+    )
     @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
     def tile_jpeg(
         self,
@@ -106,6 +121,11 @@ class TilesDetailMixin(TilesMixin):
     ) -> HttpResponse:
         return super().tile_jpeg(request, x, y, z, pk)
 
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_corners_summary,
+        manual_parameters=tile_corners_parameters,
+    )
     @action(
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )

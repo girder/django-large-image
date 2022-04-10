@@ -79,6 +79,8 @@ def get_region(
     units: str = None,
     encoding: str = None,
 ):
+    if isinstance(units, str):
+        units = units.lower()
     if encoding is None and is_geospatial(source):
         # Use tiled encoding by default for geospatial rasters
         #   output will be a tiled TIF
@@ -88,6 +90,7 @@ def get_region(
         encoding = 'JPEG'
     if is_geospatial(source) and units not in [
         'pixels',
+        'pixel',
     ]:
         if units is None:
             units = 'EPSG:4326'

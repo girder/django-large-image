@@ -4,7 +4,12 @@ import pytest
 @pytest.mark.django_db(transaction=True)
 def test_style_parameters(authenticated_api_client, image_file_geotiff):
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/tiles/0/0/0.png?band=1&palette=viridis'
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png?band=1&palette=viridis'
+    )
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'image/png'
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png?band=1&palette=green&scheme=discrete'
     )
     assert response.status_code == 200
     assert response['Content-Type'] == 'image/png'
@@ -20,7 +25,7 @@ def test_style_body(authenticated_api_client, image_file_geotiff):
         }
     }
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/tiles/0/0/0.png',
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png',
         data=style,
     )
     assert response.status_code == 200
