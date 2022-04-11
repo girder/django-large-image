@@ -1,17 +1,19 @@
 # django-large-image
 
+[![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
 [![PyPI](https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white)](https://pypi.org/project/django-large-image/)
 [![codecov](https://codecov.io/gh/girder/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/girder/django-large-image)
 [![Tests](https://github.com/girder/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/girder/django-large-image/actions/workflows/ci.yml)
 
-***Image tile serving in Django made easy***
+***Dynamic tile server in Django***
 
 `django-large-image` is an abstraction of [`large-image`](https://github.com/girder/large_image)
 for use with `django-rest-framework` providing viewset mixins for endpoints to
-work with large images in Django -- specifically geared towards geospatial and
-medical image tile serving.
-
-*Created by Kitware, Inc.*
+work with large images (Cloud Optimized GeoTiffs or medical image formats) in
+Django. The dynamic tile server provided here prevents the need for
+preprocessing large images into tile sets for viewing interactively on
+slippy-maps. Under the hood, large-image applies operations (rescaling,
+reprojection, image encoding) to create image tiles on-the-fly.
 
 ![admin-interface](https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png)
 

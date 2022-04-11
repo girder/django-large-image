@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 class DjangoLargeImageConfig(AppConfig):
     name = 'django_large_image'
-    verbose_name = 'Django Large Image: Django Large Image'
+    verbose_name = 'Django Large Image'
     default_auto_field = 'django.db.models.BigAutoField'
 
     def ready(self):
