@@ -34,9 +34,8 @@ a few classes that can be mixed into a Django project (or application)'s
 drf-based viewsets to provide tile serving endpoints out of the box. Notably,
 `django-large-image` is designed to work specifically with `FileField`
 interfaces with development being tailored to Kitware's
-[`S3FileField`](https://github.com/girder/django-s3-file-field). We are working
-to also support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
-in the future.
+[`S3FileField`](https://github.com/girder/django-s3-file-field). GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
+can also be used by returning `GDALRaster.name` in the `get_path()` override.
 
 This package ships with pre-made HTML templates for rendering geospatial image
 tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.com/OpenGeoscience/geojs).
