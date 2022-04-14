@@ -76,7 +76,7 @@ class TilesMixin(LargeImageMixinBase):
     def tile_corners(
         self, request: Request, x: int, y: int, z: int, pk: int = None
     ) -> HttpResponse:
-        source = self.get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk, style=False)
         xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
         metadata = {
             'xmin': xmin,

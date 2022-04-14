@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Union
 
 from large_image.tilesource import FileTileSource
 from rest_framework.request import Request
@@ -58,13 +59,28 @@ class LargeImageMixinBase:
                 style = json.dumps(style)
         return style
 
-    def open_image(self, request: Request, path: str, encoding: str = None):
+    def open_tile_source(self, path, *args, **kwargs):
+        """Override to open with a specific large-image source."""
+        return tilesource.get_tilesource_from_path(path, *args, **kwargs)
+
+    def open_image(
+        self, request: Request, path: str, encoding: str = None, style: Union[bool, dict] = True
+    ):
         projection = request.query_params.get('projection', None)
-        style = self.get_style(request)
-        return tilesource.get_tilesource_from_path(path, projection, style=style, encoding=encoding)
+        if isinstance(style, bool) and style:
+            style = self.get_style(request)
+        elif isinstance(style, dict):
+            style = json.dumps(style)
+        else:
+            style = json.dumps({})
+        return self.open_tile_source(path, projection=projection, encoding=encoding, style=style)
 
     def get_tile_source(
-        self, request: Request, pk: int = None, encoding: str = None
+        self,
+        request: Request,
+        pk: int = None,
+        encoding: str = None,
+        style: Union[bool, dict] = True,
     ) -> FileTileSource:
         """Return the built tile source."""
-        return self.open_image(request, self.get_path(request, pk), encoding=encoding)
+        return self.open_image(request, self.get_path(request, pk), encoding=encoding, style=style)

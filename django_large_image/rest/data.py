@@ -136,7 +136,7 @@ class DataMixin(LargeImageMixinBase):
             density=request.query_params.get('density', False),
             format=request.query_params.get('format', None),
         )
-        source = self.get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk, style=False)
         result = source.histogram(**kwargs)
         result = result['histogram']
         for entry in result:
