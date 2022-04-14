@@ -1,5 +1,6 @@
 from functools import wraps
 
+from django.db.models.fields.files import FieldFile
 from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
@@ -56,7 +57,7 @@ class LargeImageFileDetailMixin(LargeImageDetailMixin):
 
     FILE_FIELD_NAME: str = None
 
-    def get_field_file(self):
+    def get_field_file(self) -> FieldFile:
         """Get `FileField` using `FILE_FIELD_NAME`."""
         try:
             return getattr(self.get_object(), self.FILE_FIELD_NAME)
@@ -65,7 +66,7 @@ class LargeImageFileDetailMixin(LargeImageDetailMixin):
             raise APIException('`FILE_FIELD_NAME` not properly set on viewset class.')
 
     @wraps(LargeImageDetailMixin.get_path)
-    def get_path(self, request: Request, pk: int = None):
+    def get_path(self, request: Request, pk: int = None) -> str:
         return utilities.field_file_to_local_path(self.get_field_file())
 
 
@@ -73,7 +74,7 @@ class LargeImageVSIFileDetailMixin(LargeImageFileDetailMixin):
     USE_VSI: bool = True
 
     @wraps(LargeImageFileDetailMixin.get_path)
-    def get_path(self, request: Request, pk: int = None):
+    def get_path(self, request: Request, pk: int = None) -> str:
         """Wrap get_path with VSI support."""
         field_file = self.get_field_file()
         if self.USE_VSI:

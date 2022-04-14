@@ -2,6 +2,7 @@
 import os
 import pathlib
 import tempfile
+from typing import List
 
 import large_image
 from large_image.tilesource import FileTileSource
@@ -18,14 +19,14 @@ def get_tilesource_from_path(
     return large_image.open(str(path), projection=projection, style=style, encoding=encoding)
 
 
-def is_geospatial(source: FileTileSource):
+def is_geospatial(source: FileTileSource) -> bool:
     return source.getMetadata().get('geospatial', False)
 
 
 def get_bounds(
     source: FileTileSource,
     projection: str = 'EPSG:4326',
-):
+) -> List[float]:
     bounds = source.getBounds(srs=projection)
     if not bounds:
         return
@@ -42,19 +43,19 @@ def _metadata_helper(source: FileTileSource, metadata: dict):
         metadata['proj4'] = (source.getProj4String(),)
 
 
-def get_metadata(source: FileTileSource):
+def get_metadata(source: FileTileSource) -> dict:
     metadata = source.getMetadata()
     _metadata_helper(source, metadata)
     return metadata
 
 
-def get_internal_metadata(source: FileTileSource):
+def get_internal_metadata(source: FileTileSource) -> dict:
     metadata = source.getInternalMetadata()
     _metadata_helper(source, metadata)
     return metadata
 
 
-def _get_region(source: FileTileSource, region: dict, encoding: str):
+def _get_region(source: FileTileSource, region: dict, encoding: str) -> (pathlib.Path, str):
     result, mime_type = source.getRegion(region=region, encoding=encoding)
     if encoding == 'TILED':
         path = result
@@ -78,7 +79,7 @@ def get_region(
     top: float,
     units: str = None,
     encoding: str = None,
-):
+) -> (pathlib.Path, str):
     if isinstance(units, str):
         units = units.lower()
     if encoding is None and is_geospatial(source):

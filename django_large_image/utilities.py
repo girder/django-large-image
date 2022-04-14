@@ -22,11 +22,11 @@ except ImportError:
 logger = logging.getLogger(__name__)
 
 
-def param_nully(value):
+def param_nully(value) -> bool:
     """Determine null-like values."""
     if isinstance(value, str):
         value = value.lower()
-    return value in [None, '', 'undefined', 'none']
+    return value in [None, '', 'undefined', 'none', 'null']
 
 
 @contextmanager
@@ -58,7 +58,7 @@ def patch_internal_presign(f: FieldFile):
     yield
 
 
-def get_temp_dir():
+def get_temp_dir() -> pathlib.Path:
     path = pathlib.Path(
         getattr(
             settings, 'DATA_TEMP_DIR', os.path.join(tempfile.gettempdir(), 'django-large-image')
@@ -68,13 +68,13 @@ def get_temp_dir():
     return path
 
 
-def get_cache_dir():
+def get_cache_dir() -> pathlib.Path:
     path = pathlib.Path(get_temp_dir(), 'file_cache')
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
-def make_vsi(url: str, **options):
+def make_vsi(url: str, **options) -> str:
     if str(url).startswith('s3://'):
         s3_path = url.replace('s3://', '')
         vsi = f'/vsis3/{s3_path}'
@@ -89,13 +89,13 @@ def make_vsi(url: str, **options):
     return vsi
 
 
-def get_lock_dir():
+def get_lock_dir() -> pathlib.Path:
     path = pathlib.Path(get_temp_dir(), 'file_locks')
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
-def get_file_lock(path: pathlib.Path):
+def get_file_lock(path: pathlib.Path) -> FileLock:
     """Create a file lock under the lock directory."""
     # Computes the hash using Pathlib's hash implementation on absolute path
     sha = hash(path.absolute())
@@ -104,7 +104,7 @@ def get_file_lock(path: pathlib.Path):
     return lock
 
 
-def get_file_safe_path(path: pathlib.Path):
+def get_file_safe_path(path: pathlib.Path) -> pathlib.Path:
     """Mark the file/lock as safe to use."""
     sha = hash(path.absolute())
     return pathlib.Path(get_lock_dir(), f'{sha}.safe')
