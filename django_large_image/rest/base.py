@@ -73,6 +73,8 @@ class LargeImageMixinBase:
             style = json.dumps(style)
         else:
             style = json.dumps({})
+        if encoding is None:
+            encoding = 'PNG'
         return self.open_tile_source(path, projection=projection, encoding=encoding, style=style)
 
     def get_tile_source(
