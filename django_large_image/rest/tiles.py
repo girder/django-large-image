@@ -11,7 +11,10 @@ from rest_framework.response import Response
 from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
+from django_large_image.rest.serializers import TileMetadataSerializer
 
+tile_metadata_summary = 'Returns tile metadata.'
+tile_metadata_parameters = [params.projection]
 tile_summary = 'Returns tile image binary.'
 tile_parameters = [params.projection, params.z, params.x, params.y] + params.STYLE
 tile_corners_summary = 'Returns bounds of a tile for a given x, y, z index.'
@@ -19,6 +22,18 @@ tile_corners_parameters = [params.projection, params.z, params.x, params.y]
 
 
 class TilesMixin(LargeImageMixinBase):
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_metadata_summary,
+        manual_parameters=tile_metadata_parameters,
+    )
+    @action(detail=False, url_path=r'tiles/metadata')
+    def tiles_metadata(self, request: Request, pk: int = None) -> Response:
+        source = self.get_tile_source(request, pk, style=False)
+        source.dli_geospatial = tilesource.is_geospatial(source)
+        serializer = TileMetadataSerializer(source)
+        return Response(serializer.data)
+
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, format: str = None
     ) -> HttpResponse:
@@ -89,6 +104,15 @@ class TilesMixin(LargeImageMixinBase):
 
 
 class TilesDetailMixin(TilesMixin):
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_metadata_summary,
+        manual_parameters=tile_metadata_parameters,
+    )
+    @action(detail=True, url_path=r'tiles/metadata')
+    def tiles_metadata(self, request: Request, pk: int = None) -> Response:
+        return super().tiles_metadata(request, pk)
+
     @swagger_auto_schema(
         method='GET',
         operation_summary=tile_summary,

@@ -29,6 +29,27 @@ def test_tile_corners(authenticated_api_client, image_file_geotiff):
     assert data['proj4']
 
 
+@pytest.mark.django_db(transaction=True)
+def test_tiles_metadata(authenticated_api_client, image_file_geotiff):
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/tiles/metadata?projection=EPSG:3857'
+    )
+    assert response.status_code == 200
+    metadata = response.data
+    assert metadata['geospatial']
+    assert metadata['levels'] == 9
+    assert metadata['size_x'] == metadata['size_x']
+    assert metadata['additional_metadata']
+    assert (
+        metadata['additional_metadata']['tileWidth']
+        == metadata['additional_metadata']['tileHeight']
+    )
+    assert (
+        metadata['additional_metadata']['tileWidth']
+        == metadata['additional_metadata']['tileHeight']
+    )
+
+
 # @pytest.mark.django_db(transaction=True)
 # def test_cache(authenticated_api_client, image_file_geotiff, django_assert_num_queries):
 #     # cache a response
