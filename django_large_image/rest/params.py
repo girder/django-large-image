@@ -7,9 +7,24 @@ projection = openapi.Parameter(
     type=openapi.TYPE_STRING,
 )
 
-z = openapi.Parameter('z', openapi.IN_PATH, description='zoom level', type=openapi.TYPE_INTEGER)
-x = openapi.Parameter('x', openapi.IN_PATH, description='x', type=openapi.TYPE_INTEGER)
-y = openapi.Parameter('y', openapi.IN_PATH, description='y', type=openapi.TYPE_INTEGER)
+z = openapi.Parameter(
+    'z',
+    openapi.IN_PATH,
+    description='The Z level of the tile. May range from [0, levels], where 0 is the lowest resolution, single tile for the whole source.',
+    type=openapi.TYPE_INTEGER,
+)
+x = openapi.Parameter(
+    'x',
+    openapi.IN_PATH,
+    description='The 0-based X position of the tile on the specified Z level.',
+    type=openapi.TYPE_INTEGER,
+)
+y = openapi.Parameter(
+    'y',
+    openapi.IN_PATH,
+    description='The 0-based Y position of the tile on the specified Z level.',
+    type=openapi.TYPE_INTEGER,
+)
 
 # Style Parameters
 palette = openapi.Parameter(
