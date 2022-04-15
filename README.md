@@ -317,3 +317,40 @@ class URLLargeImageViewSet(viewsets.ViewSet, LargeImageMixin):
         return make_vsi(url)
 
 ```
+
+
+## Converting Images to Pyramidal Tiffs (COGs)
+
+Install [`large_image_converter`](https://pypi.org/project/large-image-converter/) and run the following:
+
+```py
+import large_image_converter
+large_image_converter.convert(input_path, output_path)
+```
+
+It's that easy! The default parameters for that function will convert
+geospatial rasters to Cloud Optimized GeoTiffs (COGs) and non-geospatial images
+to a pyramidal tiff format.
+
+It's quite common to have a celery task that converts an image from a
+model in your application. Here is a starting point:
+
+```py
+import os
+from example.core import models
+from celery import shared_task
+import large_image_converter
+
+
+@shared_task
+def task_convert_cog(my_model_pk):
+    image_file = models.ImageFile.objects.get(pk=my_model_pk)
+    input_path = image_file.file.name  # TODO: get full path to file on disk
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        output_path = os.path.join(tmpdir, 'converted.tiff')
+        large_image_converter.convert(input_path, output_path)
+
+        # Do something with converted tiff file at `output_path`
+        ...
+```
