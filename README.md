@@ -1,4 +1,4 @@
-# django-large-image
+# 🩻 🗺️ django-large-image
 
 [![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
 [![PyPI](https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white)](https://pypi.org/project/django-large-image/)
@@ -22,7 +22,7 @@ reprojection, image encoding) to create image tiles on-the-fly.
 |![swagger-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/tiles_endpoint.png)|
 
 
-## Overview
+## ℹ️ Overview
 
 This package brings Kitware's [large-image](https://github.com/girder/large_image)
 to Django by providing a set of abstract, mixin API viewset classes that will
@@ -40,7 +40,7 @@ can also be used by returning `GDALRaster.name` in the `get_path()` override.
 This package ships with pre-made HTML templates for rendering geospatial image
 tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.com/OpenGeoscience/geojs).
 
-### Features
+### 🌟 Features
 
 Rich set of RESTful endpoints to extract information from large image formats:
 - Image metadata (`/metadata`, `/internal_metadata`)
@@ -62,7 +62,7 @@ Miscellaneous:
 - Easily extensible SSR templates for tile viewing with CesiumJS and GeoJS
 - OpenAPI specification
 
-## Installation
+## ⬇️ Installation
 
 Out of the box, `django-large-image` only depends of the core `large-image`
 module, but you will need a `large-image-source-*` module in order for this
@@ -88,7 +88,7 @@ pip install \
 ```
 
 
-## Usage
+## 🚀 Usage
 
 Simply install the app and mixin one of the mixing classes to your
 existing `django-rest-framework` viewset.
@@ -141,7 +141,7 @@ urlpatterns = [
 
 And that's it!
 
-### Example Code
+### 📝 Example Code
 
 To use the mixin classes provided here, create a model, serializer, and viewset
 in your Django project like so:
@@ -233,7 +233,7 @@ Please note the example Django project in the `project/` directory of this
 repository that shows how to use `django-large-image` in a `girder-4` project.
 
 
-### Customization
+### 🛠️ Customization
 
 The mixin classes modularly designed and able to be subclassed
 for your project's needs. While the provided `LargeImageFileDetailMixin` handles
@@ -289,7 +289,7 @@ class URLImageFileDetailViewSet(
 Here is a good test image: https://oin-hotosm.s3.amazonaws.com/59c66c5223c8440011d7b1e4/0/7ad397c0-bba2-4f98-a08a-931ec3a6e943.tif
 
 
-#### Non-Detail ViewSets
+#### 🥸 Non-Detail ViewSets
 
 The `LargeImageMixin` provides a mixin interface for non-detail viewsets (no
 associated model or primary key required). This can be particularly useful if
@@ -319,7 +319,7 @@ class URLLargeImageViewSet(viewsets.ViewSet, LargeImageMixin):
 ```
 
 
-## Converting Images to Pyramidal Tiffs (COGs)
+## ☁️ Converting Images to Pyramidal Tiffs (COGs)
 
 Install [`large_image_converter`](https://pypi.org/project/large-image-converter/) and run the following:
 
