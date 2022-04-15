@@ -63,8 +63,14 @@ scheme = openapi.Parameter(
     description='This is either ``linear`` (the default) or ``discrete``. If a palette is specified, ``linear`` uses a piecewise linear interpolation, and ``discrete`` uses exact colors from the palette with the range of the data mapped into the specified number of colors (e.g., a palette with two colors will split exactly halfway between the min and max values).',
     type=openapi.TYPE_STRING,
 )
+style = openapi.Parameter(
+    'style',
+    openapi.IN_QUERY,
+    description='Base64 encoded JSON style following https://girder.github.io/large_image/tilesource_options.html#style',
+    type=openapi.TYPE_STRING,
+)
 
-STYLE = [palette, band, vmin, vmax, nodata, scheme]
+STYLE = [palette, band, vmin, vmax, nodata, scheme, style]
 
 # Region Parameters
 left = openapi.Parameter(

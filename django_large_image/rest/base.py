@@ -1,7 +1,10 @@
+import base64
+import binascii
 import json
 from typing import Union
 
 from large_image.tilesource import FileTileSource
+from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 
 from django_large_image import tilesource, utilities
@@ -24,13 +27,18 @@ class LargeImageMixinBase:
         raise NotImplementedError('You must implement `get_path` on your viewset.')
 
     def get_style(self, request: Request) -> dict:
-        body = utilities.get_request_body_as_dict(request)
-        # Check if sytle is in request body
-        if 'style' in body:
-            style = body['style']
-            if isinstance(style, str):
-                style = json.loads(style)
-        # else, fallback to supported query parameters
+        # Check for base64 encoded style dict
+        if 'style' in request.query_params:
+            style_base64 = request.query_params.get('style').encode('ascii')
+            # Un Base64 the string
+            try:
+                message_bytes = base64.b64decode(style_base64)
+                style = json.loads(message_bytes.decode('ascii'))
+            except (json.JSONDecodeError, binascii.Error):
+                raise ValidationError(
+                    '`style` query parameter is malformed and likely not base64 encoded.'
+                )
+        # else, fallback to supported query parameters for viewing a sinlge band
         else:
             band = int(request.query_params.get('band', 0))
             style = None

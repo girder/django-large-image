@@ -1,3 +1,6 @@
+import base64
+import json
+
 import pytest
 
 
@@ -16,17 +19,15 @@ def test_style_parameters(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_style_body(authenticated_api_client, image_file_geotiff):
+def test_style_base64(authenticated_api_client, image_file_geotiff):
     style = {
-        'style': {
-            'bands': [
-                {'band': 1, 'palette': ['#000', '#0f0']},
-            ]
-        }
+        'bands': [
+            {'band': 1, 'palette': ['#000', '#0f0']},
+        ]
     }
+    style_base64 = base64.urlsafe_b64encode(json.dumps(style).encode()).decode()
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png',
-        data=style,
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png?style={style_base64}',
     )
     assert response.status_code == 200
     assert response['Content-Type'] == 'image/png'

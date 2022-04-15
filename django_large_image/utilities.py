@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-import json
 import logging
 import os
 import pathlib
@@ -11,8 +10,6 @@ from django.conf import settings
 from django.core.files import File
 from django.db.models.fields.files import FieldFile
 from filelock import FileLock
-from rest_framework.exceptions import ValidationError
-from rest_framework.request import Request
 
 try:
     from minio_storage.storage import MinioStorage
@@ -150,11 +147,3 @@ def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
             logger.debug('Marking as safely downloaded...')
             safe.touch()
     return dest_path
-
-
-def get_request_body_as_dict(request: Request) -> dict:
-    if isinstance(request.data, str):
-        return json.loads(request.data)
-    elif isinstance(request.data, dict):
-        return request.data
-    raise ValidationError('improperly formed request body')
