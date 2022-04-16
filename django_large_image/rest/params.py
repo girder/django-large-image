@@ -30,7 +30,7 @@ y = openapi.Parameter(
 palette = openapi.Parameter(
     'palette',
     openapi.IN_QUERY,
-    description='The color palette to map the band values (named Matplotlib colormaps or palettable palettes).',
+    description='The color palette to map the band values (named Matplotlib colormaps or palettable palettes). `cmap` alias supported.',
     type=openapi.TYPE_STRING,
 )
 band = openapi.Parameter(

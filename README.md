@@ -318,6 +318,40 @@ class URLLargeImageViewSet(viewsets.ViewSet, LargeImageMixin):
 
 ```
 
+## 🪄 Styling
+
+`django-large-image`'s dynamic tile serving supports band styling and making
+composite images from multiple frames and/or bands of your images. This means
+that you can easily create a false color image from multispectral imagery.
+
+`django-large-image` has two styling modes:
+
+1. A simple interface to colormap a single channel using multiple query parameters. These are the documented OpenAPI query parameters.
+
+View a single band with a Matplotlib colormap:
+
+```js
+var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?band=3&palette=viridis&min=50&max=250`;
+```
+
+2. A complex specification for styling across frames and bands to create composite images using a [JSON specification defined by `large-image`](https://girder.github.io/large_image/tilesource_options.html#style). This requires encoding the JSON in Base64 and passing as the `style` query parameter.
+
+Create a false color image from multiple bands in the source image:
+
+```js
+// See https://girder.github.io/large_image/tilesource_options.html#style
+var style = {
+  bands: [
+    {band: 5, palette: ['#000', '#f00']},  // red
+    {band: 3, palette: ['#000', '#0f0']},  // green
+    {band: 2, palette: ['#000', '#00f']}   // blue
+  ]
+};
+// Encode JSON as Base64
+var styleBase64 = btoa(JSON.stringify(style));
+var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?style=${styleBase64}`;
+```
+
 
 ## ☁️ Converting Images to Pyramidal Tiffs (COGs)
 
