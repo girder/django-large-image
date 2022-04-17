@@ -3,8 +3,9 @@ import binascii
 import json
 from typing import Union
 
+from large_image.exceptions import TileSourceError
 from large_image.tilesource import FileTileSource
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.request import Request
 
 from django_large_image import tilesource, utilities
@@ -95,4 +96,10 @@ class LargeImageMixinBase:
         style: Union[bool, dict] = True,
     ) -> FileTileSource:
         """Return the built tile source."""
-        return self.open_image(request, self.get_path(request, pk), encoding=encoding, style=style)
+        try:
+            return self.open_image(
+                request, self.get_path(request, pk), encoding=encoding, style=style
+            )
+        except TileSourceError as e:
+            # Raise 500 server error if tile source failed to open
+            raise APIException(str(e))
