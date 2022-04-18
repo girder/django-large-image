@@ -1,5 +1,3 @@
-import base64
-import binascii
 import json
 from typing import Union
 
@@ -28,25 +26,15 @@ class LargeImageMixinBase:
         raise NotImplementedError('You must implement `get_path` on your viewset.')
 
     def get_style(self, request: Request) -> dict:
-        # Check for base64 encoded style dict
+        # Check for url encoded style JSON
         if 'style' in request.query_params:
             style = request.query_params.get('style')
-            # Un Base64 the string
-            if utilities.is_base64(style):
-                try:
-                    message_bytes = base64.b64decode(style.encode('ascii'))
-                    style = json.loads(message_bytes.decode('ascii'))
-                except (json.JSONDecodeError, binascii.Error) as e:
-                    raise ValidationError(
-                        f'`style` query parameter is malformed and likely not base64 encoded: {e}'
-                    )
-            else:
-                try:
-                    style = json.loads(style)
-                except json.JSONDecodeError as e:
-                    raise ValidationError(
-                        f'`style` query parameter is malformed and likely not properly URL encoded: {e}'
-                    )
+            try:
+                style = json.loads(style)
+            except json.JSONDecodeError as e:
+                raise ValidationError(
+                    f'`style` query parameter is malformed and likely not properly URL encoded: {e}'
+                )
         # else, fallback to supported query parameters for viewing a sinlge band
         else:
             band = int(request.query_params.get('band', 0))

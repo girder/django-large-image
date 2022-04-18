@@ -1,4 +1,3 @@
-import base64
 from contextlib import contextmanager
 import logging
 import os
@@ -148,17 +147,3 @@ def field_file_to_local_path(field_file: FieldFile) -> pathlib.Path:
             logger.debug('Marking as safely downloaded...')
             safe.touch()
     return dest_path
-
-
-def is_base64(sb):
-    try:
-        if isinstance(sb, str):
-            # If there's any unicode here, an exception will be thrown
-            sb_bytes = bytes(sb, 'ascii')
-        elif isinstance(sb, bytes):
-            sb_bytes = sb
-        else:
-            raise ValueError
-        return base64.b64encode(base64.b64decode(sb_bytes)) == sb_bytes
-    except Exception:
-        return False
