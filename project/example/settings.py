@@ -34,7 +34,13 @@ class ExampleMixin(ConfigMixin):
 
 
 class DevelopmentConfiguration(ExampleMixin, DevelopmentBaseConfiguration):
-    pass
+    @staticmethod
+    def mutate_configuration(configuration: ComposedConfiguration) -> None:
+        configuration.CACHES = {
+            'default': {
+                'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+            }
+        }
 
 
 class TestingConfiguration(ExampleMixin, TestingBaseConfiguration):
