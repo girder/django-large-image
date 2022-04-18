@@ -9,8 +9,8 @@ from django_large_image.rest.base import LargeImageMixinBase
 
 metadata_summary = 'Returns tile metadata.'
 metadata_parameters = [params.projection]
-internal_metadata_summary = 'Returns additional known metadata about the tile source.'
-internal_metadata_parameters = [params.projection]
+metadata_internal_summary = 'Returns additional known metadata about the tile source.'
+metadata_internal_parameters = [params.projection]
 bands_summary = 'Returns bands information.'
 bands_parameters = [params.projection]
 band_summary = 'Returns single band information.'
@@ -31,13 +31,13 @@ class MetaDataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary=internal_metadata_summary,
-        manual_parameters=internal_metadata_parameters,
+        operation_summary=metadata_internal_summary,
+        manual_parameters=metadata_internal_parameters,
     )
     @action(detail=False)
-    def internal_metadata(self, request: Request, pk: int = None) -> Response:
+    def metadata_internal(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk, style=False)
-        metadata = tilesource.get_internal_metadata(source)
+        metadata = tilesource.get_metadata_internal(source)
         return Response(metadata)
 
     @swagger_auto_schema(
@@ -76,12 +76,12 @@ class MetaDataDetailMixin(MetaDataMixin):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary=internal_metadata_summary,
-        manual_parameters=internal_metadata_parameters,
+        operation_summary=metadata_internal_summary,
+        manual_parameters=metadata_internal_parameters,
     )
     @action(detail=True)
-    def internal_metadata(self, request: Request, pk: int = None) -> Response:
-        return super().internal_metadata(request, pk)
+    def metadata_internal(self, request: Request, pk: int = None) -> Response:
+        return super().metadata_internal(request, pk)
 
     @swagger_auto_schema(
         method='GET',

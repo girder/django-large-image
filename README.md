@@ -43,7 +43,7 @@ tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.c
 ### 🌟 Features
 
 Rich set of RESTful endpoints to extract information from large image formats:
-- Image metadata (`/metadata`, `/internal_metadata`)
+- Image metadata (`/metadata`, `/metadata_internal`)
 - Tile serving (`/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`)
 - Region extraction (`/region.tif?left=v&right=v&top=v&bottom=v`)
 - Image thumbnails (`/thumbnail.png`)

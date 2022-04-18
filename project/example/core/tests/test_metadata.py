@@ -58,9 +58,9 @@ def test_metadata_s3_vsi(authenticated_api_client, s3_image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_internal_metadata(authenticated_api_client, image_file_geotiff):
+def test_metadata_internal(authenticated_api_client, image_file_geotiff):
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/internal_metadata'
+        f'/api/image-file/{image_file_geotiff.pk}/metadata_internal'
     )
     assert response.status_code == 200
     metadata = response.data

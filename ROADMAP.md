@@ -6,7 +6,7 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 ### Phase 1
 
 - [x] Abstract API View classes that can be mixed-in downstream to expose all available endpoints
-  - [x] endpoints for metadata (/tiles, /tiles/internal_metadata)
+  - [x] endpoints for metadata (/tiles, /tiles/metadata_internal)
   - [x] endpoints for serving tiles (/tiles/zxy, /tiles/fzxy)
   - [x] cache management - tile sources should be cached so that we don't open a file for each tile
   - [x] endpoint for regions

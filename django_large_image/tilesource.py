@@ -51,7 +51,7 @@ def get_metadata(source: FileTileSource) -> dict:
     return metadata
 
 
-def get_internal_metadata(source: FileTileSource) -> dict:
+def get_metadata_internal(source: FileTileSource) -> dict:
     metadata = source.getInternalMetadata()
     _metadata_helper(source, metadata)
     return metadata

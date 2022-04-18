@@ -25,12 +25,12 @@ class Mixin:
 
     metadata.allow_tags = True
 
-    def internal_metadata(self):
+    def metadata_internal(self):
         return a_html(
-            reverse(f'{self.url_name}-internal-metadata', args=[self.pk]), 'internal metadata'
+            reverse(f'{self.url_name}-metadata-internal', args=[self.pk]), 'internal metadata'
         )
 
-    internal_metadata.allow_tags = True
+    metadata_internal.allow_tags = True
 
 
 class ImageFile(TimeStampedModel, Mixin):
