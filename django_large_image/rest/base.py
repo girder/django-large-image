@@ -30,15 +30,23 @@ class LargeImageMixinBase:
     def get_style(self, request: Request) -> dict:
         # Check for base64 encoded style dict
         if 'style' in request.query_params:
-            style_base64 = request.query_params.get('style').encode('ascii')
+            style = request.query_params.get('style')
             # Un Base64 the string
-            try:
-                message_bytes = base64.b64decode(style_base64)
-                style = json.loads(message_bytes.decode('ascii'))
-            except (json.JSONDecodeError, binascii.Error):
-                raise ValidationError(
-                    '`style` query parameter is malformed and likely not base64 encoded.'
-                )
+            if utilities.is_base64(style):
+                try:
+                    message_bytes = base64.b64decode(style.encode('ascii'))
+                    style = json.loads(message_bytes.decode('ascii'))
+                except (json.JSONDecodeError, binascii.Error) as e:
+                    raise ValidationError(
+                        f'`style` query parameter is malformed and likely not base64 encoded: {e}'
+                    )
+            else:
+                try:
+                    style = json.loads(style)
+                except json.JSONDecodeError as e:
+                    raise ValidationError(
+                        f'`style` query parameter is malformed and likely not properly URL encoded: {e}'
+                    )
         # else, fallback to supported query parameters for viewing a sinlge band
         else:
             band = int(request.query_params.get('band', 0))
@@ -69,7 +77,11 @@ class LargeImageMixinBase:
         return tilesource.get_tilesource_from_path(path, *args, **kwargs)
 
     def open_image(
-        self, request: Request, path: str, encoding: str = None, style: Union[bool, dict] = True
+        self,
+        request: Request,
+        path: str,
+        encoding: str = None,
+        style: Union[bool, dict, str] = True,
     ) -> FileTileSource:
         projection = request.query_params.get('projection', None)
         kwargs = {}

@@ -334,7 +334,7 @@ View a single band with a Matplotlib colormap:
 var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?band=3&palette=viridis&min=50&max=250`;
 ```
 
-2. A complex specification for styling across frames and bands to create composite images using a [JSON specification defined by `large-image`](https://girder.github.io/large_image/tilesource_options.html#style). This requires encoding the JSON in Base64 and passing as the `style` query parameter.
+2. A complex specification for styling across frames and bands to create composite images using a [JSON specification defined by `large-image`](https://girder.github.io/large_image/tilesource_options.html#style).
 
 Create a false color image from multiple bands in the source image:
 
@@ -347,9 +347,8 @@ var style = {
     {band: 2, palette: ['#000', '#00f']}   // blue
   ]
 };
-// Encode JSON as Base64
-var styleBase64 = btoa(JSON.stringify(style));
-var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?style=${styleBase64}`;
+var styleEncoded = encodeURIComponent(JSON.stringify(style))
+var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?style=${styleEncoded}`;
 ```
 
 
