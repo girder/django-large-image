@@ -53,6 +53,7 @@ setup(
         'large-image-source-pil>=1.13.0',
         'large-image-source-ometiff>=1.13.0',
         'pooch',
+        'pyvips',
     ],
     extras_require={
         'dev': [
