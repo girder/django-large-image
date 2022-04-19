@@ -26,7 +26,7 @@ def test_style_base64(authenticated_api_client, image_file_geotiff):
             {'band': 1, 'palette': ['#000', '#0f0']},
         ]
     }
-    style_base64 = base64.urlsafe_b64encode(json.dumps(style).encode()).decode()
+    style_base64 = quote(base64.urlsafe_b64encode(json.dumps(style).encode()).decode())
     response = authenticated_api_client.get(
         f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png?style={style_base64}',
     )
