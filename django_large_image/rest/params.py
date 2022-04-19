@@ -66,7 +66,7 @@ scheme = openapi.Parameter(
 style = openapi.Parameter(
     'style',
     openapi.IN_QUERY,
-    description='Encoded string of JSON style following https://girder.github.io/large_image/tilesource_options.html#style',
+    description='Encoded string of JSON style following https://girder.github.io/large_image/tilesource_options.html#style . This can optionally be Base64 encoded if too large for URL.',
     type=openapi.TYPE_STRING,
 )
 
