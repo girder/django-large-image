@@ -42,6 +42,11 @@ def test_histogram(authenticated_api_client, image_file_geotiff):
     assert response.status_code == 200
     hist = response.data[0]
     assert isinstance(hist, dict)
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/histogram?onlyMinMax=true'
+    )
+    assert response.status_code == 200
+    assert 'min' in response.data
 
 
 @pytest.mark.django_db(transaction=True)

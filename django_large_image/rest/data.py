@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
 from rest_framework.response import Response
 
-from django_large_image import tilesource
+from django_large_image import tilesource, utilities
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
@@ -24,8 +24,8 @@ histogram_parameters = [params.projection] + params.HISTOGRAM
 class DataMixin(LargeImageMixinBase):
     def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
         encoding = tilesource.format_to_encoding(format)
-        width = int(request.query_params.get('max_width', 256))
-        height = int(request.query_params.get('max_height', 256))
+        width = int(self.get_query_param(request, 'max_width', 256))
+        height = int(self.get_query_param(request, 'max_height', 256))
         source = self.get_tile_source(request, pk, encoding=encoding)
         thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
@@ -62,12 +62,12 @@ class DataMixin(LargeImageMixinBase):
 
         """
         source = self.get_tile_source(request, pk)
-        units = request.query_params.get('units', None)
+        units = self.get_query_param(request, 'units')
         encoding = tilesource.format_to_encoding(format)
-        left = float(request.query_params.get('left'))
-        right = float(request.query_params.get('right'))
-        top = float(request.query_params.get('top'))
-        bottom = float(request.query_params.get('bottom'))
+        left = float(self.get_query_param(request, 'left'))
+        right = float(self.get_query_param(request, 'right'))
+        top = float(self.get_query_param(request, 'top'))
+        bottom = float(self.get_query_param(request, 'bottom'))
         path, mime_type = tilesource.get_region(
             source,
             left,
@@ -118,10 +118,10 @@ class DataMixin(LargeImageMixinBase):
     )
     @action(detail=False)
     def pixel(self, request: Request, pk: int = None) -> Response:
-        left = float(request.query_params.get('left'))
-        top = float(request.query_params.get('top'))
+        left = int(self.get_query_param(request, 'left'))
+        top = int(self.get_query_param(request, 'top'))
         source = self.get_tile_source(request, pk)
-        metadata = source.getPixel(region={'left': int(left), 'top': int(top), 'units': 'pixels'})
+        metadata = source.getPixel(region={'left': left, 'top': top, 'units': 'pixels'})
         return Response(metadata)
 
     @swagger_auto_schema(
@@ -131,23 +131,25 @@ class DataMixin(LargeImageMixinBase):
     )
     @action(detail=False)
     def histogram(self, request: Request, pk: int = None) -> Response:
+        only_min_max = not utilities.param_nully(self.get_query_param(request, 'onlyMinMax', False))
+        density = not utilities.param_nully(self.get_query_param(request, 'density', False))
         kwargs = dict(
-            # TODO: add openapi params for these
-            onlyMinMax=request.query_params.get('onlyMinMax', False),
-            bins=int(request.query_params.get('bins', 256)),
-            density=request.query_params.get('density', False),
-            format=request.query_params.get('format', None),
+            onlyMinMax=only_min_max,
+            bins=int(self.get_query_param(request, 'bins', 256)),
+            density=density,
+            format=self.get_query_param(request, 'format'),
         )
         source = self.get_tile_source(request, pk, style=False)
         result = source.histogram(**kwargs)
-        result = result['histogram']
-        for entry in result:
-            for key in {'bin_edges', 'hist', 'range'}:
-                if key in entry:
-                    entry[key] = [float(val) for val in list(entry[key])]
-            for key in {'min', 'max', 'samples'}:
-                if key in entry:
-                    entry[key] = float(entry[key])
+        if 'histogram' in result:
+            result = result['histogram']
+            for entry in result:
+                for key in {'bin_edges', 'hist', 'range'}:
+                    if key in entry:
+                        entry[key] = [float(val) for val in list(entry[key])]
+                for key in {'min', 'max', 'samples'}:
+                    if key in entry:
+                        entry[key] = float(entry[key])
         return Response(result)
 
 

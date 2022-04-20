@@ -23,7 +23,7 @@ def param_nully(value) -> bool:
     """Determine null-like values."""
     if isinstance(value, str):
         value = value.lower()
-    return value in [None, '', 'undefined', 'none', 'null']
+    return value in [None, '', 'undefined', 'none', 'null', 'false']
 
 
 @contextmanager
@@ -97,7 +97,7 @@ def get_file_lock(path: pathlib.Path) -> FileLock:
     # Computes the hash using Pathlib's hash implementation on absolute path
     sha = hash(path.absolute())
     lock_path = pathlib.Path(get_lock_dir(), f'{sha}.lock')
-    lock = FileLock(lock_path)
+    lock = FileLock(str(lock_path))
     return lock
 
 

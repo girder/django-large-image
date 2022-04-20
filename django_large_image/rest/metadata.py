@@ -58,7 +58,7 @@ class MetaDataMixin(LargeImageMixinBase):
     )
     @action(detail=False)
     def band(self, request: Request, pk: int = None) -> Response:
-        band = int(request.query_params.get('band', 1))
+        band = int(self.get_query_param(request, 'band', 1))
         source = self.get_tile_source(request, pk, style=False)
         metadata = source.getOneBandInformation(band)
         return Response(metadata)

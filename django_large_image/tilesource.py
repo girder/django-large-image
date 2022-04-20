@@ -2,7 +2,7 @@
 import os
 import pathlib
 import tempfile
-from typing import List
+from typing import List, Optional, Tuple, Union
 
 import large_image
 from large_image.tilesource import FileTileSource
@@ -26,10 +26,10 @@ def is_geospatial(source: FileTileSource) -> bool:
 def get_bounds(
     source: FileTileSource,
     projection: str = 'EPSG:4326',
-) -> List[float]:
+) -> Optional[List[float]]:
     bounds = source.getBounds(srs=projection)
     if not bounds:
-        return
+        return None
     threshold = 89.9999
     for key in ('ymin', 'ymax'):
         bounds[key] = max(min(bounds[key], threshold), -threshold)
@@ -57,7 +57,7 @@ def get_metadata_internal(source: FileTileSource) -> dict:
     return metadata
 
 
-def _get_region(source: FileTileSource, region: dict, encoding: str) -> (pathlib.Path, str):
+def _get_region(source: FileTileSource, region: dict, encoding: str) -> Tuple[pathlib.Path, str]:
     result, mime_type = source.getRegion(region=region, encoding=encoding)
     if encoding == 'TILED':
         path = result
@@ -75,13 +75,13 @@ def _get_region(source: FileTileSource, region: dict, encoding: str) -> (pathlib
 
 def get_region(
     source: FileTileSource,
-    left: float,
-    right: float,
-    bottom: float,
-    top: float,
+    left: Union[float, int],
+    right: Union[float, int],
+    bottom: Union[float, int],
+    top: Union[float, int],
     units: str = None,
     encoding: str = None,
-) -> (pathlib.Path, str):
+) -> Tuple[pathlib.Path, str]:
     if isinstance(units, str):
         units = units.lower()
     if encoding is None and is_geospatial(source):
@@ -106,7 +106,7 @@ def get_region(
     return _get_region(source, region, encoding)
 
 
-def format_to_encoding(format: str) -> str:
+def format_to_encoding(format: Optional[str]) -> str:
     """Translate format extension (e.g., `tiff`) to encoding (e.g., `TILED`)."""
     if format is None:
         return 'PNG'
