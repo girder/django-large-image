@@ -6,7 +6,7 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 ### Phase 1
 
 - [x] Abstract API View classes that can be mixed-in downstream to expose all available endpoints
-  - [x] endpoints for metadata (/tiles, /tiles/metadata_internal)
+  - [x] endpoints for metadata (/metadata, /tiles/metadata_internal)
   - [x] endpoints for serving tiles (/tiles/zxy, /tiles/fzxy)
   - [x] cache management - tile sources should be cached so that we don't open a file for each tile
   - [x] endpoint for regions
@@ -23,18 +23,23 @@ large geospatial images specifically in Cloud Optimized GeoTiff (COG) format.
 
 ### Phase 2
 
-- [ ] Handle band/component selection styling for tile serving and thumbnails
-  - e.g., use channels 3,7,5 for Red Green Blue
-  - endable linear/discrete color modes
-- [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
-- [ ] Provide some sort of endpoint to check if an image is a valid COG
-- [ ] Create a secondary app with celery tasks for converting images to COG
-- [ ] Refactor/prototpye RGD's ChecksumFile model as a FieldFile subclass
-- [ ] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
+- [x] Support full styling for large-image
+- [x] utilize this app in ResonantGeoData
+- [x] utilize in non-geospatial app (Atlascope)
+- [x] Support GeoDjango's [`GDALRaster`](https://docs.djangoproject.com/en/4.0/ref/contrib/gis/gdal/#django.contrib.gis.gdal.GDALRaster)
+- [x] Provide admin widget
+- [x] Support both detail and non-detail viewsets
+- [x] Provide overridable interface to make highly customizable
+- [x] Documentation (see README)
+- [x] mypy typing
+- [x] Error handling in REST interface
+
 
 ### Phase 3 and onward
 
-Incorporate more features from large-image.
+- [ ] Provide universal, includable UI for building style JSON
+- [ ] Provide some sort of endpoint to check if an image is a valid COG
+- [ ] Tie large-image's caching into Django's cache (might require upstream work in large-image)
 
 Things that would require implementing tasks with celery:
 
