@@ -1,11 +1,26 @@
 # 🩻 🗺️ django-large-image
 
-[![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
-[![PyPI](https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white)](https://pypi.org/project/django-large-image/)
-[![codecov](https://codecov.io/gh/girder/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY)](https://codecov.io/gh/girder/django-large-image)
-[![Tests](https://github.com/girder/django-large-image/actions/workflows/ci.yml/badge.svg)](https://github.com/girder/django-large-image/actions/workflows/ci.yml)
 
-***Dynamic tile server in Django***
+<p align="center">
+  <img src="https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png"/>
+  <p align="center">Dynamic tile server in Django built  on top of large-image (and GDAL)</p>
+</p>
+
+<p align="center">
+  <a href="https://img.shields.io/badge/Made%20by-Kitware-blue" target="_blank">
+      <img src="https://img.shields.io/badge/Made%20by-Kitware-blue" alt="Made by Kitware">
+  </a>
+  <a href="https://pypi.org/project/django-large-image/" target="_blank">
+      <img src="https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white" alt="PyPI">
+  </a>
+  <a href="https://codecov.io/gh/girder/django-large-image" target="_blank">
+      <img src="https://codecov.io/gh/girder/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY" alt="codecov">
+  </a>
+  <a href="https://github.com/girder/django-large-image/actions/workflows/ci.yml" target="_blank">
+      <img src="https://github.com/girder/django-large-image/actions/workflows/ci.yml/badge.svg" alt="Tests">
+  </a>
+</p>
+
 
 `django-large-image` is an abstraction of [`large-image`](https://github.com/girder/large_image)
 for use with `django-rest-framework` providing viewset mixins for endpoints to
@@ -15,11 +30,10 @@ preprocessing large images into tile sets for viewing interactively on
 slippy-maps. Under the hood, large-image applies operations (rescaling,
 reprojection, image encoding) to create image tiles on-the-fly.
 
-![admin-interface](https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png)
-
-| OpenAPI Documentation | Tiles Endpoint |
-|---|---|
-|![swagger-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/tiles_endpoint.png)|
+| Lightning Talk for 2022 Cloud-Native Geospatial Outreach Event |
+|-|
+| [![outreach event video](https://raw.githubusercontent.com/girder/django-large-image/main/doc/)](https://drive.google.com/file/d/1pLUFMHTu6Z1I4P10DEwTSJngoDd-lH4C/view?usp=sharing) |
+| [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
 
 ## ℹ️ Overview
@@ -50,9 +64,10 @@ Rich set of RESTful endpoints to extract information from large image formats:
 - Individual pixels (`/pixel?left=v&top=v`)
 - Band histograms (`/histogram`)
 
-Support for general FileField's or File URLs
-- Supports django's FileField
+Support for any storage backend:
+- Supports Django's `FileField`
 - Supports [`S3FileField`](https://github.com/girder/django-s3-file-field)
+- Customizable method for handling data access (`get_path` override)
 - Supports GDAL's [Virtual File System](https://gdal.org/user/virtual_file_systems.html) for `s3://`, `ftp://`, etc. URLs
 
 Miscellaneous:
@@ -61,6 +76,10 @@ Miscellaneous:
   - tiles and thumbnails are cached to prevent recreating these data on multiple requests
 - Easily extensible SSR templates for tile viewing with CesiumJS and GeoJS
 - OpenAPI specification
+
+| OpenAPI Documentation | Tiles Endpoint |
+|---|---|
+|![swagger-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/swagger.png) | ![tiles-spec](https://raw.githubusercontent.com/girder/django-large-image/main/doc/tiles_endpoint.png)|
 
 ## ⬇️ Installation
 
