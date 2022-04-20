@@ -12,7 +12,7 @@ from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
 thumbnail_summary = 'Returns thumbnail of full image.'
-thumbnail_parameters = [params.projection] + params.STYLE
+thumbnail_parameters = [params.projection] + params.THUMBNAIL + params.STYLE
 region_summary = 'Returns region tile binary.'
 region_parameters = [params.projection] + params.REGION
 pixel_summary = 'Returns single pixel.'
@@ -24,8 +24,10 @@ histogram_parameters = [params.projection] + params.HISTOGRAM
 class DataMixin(LargeImageMixinBase):
     def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
         encoding = tilesource.format_to_encoding(format)
+        width = int(request.query_params.get('max_width', 256))
+        height = int(request.query_params.get('max_height', 256))
         source = self.get_tile_source(request, pk, encoding=encoding)
-        thumb_data, mime_type = source.getThumbnail(encoding=encoding)
+        thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
 
     @method_decorator(cache_page(CACHE_TIMEOUT))

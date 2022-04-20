@@ -1,18 +1,39 @@
+import io
+
+from PIL import Image
 import pytest
 
 
 @pytest.mark.django_db(transaction=True)
-def test_thumbnail(authenticated_api_client, image_file_geotiff):
+@pytest.mark.parametrize('format', ['png', 'jpeg'])
+def test_thumbnail(authenticated_api_client, image_file_geotiff, format):
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.png'
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.{format}'
     )
     assert response.status_code == 200
-    assert response['Content-Type'] == 'image/png'
+    assert response['Content-Type'] == f'image/{format}'
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize('format', ['png', 'jpeg'])
+def test_thumbnail_max_size(authenticated_api_client, image_file_geotiff, format):
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.jpeg'
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.{format}?max_width=100'
     )
     assert response.status_code == 200
-    assert response['Content-Type'] == 'image/jpeg'
+    assert response['Content-Type'] == f'image/{format}'
+    # Check width of thumbnail
+    with Image.open(io.BytesIO(response.content)) as im:
+        assert im.width == 100
+
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/thumbnail.{format}?max_height=100'
+    )
+    assert response.status_code == 200
+    assert response['Content-Type'] == f'image/{format}'
+    # Check height of thumbnail
+    with Image.open(io.BytesIO(response.content)) as im:
+        assert im.height == 100
 
 
 @pytest.mark.django_db(transaction=True)
@@ -34,22 +55,15 @@ def test_pixel(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-def test_region_pixel(authenticated_api_client, image_file_geotiff, ome_image):
+@pytest.mark.parametrize('format', ['png', 'jpeg', 'tif'])
+def test_region_pixel(authenticated_api_client, image_file_geotiff, ome_image, format):
     response = authenticated_api_client.get(
-        f'/api/image-file/{image_file_geotiff.pk}/region.tif?left=0&right=10&bottom=10&top=0&units=pixels'
+        f'/api/image-file/{image_file_geotiff.pk}/region.{format}?left=0&right=10&bottom=10&top=0&units=pixels'
     )
     assert response.status_code == 200
-    assert response['Content-Type'] == 'image/tiff'
-    response = authenticated_api_client.get(
-        f'/api/image-file/{ome_image.pk}/region.png?left=0&right=10&bottom=10&top=0&units=pixels'
-    )
-    assert response.status_code == 200
-    assert response['Content-Type'] == 'image/png'
-    response = authenticated_api_client.get(
-        f'/api/image-file/{ome_image.pk}/region.jpeg?left=0&right=10&bottom=10&top=0&units=pixels'
-    )
-    assert response.status_code == 200
-    assert response['Content-Type'] == 'image/jpeg'
+    if format == 'tif':
+        format = 'tiff'  # Change for mime_type
+    assert response['Content-Type'] == f'image/{format}'
 
 
 @pytest.mark.django_db(transaction=True)

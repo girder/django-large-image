@@ -120,3 +120,22 @@ format = openapi.Parameter(
 )
 
 HISTOGRAM = [only, bins, density, format]
+
+
+# Thumbnail Parameters
+max_width = openapi.Parameter(
+    'max_width',
+    openapi.IN_QUERY,
+    description='maximum width in pixels.',
+    type=openapi.TYPE_INTEGER,
+    default=256,
+)
+max_height = openapi.Parameter(
+    'max_height',
+    openapi.IN_QUERY,
+    description='maximum width in pixels.',
+    type=openapi.TYPE_INTEGER,
+    default=256,
+)
+
+THUMBNAIL = [max_height, max_width]
