@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://img.shields.io/badge/Made%20by-Kitware-blue" target="_blank">
+  <a href="https://www.kitware.com/" target="_blank">
       <img src="https://img.shields.io/badge/Made%20by-Kitware-blue" alt="Made by Kitware">
   </a>
   <a href="https://pypi.org/project/django-large-image/" target="_blank">
