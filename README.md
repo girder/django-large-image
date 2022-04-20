@@ -54,6 +54,14 @@ can also be used by returning `GDALRaster.name` in the `get_path()` override.
 This package ships with pre-made HTML templates for rendering geospatial image
 tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.com/OpenGeoscience/geojs).
 
+### 🤝 Support [![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
+
+The Large-Image software is developed and maintained by the Data & Analytics
+group at [Kitware, Inc.](https://www.kitware.com/) for accessing large
+geospatial and medical images.
+
+Feel free to reach out at kitware@kitware.com for support or new features development.
+
 ### 🌟 Features
 
 Rich set of RESTful endpoints to extract information from large image formats:
