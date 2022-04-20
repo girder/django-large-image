@@ -1,5 +1,6 @@
 import json
-from typing import Union
+import pathlib
+from typing import Any, Optional, Union
 
 from large_image.exceptions import TileSourceError
 from large_image.tilesource import FileTileSource
@@ -12,7 +13,7 @@ CACHE_TIMEOUT = 60 * 60 * 2
 
 
 class LargeImageMixinBase:
-    def get_path(self, request: Request, pk: int = None) -> str:
+    def get_path(self, request: Request, pk: int = None) -> Union[str, pathlib.Path]:
         """Return path on disk to image file (or VSI str).
 
         This can be overridden downstream to implement custom FUSE, etc.,
@@ -25,37 +26,39 @@ class LargeImageMixinBase:
         """
         raise NotImplementedError('You must implement `get_path` on your viewset.')
 
+    def get_query_param(self, request: Request, key: str, default: Optional[Any] = '') -> str:
+        return request.query_params.get(key, str(default))
+
     def get_style(self, request: Request) -> dict:
         # Check for url encoded style JSON
         if 'style' in request.query_params:
-            style = request.query_params.get('style')
             try:
-                style = json.loads(style)
+                style = json.loads(self.get_query_param(request, 'style'))
             except json.JSONDecodeError as e:
                 raise ValidationError(
                     f'`style` query parameter is malformed and likely not properly URL encoded: {e}'
                 )
         # else, fallback to supported query parameters for viewing a sinlge band
         else:
-            band = int(request.query_params.get('band', 0))
+            band = int(self.get_query_param(request, 'band', 0))
             style = None
             if band:  # bands are 1-indexed
                 style = {'band': band}
-                bmin = request.query_params.get('min', None)
-                bmax = request.query_params.get('max', None)
+                bmin = self.get_query_param(request, 'min')
+                bmax = self.get_query_param(request, 'max')
                 if not utilities.param_nully(bmin):
                     style['min'] = bmin
                 if not utilities.param_nully(bmax):
                     style['max'] = bmax
-                palette = request.query_params.get(
-                    'palette', request.query_params.get('cmap', None)
+                palette = self.get_query_param(
+                    request, 'palette', self.get_query_param(request, 'cmap')
                 )
                 if not utilities.param_nully(palette):
                     style['palette'] = palette
-                nodata = request.query_params.get('nodata', None)
+                nodata = self.get_query_param(request, 'nodata')
                 if not utilities.param_nully(nodata):
                     style['nodata'] = nodata
-                scheme = request.query_params.get('scheme', None)
+                scheme = self.get_query_param(request, 'scheme')
                 if not utilities.param_nully:
                     style['scheme'] = scheme
         return style
@@ -67,11 +70,11 @@ class LargeImageMixinBase:
     def open_image(
         self,
         request: Request,
-        path: str,
+        path: Union[str, pathlib.Path],
         encoding: str = None,
         style: Union[bool, dict, str] = True,
     ) -> FileTileSource:
-        projection = request.query_params.get('projection', None)
+        projection = self.get_query_param(request, 'projection')
         kwargs = {}
         if encoding:
             kwargs['encoding'] = encoding

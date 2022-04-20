@@ -18,19 +18,19 @@ class Mixin:
     def thumbnail(self):
         return thumbnail_html(reverse(f'{self.url_name}-thumbnail-png', args=[self.pk]))
 
-    thumbnail.allow_tags = True
+    thumbnail.allow_tags = True  # type: ignore
 
     def metadata(self):
         return a_html(reverse(f'{self.url_name}-metadata', args=[self.pk]), 'metadata')
 
-    metadata.allow_tags = True
+    metadata.allow_tags = True  # type: ignore
 
     def metadata_internal(self):
         return a_html(
             reverse(f'{self.url_name}-metadata-internal', args=[self.pk]), 'internal metadata'
         )
 
-    metadata_internal.allow_tags = True
+    metadata_internal.allow_tags = True  # type: ignore
 
 
 class ImageFile(TimeStampedModel, Mixin):
