@@ -133,7 +133,7 @@ max_width = openapi.Parameter(
 max_height = openapi.Parameter(
     'max_height',
     openapi.IN_QUERY,
-    description='maximum width in pixels.',
+    description='maximum height in pixels.',
     type=openapi.TYPE_INTEGER,
     default=256,
 )
