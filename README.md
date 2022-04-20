@@ -32,7 +32,7 @@ reprojection, image encoding) to create image tiles on-the-fly.
 
 | Lightning Talk for 2022 Cloud-Native Geospatial Outreach Event |
 |-|
-| [![outreach event video](https://raw.githubusercontent.com/girder/django-large-image/main/doc/)](https://drive.google.com/file/d/1pLUFMHTu6Z1I4P10DEwTSJngoDd-lH4C/view?usp=sharing) |
+| [![outreach event video](https://raw.githubusercontent.com/girder/django-large-image/main/doc/outreach_video.png)](https://drive.google.com/file/d/1pLUFMHTu6Z1I4P10DEwTSJngoDd-lH4C/view?usp=sharing) |
 | [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
 
