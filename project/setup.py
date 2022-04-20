@@ -52,6 +52,7 @@ setup(
         'large-image-source-gdal>=1.13.0',
         'large-image-source-pil>=1.13.0',
         'large-image-source-ometiff>=1.13.0',
+        'large-image-converter>=1.13.0',
         'pooch',
         'pyvips',
     ],
