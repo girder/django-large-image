@@ -105,3 +105,10 @@ def test_bad_source(authenticated_api_client, image_file_geotiff):
         f'/api/image-file/{image_file_geotiff.pk}/metadata?source=foo'
     )
     assert response.status_code == 400
+
+
+@pytest.mark.django_db(transaction=True)
+def test_bad_image_data(authenticated_api_client, lonely_header_file):
+    # Catches server error safely and returns 500-level APIException
+    response = authenticated_api_client.get(f'/api/image-file/{lonely_header_file.pk}/metadata')
+    assert response.status_code == 500

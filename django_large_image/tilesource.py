@@ -18,7 +18,7 @@ def get_tilesource_from_path(
     encoding: Optional[str] = None,
     source: Optional[str] = None,
 ) -> FileTileSource:
-    if encoding is None:
+    if not encoding:
         encoding = 'PNG'
     if source:
         large_image.tilesource.loadTileSources()
@@ -99,18 +99,18 @@ def get_region(
 ) -> Tuple[pathlib.Path, str]:
     if isinstance(units, str):
         units = units.lower()
-    if encoding is None and is_geospatial(source):
+    if not encoding and is_geospatial(source):
         # Use tiled encoding by default for geospatial rasters
         #   output will be a tiled TIF
         encoding = 'TILED'
-    elif encoding is None:
+    elif not encoding:
         # Use JPEG encoding by default for nongeospatial rasters
         encoding = 'JPEG'
     if is_geospatial(source) and units not in [
         'pixels',
         'pixel',
     ]:
-        if units is None:
+        if not units:
             units = 'EPSG:4326'
         region = dict(left=left, right=right, bottom=bottom, top=top, units=units)
         return _get_region(source, region, encoding)
@@ -123,7 +123,7 @@ def get_region(
 
 def format_to_encoding(format: Optional[str]) -> str:
     """Translate format extension (e.g., `tiff`) to encoding (e.g., `TILED`)."""
-    if format is None:
+    if not format:
         return 'PNG'
     if format.lower() not in ['tif', 'tiff', 'png', 'jpeg', 'jpg']:
         raise ValidationError(f'Format {format!r} is not valid. Try `png`, `jpeg`, or `tif`')

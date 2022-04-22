@@ -12,8 +12,8 @@ from django.db.models.fields.files import FieldFile
 from filelock import FileLock
 
 try:
-    from minio_storage.storage import MinioStorage
-except ImportError:
+    from minio_storage.storage import MinioStorage  # pragma: no cover
+except ImportError:  # pragma: no cover
     MinioStorage = None
 
 logger = logging.getLogger(__name__)

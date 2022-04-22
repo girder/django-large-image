@@ -24,7 +24,9 @@ class LargeImageMixinBase:
         str : The local file path to pass to large_image
 
         """
-        raise NotImplementedError('You must implement `get_path` on your viewset.')
+        raise NotImplementedError(
+            'You must implement `get_path` on your viewset.'
+        )  # pragma: no cover
 
     def get_query_param(self, request: Request, key: str, default: Optional[Any] = '') -> str:
         return request.query_params.get(key, str(default))
@@ -59,7 +61,7 @@ class LargeImageMixinBase:
                 if not utilities.param_nully(nodata):
                     style['nodata'] = nodata
                 scheme = self.get_query_param(request, 'scheme')
-                if not utilities.param_nully:
+                if not utilities.param_nully(scheme):
                     style['scheme'] = scheme
         return style
 

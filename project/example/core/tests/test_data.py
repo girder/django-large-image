@@ -86,3 +86,9 @@ def test_region_geo(authenticated_api_client, image_file_geotiff):
     )
     assert response.status_code == 200
     assert response['Content-Type'] == 'image/tiff'
+    # Leave units out
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/region.tif?left=-117.4567824262003&right=-117.10373770277764&bottom=32.635234150046514&top=32.964410481130365'
+    )
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'image/tiff'
