@@ -12,13 +12,13 @@ from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 
 thumbnail_summary = 'Returns thumbnail of full image.'
-thumbnail_parameters = [params.projection] + params.THUMBNAIL + params.STYLE
+thumbnail_parameters = params.BASE + params.THUMBNAIL + params.STYLE
 region_summary = 'Returns region tile binary.'
-region_parameters = [params.projection] + params.REGION
+region_parameters = params.BASE + params.REGION
 pixel_summary = 'Returns single pixel.'
-pixel_parameters = [params.projection, params.left, params.top] + params.STYLE
+pixel_parameters = params.BASE + [params.left, params.top] + params.STYLE
 histogram_summary = 'Returns histogram'
-histogram_parameters = [params.projection] + params.HISTOGRAM
+histogram_parameters = params.BASE + params.HISTOGRAM
 
 
 class DataMixin(LargeImageMixinBase):

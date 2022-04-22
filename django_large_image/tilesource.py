@@ -12,11 +12,23 @@ from django_large_image import utilities
 
 
 def get_tilesource_from_path(
-    path: str, projection: str = None, style: str = None, encoding: str = None
+    path: str,
+    projection: Optional[str] = None,
+    style: Optional[str] = None,
+    encoding: Optional[str] = None,
+    source: Optional[str] = None,
 ) -> FileTileSource:
     if encoding is None:
         encoding = 'PNG'
-    return large_image.open(str(path), projection=projection, style=style, encoding=encoding)
+    if source:
+        large_image.tilesource.loadTileSources()
+        try:
+            reader = large_image.tilesource.AvailableTileSources[source]
+        except KeyError as e:
+            raise ValidationError(str(e))
+    else:
+        reader = large_image.open
+    return reader(str(path), projection=projection, style=style, encoding=encoding)
 
 
 def is_geospatial(source: FileTileSource) -> bool:

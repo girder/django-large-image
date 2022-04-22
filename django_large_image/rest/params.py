@@ -6,6 +6,14 @@ projection = openapi.Parameter(
     description='The projection in which to open the image (try `EPSG:3857`).',
     type=openapi.TYPE_STRING,
 )
+source = openapi.Parameter(
+    'source',
+    openapi.IN_QUERY,
+    description='The source to use when opening the image. Use the `large-image/sources` endpoint to list the available sources.',
+    type=openapi.TYPE_STRING,
+)
+
+BASE = [projection, source]
 
 z = openapi.Parameter(
     'z',

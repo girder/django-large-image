@@ -8,13 +8,13 @@ from django_large_image.rest import params
 from django_large_image.rest.base import LargeImageMixinBase
 
 metadata_summary = 'Returns tile metadata.'
-metadata_parameters = [params.projection]
+metadata_parameters = params.BASE
 metadata_internal_summary = 'Returns additional known metadata about the tile source.'
-metadata_internal_parameters = [params.projection]
+metadata_internal_parameters = params.BASE
 bands_summary = 'Returns bands information.'
-bands_parameters = [params.projection]
+bands_parameters = params.BASE
 band_summary = 'Returns single band information.'
-band_parameters = [params.projection, params.band]
+band_parameters = params.BASE + [params.band]
 
 
 class MetaDataMixin(LargeImageMixinBase):

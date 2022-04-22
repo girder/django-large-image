@@ -55,3 +55,15 @@ def test_non_geo_tiles(authenticated_api_client, non_geo_image):
     response = authenticated_api_client.get(f'/api/image-file/{non_geo_image.pk}/tiles/0/0/0.png')
     assert response.status_code == 200
     assert response['Content-Type'] == 'image/png'
+
+
+@pytest.mark.django_db(transaction=True)
+def test_ome_tiles(authenticated_api_client, ome_image):
+    response = authenticated_api_client.get(f'/api/image-file/{ome_image.pk}/tiles/0/0/0.png')
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'image/png'
+    response = authenticated_api_client.get(
+        f'/api/image-file/{ome_image.pk}/tiles/0/0/0.png?source=ometiff'
+    )
+    assert response.status_code == 200
+    assert response['Content-Type'] == 'image/png'

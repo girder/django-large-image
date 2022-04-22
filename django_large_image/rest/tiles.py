@@ -14,11 +14,11 @@ from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 from django_large_image.rest.serializers import TileMetadataSerializer
 
 tile_metadata_summary = 'Returns tile metadata.'
-tile_metadata_parameters = [params.projection]
+tile_metadata_parameters = params.BASE
 tile_summary = 'Returns tile image binary.'
-tile_parameters = [params.projection, params.z, params.x, params.y] + params.STYLE
+tile_parameters = params.BASE + [params.z, params.x, params.y] + params.STYLE
 tile_corners_summary = 'Returns bounds of a tile for a given x, y, z index.'
-tile_corners_parameters = [params.projection, params.z, params.x, params.y]
+tile_corners_parameters = params.BASE + [params.z, params.x, params.y]
 
 
 class TilesMixin(LargeImageMixinBase):

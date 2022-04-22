@@ -86,10 +86,22 @@ def test_band(authenticated_api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_metadata_ome(authenticated_api_client, ome_image):
-    response = authenticated_api_client.get(f'/api/image-file/{ome_image.pk}/metadata')
+    response = authenticated_api_client.get(
+        f'/api/image-file/{ome_image.pk}/metadata?source=ometiff'
+    )
     assert response.status_code == 200
     metadata = response.data
+    assert 'frames' in metadata
+    assert len(metadata['frames'])
     assert not metadata['geospatial']
     assert metadata['sizeX'] == metadata['sizeY']
     assert metadata['tileWidth'] == metadata['tileHeight']
     assert metadata['tileWidth'] == metadata['tileHeight']
+
+
+@pytest.mark.django_db(transaction=True)
+def test_bad_source(authenticated_api_client, image_file_geotiff):
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/metadata?source=foo'
+    )
+    assert response.status_code == 400
