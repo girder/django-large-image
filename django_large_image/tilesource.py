@@ -22,10 +22,13 @@ def get_tilesource_from_path(
         encoding = 'PNG'
     if source:
         large_image.tilesource.loadTileSources()
+        sources = large_image.tilesource.AvailableTileSources
         try:
-            reader = large_image.tilesource.AvailableTileSources[source]
-        except KeyError as e:
-            raise ValidationError(str(e))
+            reader = sources[source]
+        except KeyError:
+            raise ValidationError(
+                f'{source!r} is not a valid source. Try one of: {list(sources.keys())}'
+            )
     else:
         reader = large_image.open
     return reader(str(path), projection=projection, style=style, encoding=encoding)
@@ -123,7 +126,7 @@ def format_to_encoding(format: Optional[str]) -> str:
     if format is None:
         return 'PNG'
     if format.lower() not in ['tif', 'tiff', 'png', 'jpeg', 'jpg']:
-        raise ValidationError(f'Format `{format}` is not valid. Try `png`, `jpeg`, or `tif`')
+        raise ValidationError(f'Format {format!r} is not valid. Try `png`, `jpeg`, or `tif`')
     if format.lower() in ['tif', 'tiff']:
         return 'TILED'
     return format.upper()  # jpeg, png
