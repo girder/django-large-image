@@ -34,6 +34,7 @@ class TilesMixin(LargeImageMixinBase):
         serializer = TileMetadataSerializer(source)
         return Response(serializer.data)
 
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, format: str = None
     ) -> HttpResponse:
@@ -46,7 +47,6 @@ class TilesMixin(LargeImageMixinBase):
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=tile_summary,
@@ -63,7 +63,6 @@ class TilesMixin(LargeImageMixinBase):
     ) -> HttpResponse:
         return self.tile(request, x, y, z, pk=pk, format='png')
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=tile_summary,

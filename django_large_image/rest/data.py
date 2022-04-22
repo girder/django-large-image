@@ -22,6 +22,7 @@ histogram_parameters = [params.projection] + params.HISTOGRAM
 
 
 class DataMixin(LargeImageMixinBase):
+    @method_decorator(cache_page(CACHE_TIMEOUT))
     def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
         encoding = tilesource.format_to_encoding(format)
         width = int(self.get_query_param(request, 'max_width', 256))
@@ -30,7 +31,6 @@ class DataMixin(LargeImageMixinBase):
         thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=thumbnail_summary,
@@ -40,7 +40,6 @@ class DataMixin(LargeImageMixinBase):
     def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
         return self.thumbnail(request, pk, format='png')
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=thumbnail_summary,
@@ -154,7 +153,6 @@ class DataMixin(LargeImageMixinBase):
 
 
 class DataDetailMixin(DataMixin):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=thumbnail_summary,
@@ -164,7 +162,6 @@ class DataDetailMixin(DataMixin):
     def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
         return super().thumbnail_png(request, pk)
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=thumbnail_summary,
