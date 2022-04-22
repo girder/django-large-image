@@ -64,7 +64,7 @@
     });
   })
 
-  fetch(`${host}/api/large-image/colormaps`)
+  fetch(`${host}/${baseApi}/large-image/colormaps`)
     .then(response => response.json())
     .then(data => {
       for (const [source, indices] of Object.entries(data)) {

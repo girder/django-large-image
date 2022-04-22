@@ -2,8 +2,13 @@
 {% block dli_base %}
 <link rel="stylesheet" type="text/css" href="{% static 'django_large_image/styles/style.css' %}">
 <script>
-  var host = window.location.protocol + "//" + window.location.host;
+  var host = undefined;
   var thumbnailUrl = undefined;
+  var tileUrl = undefined;
+  var baseApi = 'api';
+
+  const windowSearch = new URLSearchParams(window.location.search);
+  const windowSearchParams = Object.fromEntries(windowSearch.entries());
 
   // function insertWindowUrlParam(key, value) {
   //   if (history.pushState) {
@@ -40,11 +45,9 @@
     // insertWindowUrlParam(option, value);
   }
 
-  const windowSearch = new URLSearchParams(window.location.search);
-  const windowSearchParams = Object.fromEntries(windowSearch.entries());
-  for (const [option, value] of Object.entries(windowSearchParams)) {
-    updateTileUrlOption(option, value);
-  }
+  // for (const [option, value] of Object.entries(windowSearchParams)) {
+  //   updateTileUrlOption(option, value);
+  // }
 
   function addToggleListener(uiToggle, uiContent, callback = null) {
     uiToggle.addEventListener('click', function() {

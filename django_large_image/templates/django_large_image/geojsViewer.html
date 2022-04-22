@@ -1,7 +1,10 @@
 {% extends "django_large_image/base.html" %}
 {% block content %}
 <script>
-  var tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
+  if (host === undefined) {
+    host = window.location.protocol + "//" + window.location.host;
+  }
+  tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
 </script>
 
 <div class="wrapper">
