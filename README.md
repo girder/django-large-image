@@ -56,11 +56,13 @@ tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.c
 
 ### 🤝 Support [![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
 
-The Large-Image software is developed and maintained by the Data & Analytics
-group at [Kitware, Inc.](https://www.kitware.com/) for accessing large
-geospatial and medical images.
-
-Feel free to reach out at kitware@kitware.com for support or new features development.
+`django-large-image` and the supporting [`large-image`](https://github.com/girder/large_image)
+library are developed and  maintained by the Data & Analytics group at
+[Kitware, Inc.](https://www.kitware.com/)
+We work with large image data in both the geospatial and medical capacities.
+If you have questions about these technologies, or you would like to discuss
+your own geospatial and medical image problems and learn how we can help,
+please reach out at kitware@kitware.com. We look forward to the conversation!
 
 ### 🌟 Features
 
