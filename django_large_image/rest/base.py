@@ -65,12 +65,14 @@ class LargeImageMixinBase:
                     style['scheme'] = scheme
         return style
 
-    def open_tile_source(self, path, request, *args, **kwargs) -> FileTileSource:
+    def open_tile_source(
+        self, request: Request, path: Union[str, pathlib.Path], **kwargs
+    ) -> FileTileSource:
         """Override to open with a specific large-image source."""
         source = self.get_query_param(request, 'source')
         # error: "get_tilesource_from_path" gets multiple values for keyword
         # argument "source" Found 1 error in 1 file (checked 15 source files)
-        return tilesource.get_tilesource_from_path(path, *args, source=source, **kwargs)  # type: ignore
+        return tilesource.get_tilesource_from_path(path, source=source, **kwargs)  # type: ignore
 
     def open_image(
         self,
@@ -94,7 +96,7 @@ class LargeImageMixinBase:
                 kwargs['style'] = _style
         if projection:
             kwargs['projection'] = projection
-        return self.open_tile_source(path, request, **kwargs)
+        return self.open_tile_source(request, path, **kwargs)
 
     def get_tile_source(
         self,
