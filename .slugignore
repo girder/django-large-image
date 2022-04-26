@@ -1,0 +1,8 @@
+# Heres a comment
+*.psd
+*.pdf
+project/example/core/tests
+doc/
+dev/
+*.ipynb
+*.tif
