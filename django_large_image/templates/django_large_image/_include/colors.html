@@ -1,20 +1,8 @@
 {% block colormaps %}
 
-<script>
-  async function copyMetadata() {
-    var data = await fetch(`${host}/${baseEndpoint}/${imageId}/metadata`)
-      .then(response => response.json())
-    var copyText = JSON.stringify(data)
-    await navigator.clipboard.writeText(copyText);
-    alert("Copied image metadata");
-  }
-</script>
-
 <div class="slidecontainer">
   <button type="button" class="collapsible" id="displayControlsToggle">Toggle Controls</button>
   <div id="displayControls">
-    <button type="button" id="copyMetadataButton" onclick="copyMetadata();">Copy Metadata</button>
-    <br />
     <label for="rasterOpacityRange">Raster Layer Opacity: </label>
     <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
     <br />
@@ -34,6 +22,9 @@
     </div>
     <div>
       <img id="thumbnail" />
+    </div>
+    <div id="metadataViewer">
+      <button type="button" id="copyMetadataButton" onclick="copyMetadata();">Copy Metadata</button>
     </div>
   </div>
 </div>
@@ -123,6 +114,19 @@
       colorsMax.placeholder = bands[band]['max'];
       changeColors();
     }
+  }
+
+  var metadata = undefined;
+  fetch(`${host}/${baseEndpoint}/${imageId}/metadata`)
+    .then(response => response.json())
+    .then(data => {
+      metadata = data
+    });
+
+  async function copyMetadata() {
+    var copyText = JSON.stringify(metadata);
+    await navigator.clipboard.writeText(copyText);
+    alert("Copied image metadata");
   }
 </script>
 
