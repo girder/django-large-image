@@ -40,7 +40,7 @@ def s3_image_file_geotiff() -> models.S3ImageFile:
 
 
 @pytest.fixture
-def non_geo_image() -> models.ImageFile:
+def png_image() -> models.ImageFile:
     return ImageFileFactory(
         file__filename='afie_1.jpg',
         file__from_path=datastore.fetch('afie_1.jpg'),
