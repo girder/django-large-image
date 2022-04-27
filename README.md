@@ -13,6 +13,9 @@
   <a href="https://pypi.org/project/django-large-image/" target="_blank">
       <img src="https://img.shields.io/pypi/v/django-large-image.svg?logo=python&logoColor=white" alt="PyPI">
   </a>
+  <a href="https://anaconda.org/conda-forge/django-large-image" target="_blank">
+      <img src="https://img.shields.io/conda/vn/conda-forge/django-large-image.svg?logo=conda-forge&logoColor=white" alt="conda-forge">
+  </a>
   <a href="https://codecov.io/gh/girder/django-large-image" target="_blank">
       <img src="https://codecov.io/gh/girder/django-large-image/branch/main/graph/badge.svg?token=VBK1F6JWNY" alt="codecov">
   </a>
@@ -114,6 +117,12 @@ pip install \
   --find-links https://girder.github.io/large_image_wheels \
   django-large-image \
   'large-image[gdal,pil]>=1.14'
+```
+
+### 🐍 Conda
+
+```bash
+conda install -c conda-forge django-large-image large-image-source-gdal
 ```
 
 
