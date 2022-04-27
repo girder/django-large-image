@@ -35,7 +35,7 @@ class ListColormapsView(APIView):
             import matplotlib.pyplot
 
             cmaps['matplotlib'] = list(matplotlib.pyplot.colormaps())
-        except ImportError:
+        except ImportError:  # pragma: no cover
             logger.error('Install matplotlib for additional colormap choices.')
         cmaps['simple'] = [s for s in simple.keys() if len(s) > 1]
         return Response(cmaps)
