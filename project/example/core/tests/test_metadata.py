@@ -113,3 +113,25 @@ def test_bad_image_data(authenticated_api_client, lonely_header_file):
     # Catches server error safely and returns 500-level APIException
     response = authenticated_api_client.get(f'/api/image-file/{lonely_header_file.pk}/metadata')
     assert status.is_server_error(response.status_code)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_tiffdump(authenticated_api_client, s3_image_file_geotiff, png_image):
+    response = authenticated_api_client.get(
+        f'/api/s3-image-file/{s3_image_file_geotiff.pk}/tiffdump'
+    )
+    assert status.is_success(response.status_code)
+    dump = response.data
+    assert 'firstifd' in dump
+    assert 'size' in dump
+    assert dump['ifds']
+
+    # Server error raised when image isn't accessible locally
+    response = authenticated_api_client.get(
+        f'/api/s3-vsi-image-file/{s3_image_file_geotiff.pk}/tiffdump'
+    )
+    assert status.is_server_error(response.status_code)
+
+    # Client error raised when image is not a tiff
+    response = authenticated_api_client.get(f'/api/image-file/{png_image.pk}/tiffdump')
+    assert status.is_client_error(response.status_code)
