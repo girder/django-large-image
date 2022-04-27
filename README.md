@@ -145,6 +145,7 @@ your image data are saved on the associated model.
 
 ```py
 # viewsets.py
+from rest_framework import viewsets
 from django_large_image.rest import LargeImageFileDetailMixin
 
 class MyModelViewSet(viewsets.GenericViewSet, LargeImageFileDetailMixin):
@@ -154,7 +155,7 @@ class MyModelViewSet(viewsets.GenericViewSet, LargeImageFileDetailMixin):
 
 ```py
 # urls.py
-from django.urls import path
+from django.urls import include, path
 from rest_framework.routers import SimpleRouter
 
 from myapp.viewsets import MyModelViewSet
@@ -228,7 +229,7 @@ Then register the URLs:
 
 ```py
 # urls.py
-from django.urls import path
+from django.urls import include, path
 from example.core.viewsets import ImageFileDetailViewSet
 from rest_framework.routers import SimpleRouter
 
