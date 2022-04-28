@@ -18,9 +18,7 @@ def test_metadata(api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_metadata_internal(api_client, image_file_geotiff):
-    response = api_client.get(
-        f'/api/imagefile/{image_file_geotiff.pk}/metadata_internal'
-    )
+    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/metadata_internal')
     assert status.is_success(response.status_code)
     metadata = response.data
     assert metadata['geospatial']

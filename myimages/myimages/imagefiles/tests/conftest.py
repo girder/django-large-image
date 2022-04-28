@@ -1,10 +1,11 @@
 from pathlib import Path
 
 from django.contrib.auth.models import User
-from myimages.imagefiles import models
 import pytest
 from pytest_factoryboy import register
 from rest_framework.test import APIClient
+
+from myimages.imagefiles import models
 
 from .factories import ImageFileFactory
 
