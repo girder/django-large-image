@@ -21,7 +21,10 @@ COPY --from=build /opt/build-context/dist/*.whl /opt/django-project/wheels/
 
 RUN pip install --find-links https://girder.github.io/large_image_wheels \
   $(ls -1  /opt/django-project/wheels/*.whl) \
-  gunicorn
+  gunicorn \
+  pytest \
+  pytest-django \
+  pytest-factoryboy
 
 COPY ./myimages/ /opt/django-project
 WORKDIR /opt/django-project
@@ -29,6 +32,9 @@ WORKDIR /opt/django-project
 RUN /opt/django-project/manage.py migrate
 RUN /opt/django-project/manage.py collectstatic --noinput
 RUN DJANGO_SUPERUSER_PASSWORD=password /opt/django-project/manage.py createsuperuser --noinput --username 'admin' --email 'admin@kitware.com'
+
+# Test before finishing build
+RUN DJANGO_SETTINGS_MODULE=myimages.settings pytest -v
 
 EXPOSE 8000
 ENTRYPOINT ["./manage.py", "runserver", "0.0.0.0:8000"]

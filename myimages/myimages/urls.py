@@ -25,7 +25,7 @@ from rest_framework.routers import SimpleRouter
 from myimages.imagefiles.viewsets import ImageFileDetailViewSet
 
 router = SimpleRouter(trailing_slash=False)
-router.register(r'api/image-file', ImageFileDetailViewSet)
+router.register(r'api/imagefile', ImageFileDetailViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
