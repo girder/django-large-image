@@ -1,4 +1,4 @@
-FROM python:3.8-slim
+FROM ghcr.io/girder/large_image:latest
 # Install system libraries for Python packages:
 # * psycopg2
 RUN apt-get update && \
