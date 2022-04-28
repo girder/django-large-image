@@ -434,5 +434,5 @@ There is a vanilla Django project in the `myimages/` directory and this app
 is published as a standalone Docker image that anyone can try out:
 
 ```bash
-docker run -it -p 8000:8000 -v dbdata:/opt/django-project/data ghcr.io/girder/django-large-image-demo:latest
+docker run -it -p 8000:8000 -v dli_demo_data:/opt/django-project/data ghcr.io/girder/django-large-image-demo:latest
 ```
