@@ -16,25 +16,21 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
 
 from myimages.imagefiles.viewsets import ImageFileDetailViewSet
-
-
-class AccessUser:
-    has_module_perms = has_perm = __getattr__ = lambda s, *a, **kw: True
-
-
-admin.site.has_permission = lambda r: setattr(r, 'user', AccessUser()) or True
 
 router = SimpleRouter(trailing_slash=False)
 router.register(r'api/image-file', ImageFileDetailViewSet)
 
 urlpatterns = [
-    path('', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('', include('django_large_image.urls')),
+    path(r'', RedirectView.as_view(url='admin/', permanent=False), name='index'),
 ] + router.urls
 
 schema_view = get_schema_view(
@@ -46,7 +42,8 @@ schema_view = get_schema_view(
         contact=openapi.Contact(email='kitware@kitare.com'),
         license=openapi.License(name='Apache 2.0'),
     ),
-    public=False,
+    public=True,
+    permission_classes=(permissions.AllowAny,),
     patterns=urlpatterns,
 )
 

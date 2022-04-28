@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-sa(7@&)4rq8zdp#zp=#9g32t28i!5bmz4dtlkkm^om307opsw&
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0']
+ALLOWED_HOSTS = ['0.0.0.0', '127.0.0.1']
 
 
 # Application definition
@@ -39,7 +39,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    # 'rest_framework.authtoken',
     'drf_yasg',
     'django_large_image',
 ]
@@ -52,6 +51,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myimages.middleware.AuthenticationMiddleware',
 ]
 
 ROOT_URLCONF = 'myimages.urls'
