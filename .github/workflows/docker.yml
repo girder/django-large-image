@@ -36,7 +36,7 @@ jobs:
         with:
           context: .
           file: myimages.Dockerfile
-          target: all
+          target: myimages
           push: ${{ github.actor != 'dependabot[bot]' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

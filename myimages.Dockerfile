@@ -7,7 +7,7 @@ RUN python -m pip install --upgrade pip wheel setuptools
 RUN python setup.py sdist bdist_wheel
 
 
-FROM ghcr.io/girder/large_image:latest as project
+FROM ghcr.io/girder/large_image:latest as myimages
 # Install system libraries for Python packages:
 # * psycopg2
 RUN apt-get update && \
