@@ -29,6 +29,7 @@ RUN pip install --find-links https://girder.github.io/large_image_wheels \
 
 COPY ./myimages/ /opt/django-project
 WORKDIR /opt/django-project
+RUN rm -rf /opt/django-project/data && mkdir /opt/django-project/data
 
 RUN /opt/django-project/manage.py migrate
 RUN /opt/django-project/manage.py collectstatic --noinput
