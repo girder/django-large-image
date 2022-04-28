@@ -22,6 +22,7 @@ COPY --from=build /opt/build-context/dist/*.whl /opt/django-project/wheels/
 RUN pip install --find-links https://girder.github.io/large_image_wheels \
   $(ls -1  /opt/django-project/wheels/*.whl) \
   gunicorn \
+  whitenoise \
   pytest \
   pytest-django \
   pytest-factoryboy
@@ -37,5 +38,5 @@ RUN DJANGO_SUPERUSER_PASSWORD=password /opt/django-project/manage.py createsuper
 RUN DJANGO_SETTINGS_MODULE=myimages.settings pytest -v
 
 EXPOSE 8000
-ENTRYPOINT ["./manage.py", "runserver", "0.0.0.0:8000"]
-# ENTRYPOINT ["gunicorn", "-k", "gthread", "--threads", "8", "--bind", "0.0.0.0:8000", "myimages.wsgi"]
+# ENTRYPOINT ["./manage.py", "runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["gunicorn", "-k", "gthread", "--threads", "8", "--bind", "0.0.0.0:8000", "myimages.wsgi"]
