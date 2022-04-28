@@ -1,0 +1,12 @@
+<!-- templates/admin/myapp/imagefile/change_form.html -->
+{% extends "admin/change_form.html" %}
+
+{% block after_field_sets %}
+
+<script>
+  var baseEndpoint = 'api/imagefile';
+</script>
+
+{% include 'admin/django_large_image/_include/geojs.html' %}
+
+{% endblock %}
