@@ -28,6 +28,16 @@
           gcs: 'EPSG:3857' // web mercator
         });
 
+        // Change default interactor options
+        const interactorOpts = viewer.interactor().options();
+        interactorOpts.zoomAnimation = {
+          enabled: false,
+        };
+        interactorOpts.momentum = {
+          enabled: true,
+        };
+        viewer.interactor().options(interactorOpts);
+
         function setBounds(extent, setMax = false) {
           if (extent != undefined && extent.xmin != undefined) {
             let xc = (extent.xmax - extent.xmin) * 0.2
