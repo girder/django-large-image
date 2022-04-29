@@ -1,13 +1,21 @@
-.wrapper {
-  padding: 3 3;
-  position: relative;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 100%;
-}
+@import url('https://fonts.googleapis.com/css2?family=Rubik&display=swap');
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+@layer base {
+  html {
+    font-family: 'Rubik', sans-serif !important;
+  }
+  .wrapper {
+    padding: 3 3;
+    position: relative;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100%;
+  }
 
 }
