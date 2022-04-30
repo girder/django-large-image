@@ -1,7 +1,7 @@
 {% block colormaps %}
 
 <style type="text/css">
-  @import 'https://cdn.jsdelivr.net/npm/remixicon@2.2.0/fonts/remixicon.css';
+  @import 'https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css';
   @import 'https://cdn.jsdelivr.net/npm/daisyui@2.14.2/dist/full.css';
 </style>
 
@@ -18,15 +18,90 @@
     @click="controls = ! controls"
   >
     Controls
-    <i class="ri-equalizer-line text-lg font-normal" x-show="!controls"></i>
-    <i class="ri-close-line text-lg font-normal" x-show="controls"></i>
+    <i class="ri-equalizer-line" x-show="!controls"></i>
+    <i class="ri-close-line" x-show="controls"></i>
   </button>
 
-  <div class="absolute bottom-full pb-3 right-0" x-show="controls">
-    <div class="card bg-gray-100 bg-opacity-[.90] border border-gray-300 min-w-max !rounded-lg shadow-lg">
-      <div class="card-body">
-        <div class="grid grid-cols-2 gap-8">
-          <div class="controls flex flex-col gap-6">
+  <div
+    class="absolute bottom-full pb-3 right-0"
+    x-show="controls"
+  >
+    <div class="card bg-slate-100 bg-opacity-[.85] min-w-max !rounded-lg shadow-lg">
+      <div
+        class="card-body !p-0"
+        x-data="{ customizeDisplay: false }"
+      >
+        <div
+          class="grid gap-4"
+          :class="{ 'grid-cols-2' : customizeDisplay }"
+        >
+          <div
+            x-show="customizeDisplay"
+            x-data="{ configure: false }"
+            class="row-span-full w-56"
+          >
+            <div
+              class="bg-secondary flex flex-col h-full text-slate-900 justify-between p-4 text-secondary-content"
+              x-data="{ items: [
+                { frame: 'Frame 1', bands: ['Band 1', 'Band 2', 'Band 3'] },
+                { frame: 'Frame 2', bands: ['Band 1', 'Band 2'] }
+              ]}"
+            >
+              <div>
+                <ul class="menu menu-compact menu-secondary p-1 rounded gap-2">
+                  <template x-for="item in items">
+                    <li tabindex="0">
+                      <a class="font-bold" x-text="item.frame"></a>
+                      <ul class="!block !static !p-0 rounded">
+                        <template x-for="band in item.bands">
+                          <li>
+                            <a class="flex gap-1" :class="{ 'active' : configure }" @click="configure = ! configure">
+                              <i class="ri-arrow-right-line"></i>
+                              <span x-text="band"></span>
+                            </a>
+                          </li>
+                        </template>
+                      </ul>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <div class="bg-primary p-4 mt-4 rounded" x-show="configure">
+                <div class="flex flex-col gap-2">
+                  <span class="text-primary-content text-lg">Configure Band 1</span>
+                  <div class="field">
+                    <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
+                    <select
+                      id="colors"
+                      onChange='changeColors();'
+                      class="select select-sm w-full"
+                    >
+                      <option>-- none --</option>
+                    </select>
+                  </div>
+                  <div class="flex gap-2 w-full">
+                    <div class="field">
+                      <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" placeholder="from" onChange='changeColors();'>
+                    </div>
+                    <div class="field">
+                      <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" placeholder="to" onChange='changeColors();'>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls flex flex-col gap-6 p-4">
+            <div class="field form-control">
+              <label class="label cursor-pointer !justify-start gap-2">
+                <input type="checkbox" class="toggle toggle-secondary" x-model="customizeDisplay">
+                <span class="label-text">Customize Display</span>
+              </label>
+            </div>
+            <div class="thumbnail">
+              <img id="thumbnail" class="w-full" />
+            </div>
             <div class="field">
               <label for="rasterOpacityRange" class="pb-1 block">Raster Layer Opacity:</label>
               <input
@@ -54,16 +129,27 @@
             </div>
 
             <div id='colorsSubGroup' style="display: none;">
-              <label for="colors">Choose a colormap:</label>
-              <select id="colors" onChange='changeColors();'>
-                <option>-- none --</option>
-              </select>
-              <br />
-              <input id="mincolor" type="number" step="0.01" onChange='changeColors();'>
-              <input id="maxcolor" type="number" step="0.01" onChange='changeColors();'>
+              <div class="flex flex-col gap-2">
+                <div class="field">
+                  <label for="colors" class="pb-1 block">Choose a colormap:</label>
+                  <select
+                    id="colors"
+                    onChange='changeColors();'
+                    class="select select-sm w-full"
+                  >
+                    <option>-- none --</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" onChange='changeColors();'>
+                </div>
+                <div class="field">
+                  <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" onChange='changeColors();'>
+                </div>
+              </div>
             </div>
 
-            <div class="field justify-self-end" id="metadataViewer">
+            <div class="field" id="metadataViewer">
               <button
                 type="button"
                 id="copyMetadataButton"
@@ -73,10 +159,6 @@
                 Copy Metadata
               </button>
             </div>
-          </div>
-
-          <div class="thumbnail">
-            <img id="thumbnail" class="max-h-48" />
           </div>
         </div>
       </div>
