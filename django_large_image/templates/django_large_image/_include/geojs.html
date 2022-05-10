@@ -1,7 +1,6 @@
+{% load static %}
 {% block geojs %}
-<script src="https://d3js.org/d3-color.v2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.20/lodash.min.js"></script>
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/geojs/1.4.3/geo.min.js"></script>
+<script src="{% static 'django_large_image/js/geojs/1.8.3/geo.min.js' %}"></script>
 
 <div id="imageViewer" style="width: 100%; height: 100%; z-index: 10;"></div>
 
