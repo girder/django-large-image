@@ -19,10 +19,9 @@ from django.urls import include, path, re_path
 from django.views.generic.base import RedirectView
 from drf_yasg import openapi
 from drf_yasg.views import get_schema_view
+from myimages.imagefiles.viewsets import ImageFileDetailViewSet
 from rest_framework import permissions
 from rest_framework.routers import SimpleRouter
-
-from myimages.imagefiles.viewsets import ImageFileDetailViewSet
 
 router = SimpleRouter(trailing_slash=False)
 router.register(r'api/imagefile', ImageFileDetailViewSet)

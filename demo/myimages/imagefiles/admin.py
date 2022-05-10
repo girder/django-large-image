@@ -1,5 +1,4 @@
 from django.contrib import admin
-
 from myimages.imagefiles.models import ImageFile
 
 

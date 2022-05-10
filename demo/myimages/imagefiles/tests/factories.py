@@ -1,5 +1,4 @@
 import factory.django
-
 from myimages.imagefiles.models import ImageFile
 
 
