@@ -4,7 +4,7 @@ services:
     build:
       context: .
       dockerfile: ./dev/django.Dockerfile
-    command: ["./manage.py ", "runserver", "0.0.0.0:8000"]
+    command: ["./manage.py", "runserver", "0.0.0.0:8000"]
     # command: ["gunicorn", "-k", "gthread", "--threads", "8", "--bind", "0.0.0.0:8000", "project.example.wsgi"]
     # Log printing via Rich is enhanced by a TTY
     tty: false
