@@ -4,8 +4,8 @@
 This is the simplest configuration for developers to start with.
 
 ### Initial Setup
-1. Run `docker-compose run --rm django ./project/manage.py migrate`
-2. Run `docker-compose run --rm django ./project/manage.py createsuperuser`
+1. Run `docker-compose run --rm django ./manage.py  migrate`
+2. Run `docker-compose run --rm django ./manage.py  createsuperuser`
    and follow the prompts to create your own user
 
 ### Run Application
@@ -18,7 +18,7 @@ Occasionally, new package dependencies or schema changes will necessitate
 maintenance. To non-destructively update your development stack at any time:
 1. Run `docker-compose pull`
 2. Run `docker-compose build --pull --no-cache`
-3. Run `docker-compose run --rm django ./project/manage.py migrate`
+3. Run `docker-compose run --rm django ./manage.py  migrate`
 
 ## Develop Natively (advanced)
 This configuration still uses Docker to run attached services in the background,
@@ -32,14 +32,14 @@ but allows developers to run Python code on their native system.
 4. Create and activate a new Python virtualenv
 5. Run `pip install -e .[dev]`
 6. Run `source ./dev/export-env.sh`
-7. Run `./project/manage.py migrate`
-8. Run `./project/manage.py createsuperuser` and follow the prompts to create your own user
+7. Run `./manage.py  migrate`
+8. Run `./manage.py  createsuperuser` and follow the prompts to create your own user
 
 ### Run Application
 1.  Ensure `docker-compose -f ./docker-compose.yml up -d` is still active
 2. Run:
    1. `source ./dev/export-env.sh`
-   2. `./project/manage.py runserver`
+   2. `./manage.py  runserver`
 3. Run in a separate terminal:
    1. `source ./dev/export-env.sh`
    2. `celery --app example.celery worker --loglevel INFO --without-heartbeat`
