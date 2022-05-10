@@ -7,7 +7,7 @@ RUN python -m pip install --upgrade pip wheel setuptools
 RUN python setup.py sdist bdist_wheel
 
 
-FROM ghcr.io/girder/large_image:latest as myimages
+FROM ghcr.io/girder/large_image:latest as demo
 RUN apt-get update && \
     apt-get install --no-install-recommends --yes \
         libpq-dev gcc libc6-dev \
@@ -27,7 +27,7 @@ RUN pip install --find-links https://girder.github.io/large_image_wheels \
   pytest-django \
   pytest-factoryboy
 
-COPY ./myimages/ /opt/django-project
+COPY ./demo/ /opt/django-project
 WORKDIR /opt/django-project
 RUN rm -rf /opt/django-project/data && mkdir /opt/django-project/data
 

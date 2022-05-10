@@ -430,7 +430,7 @@ def task_convert_cog(my_model_pk):
 
 ## Demo App
 
-There is a vanilla Django project in the `myimages/` directory and this app
+There is a vanilla Django project in the `demo/` directory and this app
 is published as a standalone Docker image that anyone can try out:
 
 ```bash
