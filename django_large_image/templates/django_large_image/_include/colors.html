@@ -41,25 +41,29 @@
               selectedBand: null,
               selectedFrame: null,
               style: { bands: [] },
-              updateStyleInternal(option, value) {
-                if (this.selectedFrame == null) {
-                  const ind = this.style.bands.findIndex(element => element.band == this.selectedBand);
-                  if (ind < 0) {
-                    var band = {band: this.selectedBand};
-                    band[option] = value;
-                    this.style.bands.push(band)
-                  } else {
-                    this.style.bands[ind][option] = value;
-                  }
+              getSelectedIndex() {
+                var ind;
+                if (this.selectedFrame === null) {
+                  ind = this.style.bands.findIndex(element => element.band == this.selectedBand);
                 } else {
-                  const ind = this.style.bands.findIndex(element => element.band == this.selectedBand && element.frame == this.selectedFrame);
-                  if (ind < 0) {
-                    var band = {band: this.selectedBand, frame: this.selectedFrame};
-                    band[option] = value;
-                    this.style.bands.push(band)
+                  ind = this.style.bands.findIndex(element => element.band == this.selectedBand && element.frame == this.selectedFrame);
+                }
+                return ind;
+              },
+              updateStyleInternal(option, value) {
+                this.style.bands = []; // TODO remove this - makes this single band styling mode
+
+                const ind = this.getSelectedIndex();
+                if (ind < 0) {
+                  if (this.selectedFrame == null) {
+                    var band = {band: this.selectedBand};
                   } else {
-                    this.style.bands[ind][option] = value;
+                    var band = {band: this.selectedBand, frame: this.selectedFrame};
                   }
+                  band[option] = value;
+                  this.style.bands.push(band)
+                } else {
+                  this.style.bands[ind][option] = value;
                 }
                 updateStyle(this.style)
               }
@@ -91,6 +95,13 @@
                               } else {
                                 selectedBand = band.index;
                                 selectedFrame = band.frame;
+                                var colorsDropdown = document.getElementById('colors');
+                                if (false) {
+
+                                } else {
+                                  colorsDropdown.value = '-- none --';
+                                }
+
                               }
                             }">
                               <i class="ri-arrow-right-line"></i>
@@ -110,16 +121,13 @@
                     <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
                     <select
                       id="colors"
-                      x-on:change="(()=>{
-                        var colorsDropdown = document.getElementById('colors');
-                        var cmap;
+                      x-on:change="((event)=>{
+                        var cmap = event.target.value;
                         if (colorsDropdown.value == '-- none --') {
                           cmap = undefined;
-                        } else {
-                          cmap = colorsDropdown.value;
                         }
                         updateStyleInternal('palette', cmap);
-                      })()"
+                      })($event)"
                       class="select select-sm w-full"
                     >
                       <option>-- none --</option>
@@ -127,14 +135,14 @@
                   </div>
                   <div class="flex gap-2 w-full">
                     <div class="field">
-                      <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" placeholder="from" x-on:change="(()=>{
-                          updateStyleInternal('min', value);
-                        })()">
+                      <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" placeholder="from" x-on:change="((event)=>{
+                          updateStyleInternal('min', event.target.value);
+                        })($event)">
                     </div>
                     <div class="field">
-                      <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" placeholder="to" x-on:change="(()=>{
-                          updateStyleInternal('max', value);
-                        })()">
+                      <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" placeholder="to" x-on:change="((event)=>{
+                          updateStyleInternal('max', event.target.value);
+                        })($event)">
                     </div>
                   </div>
                 </div>
@@ -201,7 +209,6 @@
     });
 
   function updateStyle(style) {
-    console.log(style)
     if (style != undefined) {
       updateTileUrlOption('style', JSON.stringify(style));
     }
