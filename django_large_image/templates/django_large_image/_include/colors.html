@@ -37,7 +37,11 @@
         >
           <div
             x-show="customizeDisplay"
-            x-data="{ configure: false }"
+            x-data="{
+              configure: false,
+              selected_band: null,
+              selected_frame: null
+            }"
             class="row-span-full w-56"
           >
             <div
@@ -58,7 +62,7 @@
                       <ul class="!block !static !p-0 rounded">
                         <template x-for="band in frame.bands">
                           <li>
-                            <a class="flex gap-1" :class="{ 'active' : configure }" @click="configure = ! configure">
+                            <a class="flex gap-1" :class="{ 'active' : configure }" @click="configure = ! configure; selected_band = band.index; selected_frame = band.frame">
                               <i class="ri-arrow-right-line"></i>
                               <span x-text="band.index"></span><span x-text="band.name"></span>
                             </a>
@@ -71,7 +75,7 @@
               </div>
               <div class="bg-primary p-4 mt-4 rounded" x-show="configure">
                 <div class="flex flex-col gap-2">
-                  <span class="text-primary-content text-lg">Configure Band 1</span>
+                  <span class="text-primary-content text-lg">Configure Band <span x-text="selected_band"></span></span>
                   <div class="field">
                     <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
                     <select
