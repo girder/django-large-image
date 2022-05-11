@@ -38,8 +38,8 @@
           <div
             x-show="customizeDisplay"
             x-data="{
-              selected_band: null,
-              selected_frame: null
+              selectedBand: null,
+              selectedFrame: null
             }"
             class="row-span-full w-56"
           >
@@ -61,13 +61,13 @@
                       <ul class="!block !static !p-0 rounded">
                         <template x-for="band in frame.bands">
                           <li>
-                            <a class="flex gap-1" :class="{ 'active' : selected_band == band.index && selected_frame == band.frame }" @click="() => {
-                              if (selected_band == band.index && selected_frame == band.frame) {
-                                selected_band = null;
-                                selected_frame = null;
+                            <a class="flex gap-1" :class="{ 'active' : selectedBand == band.index && selectedFrame == band.frame }" @click="() => {
+                              if (selectedBand == band.index && selectedFrame == band.frame) {
+                                selectedBand = null;
+                                selectedFrame = null;
                               } else {
-                                selected_band = band.index;
-                                selected_frame = band.frame;
+                                selectedBand = band.index;
+                                selectedFrame = band.frame;
                               }
                             }">
                               <i class="ri-arrow-right-line"></i>
@@ -80,9 +80,9 @@
                   </template>
                 </ul>
               </div>
-              <div class="bg-primary p-4 mt-4 rounded" x-show="selected_band != null && selected_frame != null">
+              <div class="bg-primary p-4 mt-4 rounded" x-show="selectedBand != null && selectedFrame != null">
                 <div class="flex flex-col gap-2">
-                  <span class="text-primary-content text-lg">Configure Band <span x-text="selected_band"></span></span>
+                  <span class="text-primary-content text-lg">Configure Band <span x-text="selectedBand"></span></span>
                   <div class="field">
                     <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
                     <select
@@ -151,8 +151,6 @@
   var bandDropdown = document.getElementById('bandChoice');
   var thumbnail = document.getElementById('thumbnail');
   var bands;
-
-  thumbnail.src = thumbnailUrl;
 
   fetch(`${host}/${baseApi}/large-image/colormaps`)
     .then(response => response.json())
