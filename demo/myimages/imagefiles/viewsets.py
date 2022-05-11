@@ -1,7 +1,7 @@
+from myimages.imagefiles import models
 from rest_framework import mixins, viewsets
 
 from django_large_image.rest import LargeImageFileDetailMixin
-from myimages.imagefiles import models
 
 
 class ImageFileDetailViewSet(
