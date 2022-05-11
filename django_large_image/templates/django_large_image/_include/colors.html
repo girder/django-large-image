@@ -41,23 +41,26 @@
             class="row-span-full w-56"
           >
             <div
+              id="dataContainer"
               class="bg-secondary flex flex-col h-full text-slate-900 justify-between p-4 text-secondary-content"
-              x-data="{ items: [
-                { frame: 'Frame 1', bands: ['Band 1', 'Band 2', 'Band 3'] },
-                { frame: 'Frame 2', bands: ['Band 1', 'Band 2'] }
-              ]}"
+              x-data="{ frames: [] }"
+              x-init="(async () => {
+                const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
+                data = await response.json()
+                frames = data['frames']
+              })()"
             >
               <div>
                 <ul class="menu menu-compact menu-secondary p-1 rounded gap-2">
-                  <template x-for="item in items">
+                  <template x-for="frame in frames">
                     <li tabindex="0">
-                      <a class="font-bold" x-text="item.frame"></a>
+                      <a class="font-bold" x-text="frame.frame"></a>
                       <ul class="!block !static !p-0 rounded">
-                        <template x-for="band in item.bands">
+                        <template x-for="band in frame.bands">
                           <li>
                             <a class="flex gap-1" :class="{ 'active' : configure }" @click="configure = ! configure">
                               <i class="ri-arrow-right-line"></i>
-                              <span x-text="band"></span>
+                              <span x-text="band.index"></span><span x-text="band.name"></span>
                             </a>
                           </li>
                         </template>
