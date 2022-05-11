@@ -42,31 +42,43 @@
               selectedBand: null,
               selectedFrame: null,
               style: { bands: [] },
-              getSelectedIndex() {
+              getIndex(selectedFrame, selectedBand) {
                 var ind;
-                if (this.selectedFrame === null) {
-                  ind = this.style.bands.findIndex(element => element.band == this.selectedBand);
+                if (selectedFrame === null) {
+                  ind = this.style.bands.findIndex(element => element.band == selectedBand);
                 } else {
-                  ind = this.style.bands.findIndex(element => element.band == this.selectedBand && element.frame == this.selectedFrame);
+                  ind = this.style.bands.findIndex(element => element.band == selectedBand && element.frame == selectedFrame);
                 }
                 return ind;
               },
-              updateStyleInternal(option, value) {
-                this.style.bands = []; // TODO remove this - makes this single band styling mode
-
-                const ind = this.getSelectedIndex();
-                if (ind < 0) {
-                  if (this.selectedFrame == null) {
-                    var band = {band: this.selectedBand};
-                  } else {
-                    var band = {band: this.selectedBand, frame: this.selectedFrame};
-                  }
-                  band[option] = value;
-                  this.style.bands.push(band)
-                } else {
-                  this.style.bands[ind][option] = value;
+              getSelectedIndex() {
+                return this.getIndex(this.selectedFrame, this.selectedBand);
+              },
+              generateBandSpec(selectedFrame, selectedBand) {
+                var band = {band: selectedBand, frame: selectedFrame};
+                if (selectedFrame == null) {
+                  band = {band: selectedBand};
                 }
-                updateStyle(this.style)
+                return band;
+              },
+              pushBand(selectedFrame, selectedBand) {
+                if (this.getIndex(selectedFrame, selectedBand) < 0) {
+                  this.style.bands.push(this.generateBandSpec(selectedFrame, selectedBand));
+                }
+                updateStyle(this.style);
+                return this.getIndex(selectedFrame, selectedBand);
+              },
+              popBand(selectedFrame, selectedBand) {
+                const ind = this.getIndex(selectedFrame, selectedBand)
+                if (ind < 0) {
+                  this.style.bands.splice(ind, 1);
+                }
+                updateStyle(this.style);
+              },
+              addOptionToSelected(option, value) {
+                const ind = this.pushBand(this.selectedFrame, this.selectedBand);
+                this.style.bands[ind][option] = value;
+                updateStyle(this.style);
               }
             }"
             class="row-span-full w-56"
@@ -89,7 +101,7 @@
                       <ul class="!block !static !p-0 rounded">
                         <template x-for="band in frame.bands">
                           <li>
-                            <a class="flex gap-1" :class="{ 'active' : selectedBand == band.index && selectedFrame == band.frame }" @click="() => {
+                            <a class="flex gap-1" :class="{ 'active' : selectedBand == band.index && selectedFrame == band.frame }" x-data="{enabled: false}" @click="() => {
                               if (selectedBand == band.index && selectedFrame == band.frame) {
                                 selectedBand = null;
                                 selectedFrame = null;
@@ -105,7 +117,7 @@
 
                               }
                             }">
-                              <input type="checkbox" class="checkbox flex-none"/>
+                              <input type="checkbox" x-model="enabled" class="checkbox checkbox-sm flex-none" @click="() => {enabled = ! enabled; if (enabled) {pushBand(band.frame, band.index)} else {popBand(band.frame, band.index)}};" />
                               <span x-text="band.index"></span><span x-text="band.name"></span>
                             </a>
                           </li>
@@ -127,7 +139,11 @@
                         if (colorsDropdown.value == '-- none --') {
                           cmap = undefined;
                         }
-                        updateStyleInternal('palette', cmap);
+                        if (cmap === 'green') {
+                          // see https://github.com/girder/large_image/issues/855#issuecomment-1124031510
+                          cmap = '#0f0';
+                        }
+                        addOptionToSelected('palette', cmap);
                       })($event)"
                       class="select select-sm w-full"
                     >
@@ -137,12 +153,12 @@
                   <div class="flex gap-2 w-full">
                     <div class="field">
                       <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" placeholder="from" x-on:change="((event)=>{
-                          updateStyleInternal('min', event.target.value);
+                          addOptionToSelected('min', event.target.value);
                         })($event)">
                     </div>
                     <div class="field">
                       <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" placeholder="to" x-on:change="((event)=>{
-                          updateStyleInternal('max', event.target.value);
+                          addOptionToSelected('max', event.target.value);
                         })($event)">
                     </div>
                   </div>
@@ -213,6 +229,7 @@
     if (style != undefined) {
       updateTileUrlOption('style', JSON.stringify(style));
     }
+    console.log(JSON.stringify(style));
     updateTileLayer();
     thumbnail.src = thumbnailUrl;
   }
