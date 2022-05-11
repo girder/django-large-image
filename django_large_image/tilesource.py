@@ -130,3 +130,53 @@ def format_to_encoding(format: Optional[str]) -> str:
     if format.lower() in ['tif', 'tiff']:
         return 'TILED'
     return format.upper()  # jpeg, png
+
+
+def get_frames(source: FileTileSource):
+    """Return lists of channels/bands per frame index.
+
+    Example Data
+    ------------
+
+    { frames: [
+        { frame: 'Frame 1', bands: [
+            {'index': 1, 'frame': 0, 'name': 'red'},
+            {'index': 2, 'frame': 0, 'name': 'green'},
+            {'index': 3, 'frame': 0, 'name': 'blue'},
+        ]}
+    ]}
+
+    { frames: [
+        { frame: 'Frame 1', bands: [{'index': 1, 'frame': 0, 'name': 'NUCLEI'}, ...]},
+        { frame: 'Frame 2', bands: [{'index': 1, 'frame': 1, 'name': 'CD4'}, ...] },
+        ...
+    ]}
+
+
+    """
+    frame_data = source.getMetadata().get('frames', [])
+    if not frame_data:
+        # Single frame image
+        bands = source.getBandInformation()
+        frame = {
+            'frame': 'Frame 1',
+            'bands': [
+                {'index': k, 'frame': 0, 'name': v.get('interpretation', '')}
+                for k, v in bands.items()
+            ],
+        }
+        frames = [frame]
+    else:
+        frames = {}
+        for channel in frame_data:
+            fid = channel['Frame']
+            frames.setdefault(fid, [])
+            frames[fid].append(
+                {
+                    'index': channel['Index'],
+                    'frame': fid,
+                    'name': channel.get('Name', ''),
+                }
+            )
+        frames = [{'frame': f'Frame {i}', 'bands': v} for i, v in frames.items()]
+    return {'frames': frames}

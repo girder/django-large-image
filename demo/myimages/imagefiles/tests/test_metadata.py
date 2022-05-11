@@ -34,6 +34,16 @@ def test_bands(api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
+def test_frames(authenticated_api_client, image_file_geotiff):
+    response = authenticated_api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/frames')
+    assert status.is_success(response.status_code)
+    data = response.data
+    assert isinstance(data['frames'], list)
+    assert isinstance(data['frames'][0], dict)
+    assert 'bands' in data['frames'][0]
+
+
+@pytest.mark.django_db(transaction=True)
 def test_band(api_client, image_file_geotiff):
     response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/band?band=1')
     assert status.is_success(response.status_code)

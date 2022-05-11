@@ -27,6 +27,8 @@ bands_summary = 'Returns bands information.'
 bands_parameters = params.BASE
 band_summary = 'Returns single band information.'
 band_parameters = params.BASE + [params.band]
+frames_summary = 'Retrieve all channels/bands for each frame. This is used to generate a UI to control how the image is displayed.'
+frames_parameters = params.BASE
 tiffdump_summary = 'Returns tifftools tiffdump JSON. This will raise a `ValidationError` if the image is not a Tiff.'
 
 
@@ -71,10 +73,22 @@ class MetaDataMixin(LargeImageMixinBase):
     )
     @action(detail=False)
     def band(self, request: Request, pk: int = None) -> Response:
+        # TODO: handle frame choice
         band = int(self.get_query_param(request, 'band', 1))
         source = self.get_tile_source(request, pk, style=False)
         metadata = source.getOneBandInformation(band)
         return Response(metadata)
+
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=frames_summary,
+        manual_parameters=frames_parameters,
+    )
+    @action(detail=False)
+    def frames(self, request: Request, pk: int = None) -> Response:
+        source = self.get_tile_source(request, pk, style=False)
+        data = tilesource.get_frames(source)
+        return Response(data)
 
     @swagger_auto_schema(
         method='GET',
@@ -139,6 +153,15 @@ class MetaDataDetailMixin(MetaDataMixin):
     @action(detail=True)
     def band(self, request: Request, pk: int = None) -> Response:
         return super().band(request, pk)
+
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=frames_summary,
+        manual_parameters=frames_parameters,
+    )
+    @action(detail=True)
+    def frames(self, request: Request, pk: int = None) -> Response:
+        return super().frames(request, pk)
 
     @swagger_auto_schema(
         method='GET',
