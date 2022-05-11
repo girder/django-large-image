@@ -38,7 +38,6 @@
           <div
             x-show="customizeDisplay"
             x-data="{
-              configure: false,
               selected_band: null,
               selected_frame: null
             }"
@@ -62,7 +61,15 @@
                       <ul class="!block !static !p-0 rounded">
                         <template x-for="band in frame.bands">
                           <li>
-                            <a class="flex gap-1" :class="{ 'active' : configure }" @click="configure = ! configure; selected_band = band.index; selected_frame = band.frame">
+                            <a class="flex gap-1" :class="{ 'active' : selected_band == band.index && selected_frame == band.frame }" @click="() => {
+                              if (selected_band == band.index && selected_frame == band.frame) {
+                                selected_band = null;
+                                selected_frame = null;
+                              } else {
+                                selected_band = band.index;
+                                selected_frame = band.frame;
+                              }
+                            }">
                               <i class="ri-arrow-right-line"></i>
                               <span x-text="band.index"></span><span x-text="band.name"></span>
                             </a>
@@ -73,7 +80,7 @@
                   </template>
                 </ul>
               </div>
-              <div class="bg-primary p-4 mt-4 rounded" x-show="configure">
+              <div class="bg-primary p-4 mt-4 rounded" x-show="selected_band != null && selected_frame != null">
                 <div class="flex flex-col gap-2">
                   <span class="text-primary-content text-lg">Configure Band <span x-text="selected_band"></span></span>
                   <div class="field">
