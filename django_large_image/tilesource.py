@@ -159,9 +159,9 @@ def get_frames(source: FileTileSource):
         # Single frame image
         bands = source.getBandInformation()
         frame = {
-            'frame': 'Frame 1',
+            'frame': 'Frame null',
             'bands': [
-                {'index': k, 'frame': 0, 'name': v.get('interpretation', '')}
+                {'index': k, 'frame': None, 'name': v.get('interpretation', '')}
                 for k, v in bands.items()
             ],
         }

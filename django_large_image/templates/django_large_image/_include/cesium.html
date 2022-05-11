@@ -46,7 +46,7 @@
       var extents = data["bounds"];
       rectangle = Cesium.Rectangle.fromDegrees(extents.xmin, extents.ymin, extents.xmax, extents.ymax)
 
-      bandChange(); // initial call to add tile layer
+      updateStyle(undefined);
 
       viewer.camera.flyTo({
         destination: rectangle,
