@@ -26,6 +26,49 @@
   <div
     class="absolute bottom-full pb-3 right-0"
     x-show="controls"
+    x-data="{
+      selectedBand: null,
+      selectedFrame: null,
+      style: { bands: [] },
+      getIndex(selectedFrame, selectedBand) {
+        var ind;
+        if (selectedFrame === null) {
+          ind = this.style.bands.findIndex(element => element.band == selectedBand);
+        } else {
+          ind = this.style.bands.findIndex(element => element.band == selectedBand && element.frame == selectedFrame);
+        }
+        return ind;
+      },
+      getSelectedIndex() {
+        return this.getIndex(this.selectedFrame, this.selectedBand);
+      },
+      generateBandSpec(selectedFrame, selectedBand) {
+        var band = {band: selectedBand, frame: selectedFrame};
+        if (selectedFrame == null) {
+          band = {band: selectedBand};
+        }
+        return band;
+      },
+      pushBand(selectedFrame, selectedBand) {
+        if (this.getIndex(selectedFrame, selectedBand) < 0) {
+          this.style.bands.push(this.generateBandSpec(selectedFrame, selectedBand));
+        }
+        updateStyle(this.style);
+        return this.getIndex(selectedFrame, selectedBand);
+      },
+      popBand(selectedFrame, selectedBand) {
+        const ind = this.getIndex(selectedFrame, selectedBand)
+        if (ind >= 0) {
+          this.style.bands.splice(ind, 1);
+        }
+        updateStyle(this.style);
+      },
+      addOptionToSelected(option, value) {
+        const ind = this.pushBand(this.selectedFrame, this.selectedBand);
+        this.style.bands[ind][option] = value;
+        updateStyle(this.style);
+      }
+    }"
   >
     <div class="card bg-slate-100 bg-opacity-[.85] min-w-max !rounded-lg shadow-lg">
       <div
@@ -38,49 +81,6 @@
         >
           <div
             x-show="customizeDisplay"
-            x-data="{
-              selectedBand: null,
-              selectedFrame: null,
-              style: { bands: [] },
-              getIndex(selectedFrame, selectedBand) {
-                var ind;
-                if (selectedFrame === null) {
-                  ind = this.style.bands.findIndex(element => element.band == selectedBand);
-                } else {
-                  ind = this.style.bands.findIndex(element => element.band == selectedBand && element.frame == selectedFrame);
-                }
-                return ind;
-              },
-              getSelectedIndex() {
-                return this.getIndex(this.selectedFrame, this.selectedBand);
-              },
-              generateBandSpec(selectedFrame, selectedBand) {
-                var band = {band: selectedBand, frame: selectedFrame};
-                if (selectedFrame == null) {
-                  band = {band: selectedBand};
-                }
-                return band;
-              },
-              pushBand(selectedFrame, selectedBand) {
-                if (this.getIndex(selectedFrame, selectedBand) < 0) {
-                  this.style.bands.push(this.generateBandSpec(selectedFrame, selectedBand));
-                }
-                updateStyle(this.style);
-                return this.getIndex(selectedFrame, selectedBand);
-              },
-              popBand(selectedFrame, selectedBand) {
-                const ind = this.getIndex(selectedFrame, selectedBand)
-                if (ind < 0) {
-                  this.style.bands.splice(ind, 1);
-                }
-                updateStyle(this.style);
-              },
-              addOptionToSelected(option, value) {
-                const ind = this.pushBand(this.selectedFrame, this.selectedBand);
-                this.style.bands[ind][option] = value;
-                updateStyle(this.style);
-              }
-            }"
             class="row-span-full w-56"
           >
             <div
@@ -170,7 +170,13 @@
           <div class="controls flex flex-col gap-6 p-4">
             <div class="field form-control">
               <label class="label cursor-pointer !justify-start gap-2">
-                <input type="checkbox" class="toggle toggle-primary" x-model="customizeDisplay">
+                <input type="checkbox" class="toggle toggle-primary" x-model="customizeDisplay" x-on:change="
+                if (!customizeDisplay) {
+                    // reset style being used
+                    updateStyle({ bands: [] });
+                } else {
+                  updateStyle(style);
+                }">
                 <span class="label-text">Customize Display</span>
               </label>
             </div>
@@ -227,9 +233,12 @@
 
   function updateStyle(style) {
     if (style != undefined) {
-      updateTileUrlOption('style', JSON.stringify(style));
+      if (style.bands.length === 0) {
+        updateTileUrlOption('style', undefined);
+      } else {
+        updateTileUrlOption('style', JSON.stringify(style));
+      }
     }
-    console.log(JSON.stringify(style));
     updateTileLayer();
     thumbnail.src = thumbnailUrl;
   }
