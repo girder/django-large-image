@@ -42,7 +42,7 @@
           >
             <div
               id="dataContainer"
-              class="bg-secondary flex flex-col h-full text-slate-900 justify-between p-4 text-secondary-content"
+              class="bg-slate-200 flex flex-col h-full text-slate-900 justify-between p-4"
               x-data="{ frames: [] }"
               x-init="(async () => {
                 const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
@@ -98,7 +98,7 @@
           <div class="controls flex flex-col gap-6 p-4">
             <div class="field form-control">
               <label class="label cursor-pointer !justify-start gap-2">
-                <input type="checkbox" class="toggle toggle-secondary" x-model="customizeDisplay">
+                <input type="checkbox" class="toggle toggle-primary" x-model="customizeDisplay">
                 <span class="label-text">Customize Display</span>
               </label>
             </div>
@@ -112,7 +112,7 @@
                 min="1"
                 max="100"
                 value="100"
-                class="overlay range range-xs range-secondary"
+                class="overlay range range-xs range-primary"
                 id="rasterOpacityRange"
                 onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)"
               >
@@ -123,7 +123,7 @@
                 type="button"
                 id="copyMetadataButton"
                 onclick="copyMetadata();"
-                class="btn btn-secondary btn-sm btn-outline"
+                class="btn btn-primary btn-sm btn-outline"
               >
                 Copy Metadata
               </button>
