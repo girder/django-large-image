@@ -118,40 +118,6 @@
               >
             </div>
 
-            <div class="field">
-              <label for="bandChoice" class="pb-1 block">
-                Choose a band:
-              </label>
-              <select
-                id="bandChoice"
-                onChange='bandChange();'
-                class="select select-sm w-full"
-              >
-                <option>-- none --</option>
-              </select>
-            </div>
-
-            <div id='colorsSubGroup' style="display: none;">
-              <div class="flex flex-col gap-2">
-                <div class="field">
-                  <label for="colors" class="pb-1 block">Choose a colormap:</label>
-                  <select
-                    id="colors"
-                    onChange='changeColors();'
-                    class="select select-sm w-full"
-                  >
-                    <option>-- none --</option>
-                  </select>
-                </div>
-                <div class="field">
-                  <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" onChange='changeColors();'>
-                </div>
-                <div class="field">
-                  <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" onChange='changeColors();'>
-                </div>
-              </div>
-            </div>
-
             <div class="field" id="metadataViewer">
               <button
                 type="button"
@@ -170,39 +136,12 @@
 </div>
 
 <script>
-  var colorsSubGroup = document.getElementById('colorsSubGroup');
   var colorsDropdown = document.getElementById('colors');
   var bandDropdown = document.getElementById('bandChoice');
-  var colorsMin = document.getElementById('mincolor');
-  var colorsMax = document.getElementById('maxcolor');
   var thumbnail = document.getElementById('thumbnail');
   var bands;
 
   thumbnail.src = thumbnailUrl;
-
-  if (windowSearchParams['min']) {
-    colorsMin.value = windowSearchParams['min']
-  }
-  if (windowSearchParams['max']) {
-    colorsMax.value = windowSearchParams['max']
-  }
-
-  fetch(`${host}/${baseEndpoint}/${imageId}/bands`).then(response => {
-    response.json().then(data => {
-      bands = data;
-      for (const [source, values] of Object.entries(bands)) {
-        const interp = values['interpretation']
-        var newOption = document.createElement('option');
-        newOption.value = source;
-        newOption.text = interp ? `${source}: ${interp}` : source;
-        bandDropdown.appendChild(newOption)
-      }
-      if (windowSearchParams['band']) {
-        bandDropdown.value = windowSearchParams['band'] ? windowSearchParams['band'] : '-- none --';
-        colorsSubGroup.style.display = 'block';
-      }
-    });
-  })
 
   fetch(`${host}/${baseApi}/large-image/colormaps`)
     .then(response => response.json())
@@ -216,11 +155,9 @@
           colorsDropdown.appendChild(newOption);
         }
       }
-      colorsDropdown.value = windowSearchParams['palette'] ? windowSearchParams['palette'] : '-- none --';
     });
 
   function changeColors() {
-    colorsSubGroup.display = 'block';
     var cmap;
     if (colorsDropdown.value == '-- none --') {
       cmap = undefined;
@@ -228,29 +165,18 @@
       cmap = colorsDropdown.value;
     }
     updateTileUrlOption('palette', cmap);
-    updateTileUrlOption('min', colorsMin.value);
-    updateTileUrlOption('max', colorsMax.value);
     updateTileLayer();
     thumbnail.src = thumbnailUrl;
   }
 
   function bandChange() {
-    if (bandDropdown.value == '-- none --') {
-      updateTileUrlOption('palette', undefined);
-      updateTileUrlOption('band', undefined);
-      updateTileUrlOption('min', undefined);
-      updateTileUrlOption('max', undefined);
-      colorsSubGroup.style.display = 'none';
-      updateTileLayer();
-      thumbnail.src = thumbnailUrl;
-    } else {
-      colorsSubGroup.style.display = 'block';
-      band = bandDropdown.value;
-      updateTileUrlOption('band', band);
-      colorsMin.placeholder = bands[band]['min'];
-      colorsMax.placeholder = bands[band]['max'];
-      changeColors();
-    }
+    updateTileUrlOption('palette', undefined);
+    updateTileUrlOption('band', undefined);
+    updateTileUrlOption('min', undefined);
+    updateTileUrlOption('max', undefined);
+
+    updateTileLayer();
+    thumbnail.src = thumbnailUrl;
   }
 
   var metadata = undefined;
