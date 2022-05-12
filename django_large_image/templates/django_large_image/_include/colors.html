@@ -200,8 +200,12 @@
                 type="button"
                 id="copyMetadataButton"
                 onclick="copyMetadata();"
-                class="btn btn-primary btn-sm btn-outline"
+                class="btn btn-primary btn-sm btn-outline gap-2"
               >
+                <span class="copy-icon swap swap-rotate">
+                  <i class="ri-file-copy-line swap-off"></i>
+                  <i class="ri-check-line swap-on"></i>
+                </span>
                 Copy Metadata
               </button>
             </div>
@@ -251,8 +255,14 @@
 
   async function copyMetadata() {
     var copyText = JSON.stringify(metadata);
+    var button = document.querySelector("#copyMetadataButton");
+    var icon = button.querySelector(".copy-icon");
     await navigator.clipboard.writeText(copyText);
-    alert("Copied image metadata");
+
+    icon.classList.add("swap-active");
+    setTimeout(function(){
+      icon.classList.remove("swap-active");
+    }, 2000);
   }
 </script>
 
