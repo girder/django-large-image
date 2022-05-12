@@ -76,16 +76,15 @@
         x-data="{ customizeDisplay: false }"
       >
         <div
-          class="grid gap-4"
-          :class="{ 'grid-cols-2' : customizeDisplay }"
+          :class="{ 'flex gap-4' : customizeDisplay }"
         >
           <div
             x-show="customizeDisplay"
-            class="row-span-full w-56"
+            class="row-span-full"
           >
             <div
               id="dataContainer"
-              class="bg-slate-200 flex flex-col h-full text-slate-900 justify-between p-4"
+              class="bg-slate-200 flex flex-col h-full justify-between max-h-[405px] text-slate-900 p-4 w-64"
               x-data="{ frames: [] }"
               x-init="(async () => {
                 const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
@@ -93,7 +92,7 @@
                 frames = data['frames']
               })()"
             >
-              <div>
+              <div class="flex-auto overflow-y-auto">
                 <ul class="menu menu-compact menu-secondary p-1 rounded gap-2">
                   <template x-for="frame in frames">
                     <li tabindex="0">
@@ -127,9 +126,9 @@
                   </template>
                 </ul>
               </div>
-              <div class="bg-primary p-4 mt-4 rounded" x-show="selectedBand != null">
+              <div class="bg-primary flex-initial p-4 mt-4 rounded" x-show="selectedBand != null">
                 <div class="flex flex-col gap-2">
-                  <span class="text-primary-content text-lg">Configure Band <span x-text="selectedBand"></span></span>
+                  <span class="text-primary-content font-semibold">Configure Band <span x-text="selectedBand"></span></span>
                   <div class="field">
                     <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
                     <select
@@ -167,9 +166,9 @@
             </div>
           </div>
 
-          <div class="controls flex flex-col gap-6 p-4">
+          <div class="controls flex flex-col gap-6 h-[405px] p-4 min-w-max">
             <div class="field form-control">
-              <label class="label cursor-pointer !justify-start gap-2">
+              <label class="label cursor-pointer !justify-start gap-2 !p-0">
                 <input type="checkbox" class="toggle toggle-primary" x-model="customizeDisplay" x-on:change="
                 if (!customizeDisplay) {
                     // reset style being used
@@ -177,11 +176,11 @@
                 } else {
                   updateStyle(style);
                 }">
-                <span class="label-text">Customize Display</span>
+                <span class="label-text">Advanced</span>
               </label>
             </div>
-            <div class="thumbnail">
-              <img id="thumbnail" class="w-full" />
+            <div class="thumbnail flex items-center justify-center w-[200px] h-[200px] bg-slate-800">
+              <img id="thumbnail" class="max-w-full max-h-full w-auto h-auto" />
             </div>
             <div class="field">
               <label for="rasterOpacityRange" class="pb-1 block">Raster Layer Opacity:</label>
