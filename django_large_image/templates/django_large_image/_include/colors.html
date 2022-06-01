@@ -111,7 +111,7 @@
                         <template x-for="band in frame.bands">
                           <li>
                             <a class="flex gap-1" :class="{ 'active' : selectedBand == band.index && selectedFrame == band.frame }" x-data="{enabled: false}" @click="() => {
-                              if (selectedBand == band.index && selectedFrame == band.frame) {
+                              if (!enabled && selectedBand == band.index && selectedFrame == band.frame) {
                                 selectedBand = null;
                                 selectedFrame = null;
                               } else {
@@ -130,7 +130,6 @@
                                   minChoice.value = null;
                                   maxChoice.value = null;
                                 }
-
                               }
                             }">
                               <input type="checkbox" x-model="enabled" class="checkbox checkbox-sm flex-none" @click="() => {enabled = ! enabled; if (enabled) {pushBand(band.frame, band.index)} else {popBand(band.frame, band.index)}};" />
