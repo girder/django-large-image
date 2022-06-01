@@ -49,6 +49,13 @@
         }
         return band;
       },
+      getBandSpec(selectedFrame, selectedBand) {
+        const ind = this.getIndex(selectedFrame, selectedBand)
+        if (ind >= 0) {
+          return this.style.bands[ind];
+        }
+        return undefined;
+      },
       pushBand(selectedFrame, selectedBand) {
         if (this.getIndex(selectedFrame, selectedBand) < 0) {
           this.style.bands.push(this.generateBandSpec(selectedFrame, selectedBand));
@@ -111,10 +118,17 @@
                                 selectedBand = band.index;
                                 selectedFrame = band.frame;
                                 var colorsDropdown = document.getElementById('colors');
-                                if (false) {
-
+                                var minChoice = document.getElementById('mincolor');
+                                var maxChoice = document.getElementById('maxcolor');
+                                bandSpec = getBandSpec(selectedFrame, selectedBand);
+                                if (bandSpec != undefined) {
+                                  colorsDropdown.value = bandSpec['palette'] ? bandSpec['palette']: '-- none --';
+                                  minChoice.value = bandSpec['min'] ? bandSpec['min']: null;
+                                  maxChoice.value = bandSpec['max'] ? bandSpec['max']: null;
                                 } else {
                                   colorsDropdown.value = '-- none --';
+                                  minChoice.value = null;
+                                  maxChoice.value = null;
                                 }
 
                               }
