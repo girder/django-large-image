@@ -122,7 +122,12 @@
                                 var maxChoice = document.getElementById('maxcolor');
                                 bandSpec = getBandSpec(selectedFrame, selectedBand);
                                 if (bandSpec != undefined) {
-                                  colorsDropdown.value = bandSpec['palette'] ? bandSpec['palette']: '-- none --';
+                                  if (bandSpec['palette'] === '#0f0') {
+                                    // see https://github.com/girder/large_image/issues/855#issuecomment-1124031510
+                                    colorsDropdown.value = 'green';
+                                  } else {
+                                    colorsDropdown.value = bandSpec['palette'] ? bandSpec['palette']: '-- none --';
+                                  }
                                   minChoice.value = bandSpec['min'] ? bandSpec['min']: null;
                                   maxChoice.value = bandSpec['max'] ? bandSpec['max']: null;
                                 } else {
