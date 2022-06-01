@@ -10,6 +10,7 @@
       host = window.location.protocol + "//" + window.location.host;
     }
     tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
+    thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail.png`;
   </script>
   {% include 'django_large_image/_include/geojs.html' %}
 </div>

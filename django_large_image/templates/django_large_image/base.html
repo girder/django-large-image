@@ -32,6 +32,7 @@
       host = window.location.protocol + "//" + window.location.host;
     }
     tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png`;
+    thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail.png`;
   </script>
 
   {% block content %}{% endblock %}
