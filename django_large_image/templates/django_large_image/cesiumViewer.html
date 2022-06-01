@@ -1,10 +1,7 @@
 {% extends "django_large_image/base.html" %}
 {% block content %}
 <script>
-  if (host === undefined) {
-    host = window.location.protocol + "//" + window.location.host;
-  }
-  tileUrl = `${host}/${baseEndpoint}/${imageId}/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`;
+  updateTileUrlOption('projection', 'EPSG:3857');
 </script>
 
 <div class="wrapper">

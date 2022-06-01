@@ -1,71 +1,245 @@
 {% block colormaps %}
 
-<div class="slidecontainer">
-  <button type="button" class="collapsible" id="displayControlsToggle">Toggle Controls</button>
-  <div id="displayControls">
-    <label for="rasterOpacityRange">Raster Layer Opacity: </label>
-    <input type="range" min="1" max="100" value="100" class="overlay" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)" style="top: 5px; left: 5px;">
-    <br />
-    <label for="bandChoice">Choose a band:</label>
-    <select id="bandChoice" onChange='bandChange();'>
-      <option>-- none --</option>
-    </select>
-    <br />
-    <div id='colorsSubGroup' style="display: none;">
-      <label for="colors">Choose a colormap:</label>
-      <select id="colors" onChange='changeColors();'>
-        <option>-- none --</option>
-      </select>
-      <br />
-      <input id="mincolor" type="number" step="0.01" onChange='changeColors();'>
-      <input id="maxcolor" type="number" step="0.01" onChange='changeColors();'>
-    </div>
-    <div>
-      <img id="thumbnail" />
-    </div>
-    <div id="metadataViewer">
-      <button type="button" id="copyMetadataButton" onclick="copyMetadata();">Copy Metadata</button>
+<style type="text/css">
+  @import 'https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css';
+  @import 'https://cdn.jsdelivr.net/npm/daisyui@2.14.2/dist/full.css';
+</style>
+
+<script src="//unpkg.com/alpinejs" defer></script>
+<script src="https://cdn.tailwindcss.com"></script>
+
+<div
+  class="control-panel bg-transparent absolute bottom-[25px] right-[25px] z-20"
+  x-data="{ controls: false }"
+  data-theme="winter"
+>
+  <button
+    class="btn btn-primary btn-sm gap-2"
+    @click="controls = ! controls"
+    type="button"
+  >
+    Controls
+    <i class="ri-equalizer-line" x-show="!controls"></i>
+    <i class="ri-close-line" x-show="controls"></i>
+  </button>
+
+  <div
+    class="absolute bottom-full pb-3 right-0"
+    x-show="controls"
+    x-data="{
+      selectedBand: null,
+      selectedFrame: null,
+      style: { bands: [] },
+      getIndex(selectedFrame, selectedBand) {
+        var ind;
+        if (selectedFrame === null) {
+          ind = this.style.bands.findIndex(element => element.band == selectedBand);
+        } else {
+          ind = this.style.bands.findIndex(element => element.band == selectedBand && element.frame == selectedFrame);
+        }
+        return ind;
+      },
+      getSelectedIndex() {
+        return this.getIndex(this.selectedFrame, this.selectedBand);
+      },
+      generateBandSpec(selectedFrame, selectedBand) {
+        var band = {band: selectedBand, frame: selectedFrame};
+        if (selectedFrame == null) {
+          band = {band: selectedBand};
+        }
+        return band;
+      },
+      getBandSpec(selectedFrame, selectedBand) {
+        const ind = this.getIndex(selectedFrame, selectedBand)
+        if (ind >= 0) {
+          return this.style.bands[ind];
+        }
+        return undefined;
+      },
+      pushBand(selectedFrame, selectedBand) {
+        if (this.getIndex(selectedFrame, selectedBand) < 0) {
+          this.style.bands.push(this.generateBandSpec(selectedFrame, selectedBand));
+        }
+        updateStyle(this.style);
+        return this.getIndex(selectedFrame, selectedBand);
+      },
+      popBand(selectedFrame, selectedBand) {
+        const ind = this.getIndex(selectedFrame, selectedBand)
+        if (ind >= 0) {
+          this.style.bands.splice(ind, 1);
+        }
+        updateStyle(this.style);
+      },
+      addOptionToSelected(option, value) {
+        const ind = this.pushBand(this.selectedFrame, this.selectedBand);
+        this.style.bands[ind][option] = value;
+        updateStyle(this.style);
+      }
+    }"
+  >
+    <div class="card bg-slate-100 bg-opacity-[.85] min-w-max !rounded-lg shadow-lg">
+      <div
+        class="card-body !p-0"
+        x-data="{ customizeDisplay: false }"
+      >
+        <div
+          :class="{ 'flex gap-4' : customizeDisplay }"
+        >
+          <div
+            x-show="customizeDisplay"
+            class="row-span-full"
+          >
+            <div
+              id="dataContainer"
+              class="bg-slate-200 flex flex-col h-full justify-between max-h-[405px] text-slate-900 w-64"
+              x-data="{ frames: [] }"
+              x-init="(async () => {
+                const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
+                data = await response.json()
+                frames = data['frames']
+              })()"
+            >
+              <div
+                class="flex-auto overflow-y-auto"
+                :class="{ 'shadow-[inset_0_-10px_15px_-10px_rgba(0,0,0,0.35)]' : selectedBand }"
+              >
+                <ul class="menu menu-compact menu-secondary p-4 rounded gap-2">
+                  <template x-for="frame in frames">
+                    <li tabindex="0">
+                      <a class="font-bold" x-text="frame.frame"></a>
+                      <ul class="!block !static !p-0 rounded">
+                        <template x-for="band in frame.bands">
+                          <li>
+                            <a class="flex gap-1" :class="{ 'active' : selectedBand == band.index && selectedFrame == band.frame }" x-data="{enabled: false}" @click="() => {
+                              if (!enabled && selectedBand == band.index && selectedFrame == band.frame) {
+                                selectedBand = null;
+                                selectedFrame = null;
+                              } else {
+                                selectedBand = band.index;
+                                selectedFrame = band.frame;
+                                var colorsDropdown = document.getElementById('colors');
+                                var minChoice = document.getElementById('mincolor');
+                                var maxChoice = document.getElementById('maxcolor');
+                                bandSpec = getBandSpec(selectedFrame, selectedBand);
+                                if (bandSpec != undefined) {
+                                  if (bandSpec['palette'] === '#0f0') {
+                                    // see https://github.com/girder/large_image/issues/855#issuecomment-1124031510
+                                    colorsDropdown.value = 'green';
+                                  } else {
+                                    colorsDropdown.value = bandSpec['palette'] ? bandSpec['palette']: '-- none --';
+                                  }
+                                  minChoice.value = bandSpec['min'] ? bandSpec['min']: null;
+                                  maxChoice.value = bandSpec['max'] ? bandSpec['max']: null;
+                                } else {
+                                  colorsDropdown.value = '-- none --';
+                                  minChoice.value = null;
+                                  maxChoice.value = null;
+                                }
+                              }
+                            }">
+                              <input type="checkbox" x-model="enabled" class="checkbox checkbox-sm flex-none" @click="() => {enabled = ! enabled; if (enabled) {pushBand(band.frame, band.index)} else {popBand(band.frame, band.index)}};" />
+                              <span x-text="band.index"></span><span x-text="band.name"></span>
+                            </a>
+                          </li>
+                        </template>
+                      </ul>
+                    </li>
+                  </template>
+                </ul>
+              </div>
+              <div class="bg-primary flex-initial p-4" x-show="selectedBand != null">
+                <div class="flex flex-col gap-2">
+                  <span class="text-primary-content font-semibold">Configure Band <span x-text="selectedBand"></span></span>
+                  <div class="field">
+                    <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
+                    <select
+                      id="colors"
+                      x-on:change="((event)=>{
+                        var cmap = event.target.value;
+                        if (colorsDropdown.value == '-- none --') {
+                          cmap = undefined;
+                        }
+                        if (cmap === 'green') {
+                          // see https://github.com/girder/large_image/issues/855#issuecomment-1124031510
+                          cmap = '#0f0';
+                        }
+                        addOptionToSelected('palette', cmap);
+                      })($event)"
+                      class="select select-sm w-full"
+                    >
+                      <option>-- none --</option>
+                    </select>
+                  </div>
+                  <div class="flex gap-2 w-full">
+                    <div class="field">
+                      <input class="input input-sm w-full" id="mincolor" type="number" step="0.01" placeholder="from" x-on:change="((event)=>{
+                          addOptionToSelected('min', event.target.value);
+                        })($event)">
+                    </div>
+                    <div class="field">
+                      <input class="input input-sm w-full" id="maxcolor" type="number" step="0.01" placeholder="to" x-on:change="((event)=>{
+                          addOptionToSelected('max', event.target.value);
+                        })($event)">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="controls flex flex-col gap-6 h-[405px] p-4 min-w-max">
+            <div class="field form-control">
+              <label class="label cursor-pointer !justify-start gap-2 !p-0">
+                <input type="checkbox" class="toggle toggle-primary" x-model="customizeDisplay" x-on:change="
+                if (!customizeDisplay) {
+                    // reset style being used
+                    updateStyle({ bands: [] });
+                } else {
+                  updateStyle(style);
+                }">
+                <span class="label-text">Advanced</span>
+              </label>
+            </div>
+            <div class="thumbnail flex items-center justify-center w-[200px] h-[200px] bg-slate-800">
+              <img id="thumbnail" class="max-w-full max-h-full w-auto h-auto" />
+            </div>
+            <div class="field">
+              <label for="rasterOpacityRange" class="pb-1 block">Raster Layer Opacity:</label>
+              <input
+                type="range"
+                min="1"
+                max="100"
+                value="100"
+                class="overlay range range-xs range-primary"
+                id="rasterOpacityRange"
+                onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)"
+              >
+            </div>
+
+            <div class="field" id="metadataViewer">
+              <button
+                type="button"
+                id="copyMetadataButton"
+                onclick="copyMetadata();"
+                class="btn btn-primary btn-sm btn-outline gap-2"
+              >
+                <span class="copy-icon swap swap-rotate">
+                  <i class="ri-file-copy-line swap-off"></i>
+                  <i class="ri-check-line swap-on"></i>
+                </span>
+                Copy Metadata
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+
 <script>
-  const displayControlsToggle = document.getElementById('displayControlsToggle');
-  const displayControls = document.getElementById('displayControls');
-  addToggleListener(displayControlsToggle, displayControls);
-
-  var colorsSubGroup = document.getElementById('colorsSubGroup');
   var colorsDropdown = document.getElementById('colors');
-  var bandDropdown = document.getElementById('bandChoice');
-  var colorsMin = document.getElementById('mincolor');
-  var colorsMax = document.getElementById('maxcolor');
   var thumbnail = document.getElementById('thumbnail');
-  var bands;
-
-  thumbnail.src = thumbnailUrl;
-
-  if (windowSearchParams['min']) {
-    colorsMin.value = windowSearchParams['min']
-  }
-  if (windowSearchParams['max']) {
-    colorsMax.value = windowSearchParams['max']
-  }
-
-  fetch(`${host}/${baseEndpoint}/${imageId}/bands`).then(response => {
-    response.json().then(data => {
-      bands = data;
-      for (const [source, values] of Object.entries(bands)) {
-        const interp = values['interpretation']
-        var newOption = document.createElement('option');
-        newOption.value = source;
-        newOption.text = interp ? `${source}: ${interp}` : source;
-        bandDropdown.appendChild(newOption)
-      }
-      if (windowSearchParams['band']) {
-        bandDropdown.value = windowSearchParams['band'] ? windowSearchParams['band'] : '-- none --';
-        colorsSubGroup.style.display = 'block';
-      }
-    });
-  })
 
   fetch(`${host}/${baseApi}/large-image/colormaps`)
     .then(response => response.json())
@@ -79,41 +253,18 @@
           colorsDropdown.appendChild(newOption);
         }
       }
-      colorsDropdown.value = windowSearchParams['palette'] ? windowSearchParams['palette'] : '-- none --';
     });
 
-  function changeColors() {
-    colorsSubGroup.display = 'block';
-    var cmap;
-    if (colorsDropdown.value == '-- none --') {
-      cmap = undefined;
-    } else {
-      cmap = colorsDropdown.value;
+  function updateStyle(style) {
+    if (style != undefined) {
+      if (style.bands.length === 0) {
+        updateTileUrlOption('style', undefined);
+      } else {
+        updateTileUrlOption('style', JSON.stringify(style));
+      }
     }
-    updateTileUrlOption('palette', cmap);
-    updateTileUrlOption('min', colorsMin.value);
-    updateTileUrlOption('max', colorsMax.value);
     updateTileLayer();
     thumbnail.src = thumbnailUrl;
-  }
-
-  function bandChange() {
-    if (bandDropdown.value == '-- none --') {
-      updateTileUrlOption('palette', undefined);
-      updateTileUrlOption('band', undefined);
-      updateTileUrlOption('min', undefined);
-      updateTileUrlOption('max', undefined);
-      colorsSubGroup.style.display = 'none';
-      updateTileLayer();
-      thumbnail.src = thumbnailUrl;
-    } else {
-      colorsSubGroup.style.display = 'block';
-      band = bandDropdown.value;
-      updateTileUrlOption('band', band);
-      colorsMin.placeholder = bands[band]['min'];
-      colorsMax.placeholder = bands[band]['max'];
-      changeColors();
-    }
   }
 
   var metadata = undefined;
@@ -125,8 +276,14 @@
 
   async function copyMetadata() {
     var copyText = JSON.stringify(metadata);
+    var button = document.querySelector("#copyMetadataButton");
+    var icon = button.querySelector(".copy-icon");
     await navigator.clipboard.writeText(copyText);
-    alert("Copied image metadata");
+
+    icon.classList.add("swap-active");
+    setTimeout(function(){
+      icon.classList.remove("swap-active");
+    }, 2000);
   }
 </script>
 

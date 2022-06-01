@@ -7,27 +7,12 @@
   var tileUrl = undefined;
   var baseApi = 'api';
 
-  const windowSearch = new URLSearchParams(window.location.search);
-  const windowSearchParams = Object.fromEntries(windowSearch.entries());
-
-  // function insertWindowUrlParam(key, value) {
-  //   if (history.pushState) {
-  //     let searchParams = new URLSearchParams(window.location.search);
-  //     if (value === undefined) {
-  //       searchParams.delete(key);
-  //     } else {
-  //       searchParams.set(key, value);
-  //     }
-  //     let newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?' + searchParams.toString();
-  //     window.history.pushState({
-  //       path: newurl
-  //     }, '', newurl);
-  //   }
-  // }
-
   function updateTileUrlOption(option, value) {
     if (thumbnailUrl === undefined) {
       thumbnailUrl = `${host}/${baseEndpoint}/${imageId}/thumbnail.png`;
+    }
+    if (option === undefined) {
+      return;
     }
     const url = new URL(tileUrl);
     const urlThumb = new URL(thumbnailUrl);
@@ -42,31 +27,6 @@
     const tileFormat = '/{z}/{x}/{y}.';
     tileUrl = url.toString().replace(tileFormatEncoded, tileFormat);
     thumbnailUrl = urlThumb.toString();
-    // insertWindowUrlParam(option, value);
-  }
-
-  // for (const [option, value] of Object.entries(windowSearchParams)) {
-  //   updateTileUrlOption(option, value);
-  // }
-
-  function addToggleListener(uiToggle, uiContent, callback = null) {
-    uiToggle.addEventListener('click', function() {
-      this.classList.toggle('active');
-      var state = null;
-      if (uiContent.style.display === 'block') {
-        uiContent.style.display = 'none';
-        state = false;
-      } else {
-        uiContent.style.display = 'block';
-        state = true;
-      }
-      // Call the custom callback if given
-      if (callback != null) {
-        callback(state);
-      }
-    });
-    // Hide by default
-    uiContent.style.display = 'none';
   }
 </script>
 {% endblock %}
