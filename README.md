@@ -436,3 +436,14 @@ is published as a standalone Docker image that anyone can try out:
 ```bash
 docker run -it -p 8000:8000 -v dli_demo_data:/opt/django-project/data ghcr.io/girder/django-large-image-demo:latest
 ```
+
+
+## Using with django-raster
+
+[`django-raster`](https://github.com/geodesign/django-raster) is a popular
+choice for storing geospatial raster data in Django. `django-large-image` works
+well with `django-raster` to provide additional endpoints for dynamic tile
+serving and more.
+
+Please take a look at the demo project here: https://github.com/ResonantGeoData/django-raster-demo
+and raise any questions about usage with `django-raster` there.
