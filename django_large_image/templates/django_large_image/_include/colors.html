@@ -8,25 +8,14 @@
 <script src="//unpkg.com/alpinejs" defer></script>
 <script src="https://cdn.tailwindcss.com"></script>
 
-<div
-  class="control-panel bg-transparent absolute bottom-[25px] right-[25px] z-20"
-  x-data="{ controls: false }"
-  data-theme="winter"
->
-  <button
-    class="btn btn-primary btn-sm gap-2"
-    @click="controls = ! controls"
-    type="button"
-  >
+<div class="control-panel bg-transparent absolute bottom-[25px] right-[25px] z-20" x-data="{ controls: false }" data-theme="winter">
+  <button class="btn btn-primary btn-sm gap-2" @click="controls = ! controls" type="button">
     Controls
     <i class="ri-equalizer-line" x-show="!controls"></i>
     <i class="ri-close-line" x-show="controls"></i>
   </button>
 
-  <div
-    class="absolute bottom-full pb-3 right-0"
-    x-show="controls"
-    x-data="{
+  <div class="absolute bottom-full pb-3 right-0" x-show="controls" x-data="{
       selectedBand: null,
       selectedFrame: null,
       style: { bands: [] },
@@ -75,34 +64,17 @@
         this.style.bands[ind][option] = value;
         updateStyle(this.style);
       }
-    }"
-  >
+    }">
     <div class="card bg-slate-100 bg-opacity-[.85] min-w-max !rounded-lg shadow-lg">
-      <div
-        class="card-body !p-0"
-        x-data="{ customizeDisplay: false }"
-      >
-        <div
-          :class="{ 'flex gap-4' : customizeDisplay }"
-        >
-          <div
-            x-show="customizeDisplay"
-            class="row-span-full"
-          >
-            <div
-              id="dataContainer"
-              class="bg-slate-200 flex flex-col h-full justify-between max-h-[405px] text-slate-900 w-64"
-              x-data="{ frames: [] }"
-              x-init="(async () => {
+      <div class="card-body !p-0" x-data="{ customizeDisplay: false, customPalette: false }">
+        <div :class="{ 'flex gap-4' : customizeDisplay }">
+          <div x-show="customizeDisplay" class="row-span-full">
+            <div id="dataContainer" class="bg-slate-200 flex flex-col h-full justify-between max-h-[405px] text-slate-900 w-64" x-data="{ frames: [] }" x-init="(async () => {
                 const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
                 data = await response.json()
                 frames = data['frames']
-              })()"
-            >
-              <div
-                class="flex-auto overflow-y-auto"
-                :class="{ 'shadow-[inset_0_-10px_15px_-10px_rgba(0,0,0,0.35)]' : selectedBand }"
-              >
+              })()">
+              <div class="flex-auto overflow-y-auto" :class="{ 'shadow-[inset_0_-10px_15px_-10px_rgba(0,0,0,0.35)]' : selectedBand }">
                 <ul class="menu menu-compact menu-secondary p-4 rounded gap-2">
                   <template x-for="frame in frames">
                     <li tabindex="0">
@@ -118,14 +90,29 @@
                                 selectedBand = band.index;
                                 selectedFrame = band.frame;
                                 var colorsDropdown = document.getElementById('colors');
+                                var customPaletteField = document.getElementById('customPalette');
                                 var minChoice = document.getElementById('mincolor');
                                 var maxChoice = document.getElementById('maxcolor');
                                 bandSpec = getBandSpec(selectedFrame, selectedBand);
+
                                 if (bandSpec != undefined) {
+                                  // Check if palette not in drop down - if so set as custom
+                                  const isChosen = [...colorsDropdown.options].some(function(element, index) {
+                                    if (element.value === bandSpec['palette']) {
+                                      return true;
+                                    }
+                                    return false;
+                                  });
                                   if (bandSpec['palette'] === '#0f0') {
                                     // see https://github.com/girder/large_image/issues/855#issuecomment-1124031510
                                     colorsDropdown.value = 'green';
+                                    customPalette = false;
+                                  } else if (bandSpec['palette'] && !isChosen) {
+                                    customPalette = true;
+                                    colorsDropdown.value = '-- custom --';
+                                    customPaletteField.value = bandSpec['palette'];
                                   } else {
+                                    customPalette = false;
                                     colorsDropdown.value = bandSpec['palette'] ? bandSpec['palette']: '-- none --';
                                   }
                                   minChoice.value = bandSpec['min'] ? bandSpec['min']: null;
@@ -152,9 +139,17 @@
                   <span class="text-primary-content font-semibold">Configure Band <span x-text="selectedBand"></span></span>
                   <div class="field">
                     <label for="colors" class="pb-1 block text-xs text-primary-content">Choose a colormap:</label>
-                    <select
-                      id="colors"
-                      x-on:change="((event)=>{
+                    <select id="colors" x-on:change="((event)=>{
+                        if (colorsDropdown.value == '-- custom --') {
+                          customPalette = true;
+                          var customPaletteField = document.getElementById('customPalette');
+                          if (customPaletteField.value) {
+                            addOptionToSelected('palette', customPaletteField.value);
+                          }
+                          return;
+                        }
+                        customPalette = false;
+
                         var cmap = event.target.value;
                         if (colorsDropdown.value == '-- none --') {
                           cmap = undefined;
@@ -164,11 +159,18 @@
                           cmap = '#0f0';
                         }
                         addOptionToSelected('palette', cmap);
-                      })($event)"
-                      class="select select-sm w-full"
-                    >
+                      })($event)" class="select select-sm w-full">
                       <option>-- none --</option>
+                      <option>-- custom --</option>
                     </select>
+                  </div>
+                  <div class="flex gap-2 w-full" x-show="customPalette">
+                    <label for="customPalette" class="pb-1 block text-xs text-primary-content">Specify a color:</label>
+                    <div class="field">
+                      <input class="input input-sm w-full" id="customPalette" type="string" placeholder="#FFA07A" x-on:change="((event)=>{
+                          addOptionToSelected('palette', event.target.value);
+                        })($event)">
+                    </div>
                   </div>
                   <div class="flex gap-2 w-full">
                     <div class="field">
@@ -205,24 +207,11 @@
             </div>
             <div class="field">
               <label for="rasterOpacityRange" class="pb-1 block">Raster Layer Opacity:</label>
-              <input
-                type="range"
-                min="1"
-                max="100"
-                value="100"
-                class="overlay range range-xs range-primary"
-                id="rasterOpacityRange"
-                onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)"
-              >
+              <input type="range" min="1" max="100" value="100" class="overlay range range-xs range-primary" id="rasterOpacityRange" onChange="updateTilesOpacity(event, value)" onInput="updateTilesOpacity(event, value)">
             </div>
 
             <div class="field" id="metadataViewer">
-              <button
-                type="button"
-                id="copyMetadataButton"
-                onclick="copyMetadata();"
-                class="btn btn-primary btn-sm btn-outline gap-2"
-              >
+              <button type="button" id="copyMetadataButton" onclick="copyMetadata();" class="btn btn-primary btn-sm btn-outline gap-2">
                 <span class="copy-icon swap swap-rotate">
                   <i class="ri-file-copy-line swap-off"></i>
                   <i class="ri-check-line swap-on"></i>
@@ -281,7 +270,7 @@
     await navigator.clipboard.writeText(copyText);
 
     icon.classList.add("swap-active");
-    setTimeout(function(){
+    setTimeout(function() {
       icon.classList.remove("swap-active");
     }, 2000);
   }
