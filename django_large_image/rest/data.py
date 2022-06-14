@@ -23,8 +23,14 @@ histogram_parameters = params.BASE + params.HISTOGRAM
 
 class DataMixin(LargeImageMixinBase):
     @method_decorator(cache_page(CACHE_TIMEOUT))
-    def thumbnail(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
-        encoding = tilesource.format_to_encoding(format)
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=thumbnail_summary,
+        manual_parameters=thumbnail_parameters,
+    )
+    @action(detail=False, url_path=r'thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
+        encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
         height = int(self.get_query_param(request, 'max_height', 256))
         source = self.get_tile_source(request, pk, encoding=encoding)
@@ -33,23 +39,11 @@ class DataMixin(LargeImageMixinBase):
 
     @swagger_auto_schema(
         method='GET',
-        operation_summary=thumbnail_summary,
-        manual_parameters=thumbnail_parameters,
+        operation_summary=region_summary,
+        manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=False, url_path='thumbnail.png')
-    def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
-        return self.thumbnail(request, pk, format='png')
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=thumbnail_summary,
-        manual_parameters=thumbnail_parameters,
-    )
-    @action(detail=False, url_path='thumbnail.jpeg')
-    def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
-        return self.thumbnail(request, pk, format='jpeg')
-
-    def region(self, request: Request, pk: int = None, format: str = None) -> HttpResponse:
+    @action(detail=False, url_path=r'region.(?P<fmt>png|jpg|jpeg|tif)')
+    def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
         Note
@@ -62,7 +56,7 @@ class DataMixin(LargeImageMixinBase):
         """
         source = self.get_tile_source(request, pk)
         units = self.get_query_param(request, 'units')
-        encoding = tilesource.format_to_encoding(format)
+        encoding = tilesource.format_to_encoding(fmt)
         left = float(self.get_query_param(request, 'left'))
         right = float(self.get_query_param(request, 'right'))
         top = float(self.get_query_param(request, 'top'))
@@ -82,33 +76,6 @@ class DataMixin(LargeImageMixinBase):
             )
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters,
-    )
-    @action(detail=False, url_path=r'region.tif')
-    def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
-        return self.region(request, pk, format='tif')
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters + params.STYLE,
-    )
-    @action(detail=False, url_path=r'region.png')
-    def region_png(self, request: Request, pk: int = None) -> HttpResponse:
-        return self.region(request, pk, format='png')
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters + params.STYLE,
-    )
-    @action(detail=False, url_path=r'region.jpeg')
-    def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
-        return self.region(request, pk, format='jpeg')
 
     @swagger_auto_schema(
         method='GET',
@@ -158,45 +125,18 @@ class DataDetailMixin(DataMixin):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=True, url_path='thumbnail.png')
-    def thumbnail_png(self, request: Request, pk: int = None) -> HttpResponse:
-        return super().thumbnail_png(request, pk)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=thumbnail_summary,
-        manual_parameters=thumbnail_parameters,
-    )
-    @action(detail=True, url_path='thumbnail.jpeg')
-    def thumbnail_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
-        return super().thumbnail_jpeg(request, pk)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters,
-    )
-    @action(detail=True, url_path=r'region.tif')
-    def region_tif(self, request: Request, pk: int = None) -> HttpResponse:
-        return super().region_tif(request, pk)
+    @action(detail=True, url_path=r'thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
+        return super().thumbnail(request, pk, fmt)
 
     @swagger_auto_schema(
         method='GET',
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=True, url_path=r'region.png')
-    def region_png(self, request: Request, pk: int = None) -> HttpResponse:
-        return super().region_png(request, pk)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters + params.STYLE,
-    )
-    @action(detail=True, url_path=r'region.jpeg')
-    def region_jpeg(self, request: Request, pk: int = None) -> HttpResponse:
-        return super().region_jpeg(request, pk)
+    @action(detail=True, url_path=r'region.(?P<fmt>png|jpg|jpeg|tif)')
+    def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
+        return super().region(request, pk, fmt)
 
     @swagger_auto_schema(
         method='GET',
