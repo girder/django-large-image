@@ -11,7 +11,7 @@
   var imageLayer;
   var viewer;
 
-  fetch(`${host}/${baseEndpoint}/${imageId}/metadata`)
+  fetch(`${host}/${baseEndpoint}/${imageId}/info/metadata`)
     .then(response => response.json())
     .then(tileinfo => {
       if (tileinfo['geospatial']) {

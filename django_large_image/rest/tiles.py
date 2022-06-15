@@ -16,7 +16,7 @@ from django_large_image.rest.serializers import TileMetadataSerializer
 tile_metadata_summary = 'Returns tile metadata.'
 tile_metadata_parameters = params.BASE
 tile_summary = 'Returns tile image binary.'
-tile_parameters = params.BASE + [params.z, params.x, params.y] + params.STYLE
+tile_parameters = params.BASE + [params.z, params.x, params.y, params.fmt_png] + params.STYLE
 tile_corners_summary = 'Returns bounds of a tile for a given x, y, z index.'
 tile_corners_parameters = params.BASE + [params.z, params.x, params.y]
 
@@ -35,10 +35,16 @@ class TilesMixin(LargeImageMixinBase):
         return Response(serializer.data)
 
     @method_decorator(cache_page(CACHE_TIMEOUT))
+    @swagger_auto_schema(
+        method='GET',
+        operation_summary=tile_summary,
+        manual_parameters=tile_parameters,
+    )
+    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)')
     def tile(
-        self, request: Request, x: int, y: int, z: int, pk: int = None, format: str = None
+        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
     ) -> HttpResponse:
-        encoding = tilesource.format_to_encoding(format)
+        encoding = tilesource.format_to_encoding(fmt)
         source = self.get_tile_source(request, pk, encoding=encoding)
         try:
             tile_binary = source.getTile(int(x), int(y), int(z), encoding=encoding)
@@ -46,38 +52,6 @@ class TilesMixin(LargeImageMixinBase):
             raise ValidationError(e)
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_summary,
-        manual_parameters=tile_parameters,
-    )
-    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
-    def tile_png(
-        self,
-        request: Request,
-        x: int,
-        y: int,
-        z: int,
-        pk: int = None,
-    ) -> HttpResponse:
-        return self.tile(request, x, y, z, pk=pk, format='png')
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_summary,
-        manual_parameters=tile_parameters,
-    )
-    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
-    def tile_jpeg(
-        self,
-        request: Request,
-        x: int,
-        y: int,
-        z: int,
-        pk: int = None,
-    ) -> HttpResponse:
-        return self.tile(request, x, y, z, pk=pk, format='jpeg')
 
     @swagger_auto_schema(
         method='GET',
@@ -117,32 +91,11 @@ class TilesDetailMixin(TilesMixin):
         operation_summary=tile_summary,
         manual_parameters=tile_parameters,
     )
-    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).png')
-    def tile_png(
-        self,
-        request: Request,
-        x: int,
-        y: int,
-        z: int,
-        pk: int = None,
+    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)')
+    def tile(
+        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
     ) -> HttpResponse:
-        return super().tile_png(request, x, y, z, pk)
-
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_summary,
-        manual_parameters=tile_parameters,
-    )
-    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).jpeg')
-    def tile_jpeg(
-        self,
-        request: Request,
-        x: int,
-        y: int,
-        z: int,
-        pk: int = None,
-    ) -> HttpResponse:
-        return super().tile_jpeg(request, x, y, z, pk)
+        return super().tile(request, x, y, z, pk, fmt)
 
     @swagger_auto_schema(
         method='GET',

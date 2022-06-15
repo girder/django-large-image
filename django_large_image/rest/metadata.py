@@ -38,7 +38,7 @@ class MetaDataMixin(LargeImageMixinBase):
         operation_summary=metadata_summary,
         manual_parameters=metadata_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/metadata')
     def metadata(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk, style=False)
         metadata = tilesource.get_metadata(source)
@@ -49,7 +49,7 @@ class MetaDataMixin(LargeImageMixinBase):
         operation_summary=metadata_internal_summary,
         manual_parameters=metadata_internal_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/metadata_internal')
     def metadata_internal(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk, style=False)
         metadata = tilesource.get_metadata_internal(source)
@@ -60,7 +60,7 @@ class MetaDataMixin(LargeImageMixinBase):
         operation_summary=bands_summary,
         manual_parameters=bands_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/bands')
     def bands(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk, style=False)
         metadata = source.getBandInformation()
@@ -71,7 +71,7 @@ class MetaDataMixin(LargeImageMixinBase):
         operation_summary=bands_summary,
         manual_parameters=band_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/band')
     def band(self, request: Request, pk: int = None) -> Response:
         # TODO: handle frame choice
         band = int(self.get_query_param(request, 'band', 1))
@@ -84,7 +84,7 @@ class MetaDataMixin(LargeImageMixinBase):
         operation_summary=frames_summary,
         manual_parameters=frames_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/frames')
     def frames(self, request: Request, pk: int = None) -> Response:
         source = self.get_tile_source(request, pk, style=False)
         data = tilesource.get_frames(source)
@@ -94,7 +94,7 @@ class MetaDataMixin(LargeImageMixinBase):
         method='GET',
         operation_summary=tiffdump_summary,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='info/tiffdump')
     def tiffdump(self, request: Request, pk: int = None) -> Response:
         if tifftools is None:  # pragma: no cover
             raise APIException('`tifftools` is not installed on the server.')
@@ -123,7 +123,7 @@ class MetaDataDetailMixin(MetaDataMixin):
         operation_summary=metadata_summary,
         manual_parameters=metadata_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/metadata')
     def metadata(self, request: Request, pk: int = None) -> Response:
         return super().metadata(request, pk)
 
@@ -132,7 +132,7 @@ class MetaDataDetailMixin(MetaDataMixin):
         operation_summary=metadata_internal_summary,
         manual_parameters=metadata_internal_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/metadata_internal')
     def metadata_internal(self, request: Request, pk: int = None) -> Response:
         return super().metadata_internal(request, pk)
 
@@ -141,7 +141,7 @@ class MetaDataDetailMixin(MetaDataMixin):
         operation_summary=bands_summary,
         manual_parameters=bands_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/bands')
     def bands(self, request: Request, pk: int = None) -> Response:
         return super().bands(request, pk)
 
@@ -150,7 +150,7 @@ class MetaDataDetailMixin(MetaDataMixin):
         operation_summary=bands_summary,
         manual_parameters=band_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/band')
     def band(self, request: Request, pk: int = None) -> Response:
         return super().band(request, pk)
 
@@ -159,7 +159,7 @@ class MetaDataDetailMixin(MetaDataMixin):
         operation_summary=frames_summary,
         manual_parameters=frames_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/frames')
     def frames(self, request: Request, pk: int = None) -> Response:
         return super().frames(request, pk)
 
@@ -167,6 +167,6 @@ class MetaDataDetailMixin(MetaDataMixin):
         method='GET',
         operation_summary=tiffdump_summary,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='info/tiffdump')
     def tiffdump(self, request: Request, pk: int = None) -> Response:
         return super().tiffdump(request, pk)

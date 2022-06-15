@@ -14,7 +14,7 @@ def a_html(url, label):
 
 class Mixin:
     def thumbnail(self):
-        return thumbnail_html(reverse('imagefile-thumbnail-png', args=[self.pk]))
+        return thumbnail_html(reverse('imagefile-thumbnail', args=[self.pk, 'png']))
 
     thumbnail.allow_tags = True  # type: ignore
 
