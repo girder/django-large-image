@@ -28,7 +28,7 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=False, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=False, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)')
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
@@ -42,8 +42,8 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=False, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif)')
-    def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
+    @action(detail=False, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)')
+    def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
         Note
@@ -125,7 +125,7 @@ class DataDetailMixin(DataMixin):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=True, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=True, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)')
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
@@ -134,8 +134,8 @@ class DataDetailMixin(DataMixin):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=True, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif)')
-    def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
+    @action(detail=True, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)')
+    def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
         return super().region(request, pk, fmt)
 
     @swagger_auto_schema(

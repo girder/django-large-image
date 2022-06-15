@@ -18,16 +18,16 @@ BASE = [projection, source]
 fmt_png = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image format (png | jpeg | tif)',
+    description='Image format (png | jpeg)',
     type=openapi.TYPE_STRING,
     default='png',
 )
-fmt_tif = openapi.Parameter(
+fmt_tiff = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image format (png | jpeg | tif)',
+    description='Image data format (png | jpeg | tiff)',
     type=openapi.TYPE_STRING,
-    default='tif',
+    default='tiff',
 )
 
 z = openapi.Parameter(
@@ -115,7 +115,7 @@ units = openapi.Parameter(
     type=openapi.TYPE_STRING,
 )
 
-REGION = [left, right, top, bottom, units, fmt_tif]
+REGION = [left, right, top, bottom, units, fmt_tiff]
 
 # Histogram Parameters
 only = openapi.Parameter(
