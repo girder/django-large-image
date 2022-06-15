@@ -18,14 +18,14 @@ BASE = [projection, source]
 fmt_png = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image format (png|jpg|jpeg|tif)',
+    description='Image format (png | jpeg | tif)',
     type=openapi.TYPE_STRING,
     default='png',
 )
 fmt_tif = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image format (png|jpg|jpeg|tif)',
+    description='Image format (png | jpeg | tif)',
     type=openapi.TYPE_STRING,
     default='tif',
 )

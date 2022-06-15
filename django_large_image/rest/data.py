@@ -125,7 +125,7 @@ class DataDetailMixin(DataMixin):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=True, url_path='data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=True, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
