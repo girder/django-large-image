@@ -5,7 +5,7 @@ from rest_framework import status
 @pytest.mark.django_db(transaction=True)
 def test_metadata(api_client, image_file_geotiff):
     response = api_client.get(
-        f'/api/imagefile/{image_file_geotiff.pk}/metadata?projection=EPSG:3857'
+        f'/api/imagefile/{image_file_geotiff.pk}/info/metadata?projection=EPSG:3857'
     )
     assert status.is_success(response.status_code)
     metadata = response.data
@@ -18,7 +18,7 @@ def test_metadata(api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_metadata_internal(api_client, image_file_geotiff):
-    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/metadata_internal')
+    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/info/metadata_internal')
     assert status.is_success(response.status_code)
     metadata = response.data
     assert metadata['geospatial']
@@ -27,7 +27,7 @@ def test_metadata_internal(api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_bands(api_client, image_file_geotiff):
-    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/bands')
+    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/info/bands')
     assert status.is_success(response.status_code)
     bands = response.data
     assert isinstance(bands[1], dict)
@@ -35,7 +35,7 @@ def test_bands(api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_frames(api_client, image_file_geotiff):
-    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/frames')
+    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/info/frames')
     assert status.is_success(response.status_code)
     data = response.data
     assert isinstance(data['frames'], list)
@@ -45,7 +45,7 @@ def test_frames(api_client, image_file_geotiff):
 
 @pytest.mark.django_db(transaction=True)
 def test_band(api_client, image_file_geotiff):
-    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/band?band=1')
+    response = api_client.get(f'/api/imagefile/{image_file_geotiff.pk}/info/band?band=1')
     assert status.is_success(response.status_code)
     band = response.data
     assert band['interpretation']

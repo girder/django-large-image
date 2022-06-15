@@ -70,12 +70,12 @@ please reach out at kitware@kitware.com. We look forward to the conversation!
 ### 🌟 Features
 
 Rich set of RESTful endpoints to extract information from large image formats:
-- Image metadata (`/metadata`, `/metadata_internal`)
+- Image metadata (`/info/metadata`, `/info/metadata_internal`)
 - Tile serving (`/tiles/{z}/{x}/{y}.png?projection=EPSG:3857`)
-- Region extraction (`/region.tif?left=v&right=v&top=v&bottom=v`)
-- Image thumbnails (`/thumbnail.png`)
-- Individual pixels (`/pixel?left=v&top=v`)
-- Band histograms (`/histogram`)
+- Region extraction (`/data/region.tif?left=v&right=v&top=v&bottom=v`)
+- Image thumbnails (`/data/thumbnail.png`)
+- Individual pixels (`/data/pixel?left=v&top=v`)
+- Band histograms (`/data/histogram`)
 
 Support for any storage backend:
 - Supports Django's `FileField`
@@ -370,7 +370,7 @@ that you can easily create a false color image from multispectral imagery.
 View a single band with a Matplotlib colormap:
 
 ```js
-var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?band=3&palette=viridis&min=50&max=250`;
+var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/data/thumbnail.png?band=3&palette=viridis&min=50&max=250`;
 ```
 
 2. A complex specification for styling across frames and bands to create composite images using a [JSON specification defined by `large-image`](https://girder.github.io/large_image/tilesource_options.html#style).
@@ -387,7 +387,7 @@ var style = {
   ]
 };
 var styleEncoded = encodeURIComponent(JSON.stringify(style))
-var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/thumbnail.png?style=${styleEncoded}`;
+var thumbnailUrl = `http://localhost:8000/api/image-file/${imageId}/data/thumbnail.png?style=${styleEncoded}`;
 ```
 
 

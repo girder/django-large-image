@@ -28,7 +28,7 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=False, url_path=r'thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=False, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
@@ -42,7 +42,7 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=False, url_path=r'region.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=False, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif)')
     def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
@@ -82,7 +82,7 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=pixel_summary,
         manual_parameters=pixel_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None) -> Response:
         left = int(self.get_query_param(request, 'left'))
         top = int(self.get_query_param(request, 'top'))
@@ -95,7 +95,7 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=histogram_summary,
         manual_parameters=histogram_parameters,
     )
-    @action(detail=False)
+    @action(detail=False, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None) -> Response:
         only_min_max = not utilities.param_nully(self.get_query_param(request, 'onlyMinMax', False))
         density = not utilities.param_nully(self.get_query_param(request, 'density', False))
@@ -125,7 +125,7 @@ class DataDetailMixin(DataMixin):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=True, url_path=r'thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=True, url_path='data/thumbnail.(?P<fmt>png|jpg|jpeg|tif)')
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
@@ -134,7 +134,7 @@ class DataDetailMixin(DataMixin):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=True, url_path=r'region.(?P<fmt>png|jpg|jpeg|tif)')
+    @action(detail=True, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif)')
     def region(self, request: Request, pk: int = None, fmt: str = 'tif') -> HttpResponse:
         return super().region(request, pk, fmt)
 
@@ -143,7 +143,7 @@ class DataDetailMixin(DataMixin):
         operation_summary=pixel_summary,
         manual_parameters=pixel_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None) -> Response:
         return super().pixel(request, pk)
 
@@ -152,6 +152,6 @@ class DataDetailMixin(DataMixin):
         operation_summary=histogram_summary,
         manual_parameters=histogram_parameters,
     )
-    @action(detail=True)
+    @action(detail=True, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None) -> Response:
         return super().histogram(request, pk)

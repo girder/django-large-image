@@ -40,7 +40,7 @@
     tileLayer = layers.addImageryProvider(tileProvider);
   }
 
-  fetch(`${host}/${baseEndpoint}/${imageId}/metadata?projection=EPSG:3857`)
+  fetch(`${host}/${baseEndpoint}/${imageId}/info/metadata?projection=EPSG:3857`)
     .then(response => response.json())
     .then(data => {
       var extents = data["bounds"];

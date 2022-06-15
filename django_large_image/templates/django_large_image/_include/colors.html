@@ -70,7 +70,7 @@
         <div :class="{ 'flex gap-4' : customizeDisplay }">
           <div x-show="customizeDisplay" class="row-span-full">
             <div id="dataContainer" class="bg-slate-200 flex flex-col h-full justify-between max-h-[405px] text-slate-900 w-64" x-data="{ frames: [] }" x-init="(async () => {
-                const response = await fetch(`${host}/${baseEndpoint}/${imageId}/frames`)
+                const response = await fetch(`${host}/${baseEndpoint}/${imageId}/info/frames`)
                 data = await response.json()
                 frames = data['frames']
               })()">
@@ -257,7 +257,7 @@
   }
 
   var metadata = undefined;
-  fetch(`${host}/${baseEndpoint}/${imageId}/metadata`)
+  fetch(`${host}/${baseEndpoint}/${imageId}/info/metadata`)
     .then(response => response.json())
     .then(data => {
       metadata = data
