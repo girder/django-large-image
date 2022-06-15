@@ -12,14 +12,16 @@ from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 from django_large_image.rest.renderers import image_renderers
-from django_large_image.rest.serializers import TileMetadataSerializer
+from django_large_image.serializers.tiles import TileCornersSerializer, TileMetadataSerializer
 
 tile_metadata_summary = 'Returns tile metadata.'
 tile_metadata_parameters = params.BASE
+tile_metadata_responses = {200: TileMetadataSerializer}
 tile_summary = 'Returns tile image binary.'
 tile_parameters = params.BASE + [params.z, params.x, params.y, params.fmt_png] + params.STYLE
 tile_corners_summary = 'Returns bounds of a tile for a given x, y, z index.'
 tile_corners_parameters = params.BASE + [params.z, params.x, params.y]
+tile_corners_responses = {200: TileCornersSerializer}
 
 
 class TilesMixin(LargeImageMixinBase):
@@ -27,6 +29,7 @@ class TilesMixin(LargeImageMixinBase):
         method='GET',
         operation_summary=tile_metadata_summary,
         manual_parameters=tile_metadata_parameters,
+        responses=tile_metadata_responses,
     )
     @action(detail=False, url_path=r'tiles/metadata')
     def tiles_metadata(self, request: Request, pk: int = None) -> Response:
@@ -62,6 +65,7 @@ class TilesMixin(LargeImageMixinBase):
         method='GET',
         operation_summary=tile_corners_summary,
         manual_parameters=tile_corners_parameters,
+        responses=tile_corners_responses,
     )
     @action(
         detail=False, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
@@ -70,7 +74,12 @@ class TilesMixin(LargeImageMixinBase):
         self, request: Request, x: int, y: int, z: int, pk: int = None
     ) -> HttpResponse:
         source = self.get_tile_source(request, pk, style=False)
-        xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
+        try:
+            xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
+        except AttributeError:
+            raise ValidationError(
+                'Tile source is not geospatial and has no `getTileCorners` method.'
+            )
         metadata = {
             'xmin': xmin,
             'xmax': xmax,
@@ -86,6 +95,7 @@ class TilesDetailMixin(TilesMixin):
         method='GET',
         operation_summary=tile_metadata_summary,
         manual_parameters=tile_metadata_parameters,
+        responses=tile_metadata_responses,
     )
     @action(detail=True, url_path=r'tiles/metadata')
     def tiles_metadata(self, request: Request, pk: int = None) -> Response:
@@ -110,6 +120,7 @@ class TilesDetailMixin(TilesMixin):
         method='GET',
         operation_summary=tile_corners_summary,
         manual_parameters=tile_corners_parameters,
+        responses=tile_corners_responses,
     )
     @action(
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'

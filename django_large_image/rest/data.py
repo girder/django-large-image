@@ -11,6 +11,7 @@ from django_large_image import tilesource, utilities
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
 from django_large_image.rest.renderers import image_data_renderers, image_renderers
+from django_large_image.serializers.data import HistogramSerializer, PixelSerializer
 
 thumbnail_summary = 'Returns thumbnail of full image.'
 thumbnail_parameters = params.BASE + params.THUMBNAIL + params.STYLE
@@ -18,8 +19,10 @@ region_summary = 'Returns region tile binary.'
 region_parameters = params.BASE + params.REGION
 pixel_summary = 'Returns single pixel.'
 pixel_parameters = params.BASE + [params.left, params.top] + params.STYLE
+pixel_responses = {200: PixelSerializer}
 histogram_summary = 'Returns histogram'
 histogram_parameters = params.BASE + params.HISTOGRAM
+histogram_responses = {200: HistogramSerializer}
 
 
 class DataMixin(LargeImageMixinBase):
@@ -90,6 +93,7 @@ class DataMixin(LargeImageMixinBase):
         method='GET',
         operation_summary=pixel_summary,
         manual_parameters=pixel_parameters,
+        responses=pixel_responses,
     )
     @action(detail=False, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None) -> Response:
@@ -103,6 +107,7 @@ class DataMixin(LargeImageMixinBase):
         method='GET',
         operation_summary=histogram_summary,
         manual_parameters=histogram_parameters,
+        responses=histogram_responses,
     )
     @action(detail=False, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None) -> Response:
@@ -159,6 +164,7 @@ class DataDetailMixin(DataMixin):
         method='GET',
         operation_summary=pixel_summary,
         manual_parameters=pixel_parameters,
+        responses=pixel_responses,
     )
     @action(detail=True, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None) -> Response:
@@ -168,6 +174,7 @@ class DataDetailMixin(DataMixin):
         method='GET',
         operation_summary=histogram_summary,
         manual_parameters=histogram_parameters,
+        responses=histogram_responses,
     )
     @action(detail=True, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None) -> Response:

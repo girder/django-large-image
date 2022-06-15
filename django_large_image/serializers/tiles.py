@@ -36,3 +36,27 @@ class TileMetadataSerializer(serializers.Serializer):
         read_only=True,
         source='getMetadata',
     )
+
+
+class TileCornersSerializer(serializers.Serializer):
+
+    xmin = serializers.FloatField(
+        help_text='Minimum X coordinate',
+        read_only=True,
+    )
+    xmax = serializers.FloatField(
+        help_text='Maximum X coordinate',
+        read_only=True,
+    )
+    ymin = serializers.FloatField(
+        help_text='Minimum Y coordinate',
+        read_only=True,
+    )
+    ymax = serializers.FloatField(
+        help_text='Maximum Y coordinate',
+        read_only=True,
+    )
+    proj4 = serializers.CharField(
+        help_text='Proj4 string of projection information',
+        read_only=True,
+    )
