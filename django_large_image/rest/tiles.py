@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from django_large_image import tilesource
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
+from django_large_image.rest.renderers import image_renderers
 from django_large_image.rest.serializers import TileMetadataSerializer
 
 tile_metadata_summary = 'Returns tile metadata.'
@@ -40,7 +41,11 @@ class TilesMixin(LargeImageMixinBase):
         operation_summary=tile_summary,
         manual_parameters=tile_parameters,
     )
-    @action(detail=False, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)')
+    @action(
+        detail=False,
+        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        renderer_classes=image_renderers,
+    )
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
     ) -> HttpResponse:
@@ -91,7 +96,11 @@ class TilesDetailMixin(TilesMixin):
         operation_summary=tile_summary,
         manual_parameters=tile_parameters,
     )
-    @action(detail=True, url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)')
+    @action(
+        detail=True,
+        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        renderer_classes=image_renderers,
+    )
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
     ) -> HttpResponse:

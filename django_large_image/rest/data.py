@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from django_large_image import tilesource, utilities
 from django_large_image.rest import params
 from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
+from django_large_image.rest.renderers import image_data_renderers, image_renderers
 
 thumbnail_summary = 'Returns thumbnail of full image.'
 thumbnail_parameters = params.BASE + params.THUMBNAIL + params.STYLE
@@ -28,7 +29,11 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=False, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)')
+    @action(
+        detail=False,
+        url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)',
+        renderer_classes=image_renderers,
+    )
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
@@ -42,7 +47,11 @@ class DataMixin(LargeImageMixinBase):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=False, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)')
+    @action(
+        detail=False,
+        url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)',
+        renderer_classes=image_data_renderers,
+    )
     def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
@@ -125,7 +134,11 @@ class DataDetailMixin(DataMixin):
         operation_summary=thumbnail_summary,
         manual_parameters=thumbnail_parameters,
     )
-    @action(detail=True, url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)')
+    @action(
+        detail=True,
+        url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)',
+        renderer_classes=image_renderers,
+    )
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
@@ -134,7 +147,11 @@ class DataDetailMixin(DataMixin):
         operation_summary=region_summary,
         manual_parameters=region_parameters + params.STYLE,
     )
-    @action(detail=True, url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)')
+    @action(
+        detail=True,
+        url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)',
+        renderer_classes=image_data_renderers,
+    )
     def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
         return super().region(request, pk, fmt)
 
