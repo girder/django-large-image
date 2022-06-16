@@ -1,10 +1,7 @@
 import logging
 
 from django.apps import AppConfig
-from django.conf import settings
 import large_image
-
-from django_large_image.cache import DjangoCache
 
 logger = logging.getLogger(__name__)
 
