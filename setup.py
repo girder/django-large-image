@@ -50,4 +50,7 @@ setup(
             'cmocean',
         ],
     },
+    entry_points={
+        'large_image.cache': ['django = django_large_image.cache:DjangoCache'],
+    },
 )
