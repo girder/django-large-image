@@ -9,8 +9,6 @@ from rest_framework.request import Request
 
 from django_large_image import tilesource, utilities
 
-CACHE_TIMEOUT = 60 * 60 * 2
-
 
 class LargeImageMixinBase:
     def get_path(self, request: Request, pk: int = None) -> Union[str, pathlib.Path]:

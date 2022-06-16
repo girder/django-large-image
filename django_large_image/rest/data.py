@@ -1,6 +1,4 @@
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -9,7 +7,7 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource, utilities
 from django_large_image.rest import params
-from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
+from django_large_image.rest.base import LargeImageMixinBase
 from django_large_image.rest.renderers import image_data_renderers, image_renderers
 
 thumbnail_summary = 'Returns thumbnail of full image.'
@@ -23,7 +21,6 @@ histogram_parameters = params.BASE + params.HISTOGRAM
 
 
 class DataMixin(LargeImageMixinBase):
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=thumbnail_summary,
