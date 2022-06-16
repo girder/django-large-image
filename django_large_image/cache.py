@@ -30,7 +30,6 @@ class DjangoCache(BaseCache):
         return self._django_cache.delete(hashed_key)
 
     def __getitem__(self, key):
-        print(f'getting {key}')
         hashed_key = self._hashKey(key)
         value = self._django_cache.get(hashed_key)
         if value is None:
@@ -38,7 +37,6 @@ class DjangoCache(BaseCache):
         return value
 
     def __setitem__(self, key, value):
-        print(f'setting {key}')
         hashed_key = self._hashKey(key)
         # TODO: do we want to use `add` instead to add a key only if it doesn’t already exist
         return self._django_cache.set(hashed_key, value)
