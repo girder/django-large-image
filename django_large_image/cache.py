@@ -1,7 +1,10 @@
 import threading
 
 from django.conf import settings
+from django.core.cache import caches
+from django.core.exceptions import ImproperlyConfigured
 from large_image.cache_util.base import BaseCache
+from large_image.exceptions import TileCacheConfigurationError
 
 
 class DjangoCache(BaseCache):
@@ -59,9 +62,11 @@ class DjangoCache(BaseCache):
 
     @staticmethod
     def getCache():  # noqa: N802
-        from django.core.cache import caches
-
-        name = getattr(settings, 'LARGE_IMAGE_CACHE_NAME', 'default')
+        try:
+            name = getattr(settings, 'LARGE_IMAGE_CACHE_NAME', 'default')
+            dajngo_cache = caches[name]
+        except ImproperlyConfigured:
+            raise TileCacheConfigurationError
         cache_lock = threading.Lock()
-        cache = DjangoCache(caches[name])
+        cache = DjangoCache(dajngo_cache)
         return cache, cache_lock
