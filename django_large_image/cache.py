@@ -1,5 +1,6 @@
 import threading
 
+from django.conf import settings
 from large_image.cache_util.base import BaseCache
 
 
@@ -10,14 +11,14 @@ class DjangoCache(BaseCache):
         super().__init__(0, getsizeof=getsizeof)
         self._django_cache = cache
 
-    def __repr__(self):
-        return f'DjangoCache: {repr(self._django_cache)}'
+    def __repr__(self):  # pragma: no cover
+        return f'DjangoCache<{repr(self._django_cache._alias)}>'
 
-    def __iter__(self):
+    def __iter__(self):  # pragma: no cover
         # return invalid iter
         return None
 
-    def __len__(self):
+    def __len__(self):  # pragma: no cover
         # return invalid length
         return -1
 
@@ -42,15 +43,15 @@ class DjangoCache(BaseCache):
         return self._django_cache.set(hashed_key, value)
 
     @property
-    def curritems(self):
+    def curritems(self):  # pragma: no cover
         raise NotImplementedError
 
     @property
-    def currsize(self):
+    def currsize(self):  # pragma: no cover
         raise NotImplementedError
 
     @property
-    def maxsize(self):
+    def maxsize(self):  # pragma: no cover
         raise NotImplementedError
 
     def clear(self):
@@ -58,9 +59,9 @@ class DjangoCache(BaseCache):
 
     @staticmethod
     def getCache():  # noqa: N802
-        # TODO: may want to try for named cache
-        from django.core.cache import cache as django_cache
+        from django.core.cache import caches
 
+        name = getattr(settings, 'LARGE_IMAGE_CACHE_NAME', 'default')
         cache_lock = threading.Lock()
-        cache = DjangoCache(django_cache)
+        cache = DjangoCache(caches[name])
         return cache, cache_lock
