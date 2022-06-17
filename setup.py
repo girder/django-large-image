@@ -42,7 +42,7 @@ setup(
         'djangorestframework',
         'drf-yasg',
         'filelock',
-        'large-image>=1.14',
+        'large-image>=1.15',
     ],
     extras_require={
         'colormaps': [
