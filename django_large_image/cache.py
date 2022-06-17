@@ -10,12 +10,13 @@ from large_image.exceptions import TileCacheConfigurationError
 class DjangoCache(BaseCache):
     """Use Django cache as the backing cache for large-image."""
 
-    def __init__(self, cache, getsizeof=None):
+    def __init__(self, cache, alias, getsizeof=None):
         super().__init__(0, getsizeof=getsizeof)
         self._django_cache = cache
+        self._alias = alias
 
     def __repr__(self):  # pragma: no cover
-        return f'DjangoCache<{repr(self._django_cache._alias)}>'
+        return f'DjangoCache<{repr(self._alias)}>'
 
     def __iter__(self):  # pragma: no cover
         # return invalid iter
@@ -65,8 +66,8 @@ class DjangoCache(BaseCache):
         try:
             name = getattr(settings, 'LARGE_IMAGE_CACHE_NAME', 'default')
             dajngo_cache = caches[name]
-        except ImproperlyConfigured:
+        except ImproperlyConfigured:  # pragma: no cover
             raise TileCacheConfigurationError
         cache_lock = threading.Lock()
-        cache = DjangoCache(dajngo_cache)
+        cache = DjangoCache(dajngo_cache, alias=name)
         return cache, cache_lock
