@@ -1,7 +1,6 @@
 from contextlib import contextmanager
 
 from large_image.cache_util.base import BaseCache
-import pytest
 
 from django_large_image import tilesource
 from django_large_image.cache import DjangoCache
