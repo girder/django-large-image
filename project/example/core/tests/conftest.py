@@ -62,3 +62,8 @@ def lonely_header_file() -> models.ImageFile:
         file__filename='envi_rgbsmall_bip.hdr',
         file__from_path=datastore.fetch('envi_rgbsmall_bip.hdr'),
     )
+
+
+@pytest.fixture
+def geotiff_path():
+    return datastore.fetch('rgb_geotiff.tiff')

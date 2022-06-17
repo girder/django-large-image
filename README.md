@@ -85,8 +85,9 @@ Support for any storage backend:
 
 Miscellaneous:
 - Admin interface widget for viewing image tiles.
-- Caching - tile sources are cached for rapid file re-opening
-  - tiles and thumbnails are cached to prevent recreating these data on multiple requests
+- Caching
+  - image tiles and thumbnails are cached to prevent recreating these data on multiple requests
+  - utilizes the [Django cache framework](https://docs.djangoproject.com/en/4.0/topics/cache/). Specify a named cache to use with the `LARGE_IMAGE_CACHE_NAME` setting.
 - Easily extensible SSR templates for tile viewing with CesiumJS and GeoJS
 - OpenAPI specification
 
@@ -116,7 +117,7 @@ production environments. To install our GDAL wheel, use:
 pip install \
   --find-links https://girder.github.io/large_image_wheels \
   django-large-image \
-  'large-image[gdal,pil]>=1.14'
+  'large-image[gdal,pil]>=1.15'
 ```
 
 ### 🐍 Conda

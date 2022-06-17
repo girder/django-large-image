@@ -1,6 +1,4 @@
 from django.http import HttpResponse
-from django.utils.decorators import method_decorator
-from django.views.decorators.cache import cache_page
 from drf_yasg.utils import swagger_auto_schema
 from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.decorators import action
@@ -10,7 +8,7 @@ from rest_framework.response import Response
 
 from django_large_image import tilesource
 from django_large_image.rest import params
-from django_large_image.rest.base import CACHE_TIMEOUT, LargeImageMixinBase
+from django_large_image.rest.base import LargeImageMixinBase
 from django_large_image.rest.renderers import image_renderers
 from django_large_image.rest.serializers import TileMetadataSerializer
 
@@ -35,7 +33,6 @@ class TilesMixin(LargeImageMixinBase):
         serializer = TileMetadataSerializer(source)
         return Response(serializer.data)
 
-    @method_decorator(cache_page(CACHE_TIMEOUT))
     @swagger_auto_schema(
         method='GET',
         operation_summary=tile_summary,
