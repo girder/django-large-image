@@ -26,7 +26,7 @@ python manage.py collectstatic --noinput
 DJANGO_SUPERUSER_PASSWORD=password python manage.py createsuperuser --noinput --username 'admin' --email 'admin@kitware.com'
 
 # Test before finishing build
-DJANGO_SETTINGS_MODULE=myimages.settings pytest -v
+DJANGO_SETTINGS_MODULE=myimages.settings pytest --cov=django_large_image -v .
 
 python manage.py runserver
 ```

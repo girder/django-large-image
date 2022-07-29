@@ -133,6 +133,7 @@ jobs:
         run: |
           rm -rf ./data && mkdir ./data
           python manage.py migrate
-          pytest -v -cov django_large_image .
+          pytest --cov=django_large_image -v .
         env:
           DJANGO_SETTINGS_MODULE: myimages.settings
+          DJANGO_DEBUG: true
