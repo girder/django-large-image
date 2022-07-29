@@ -110,7 +110,12 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: .coverage
-          path: project/.coverage
+          path: project/coverage.xml
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: project/coverage.xml
+          verbose: true
   test-demo:
     runs-on: ubuntu-latest
     steps:
@@ -129,7 +134,7 @@ jobs:
           rm -rf ./data && mkdir ./data
           python manage.py migrate
           pytest --cov=django_large_image -v .
-          mv .coverage .coverage.demo
+          coverage xml -o coverage.xml
         env:
           DJANGO_SETTINGS_MODULE: myimages.settings
           DJANGO_DEBUG: true
@@ -137,30 +142,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: .coverage
-          path: demo/.coverage.demo
-  coverage:
-    runs-on: ubuntu-latest
-    needs:
-      - test
-      - test-demo
-    steps:
-      - uses: actions/checkout@v3
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.9"
-      - uses: actions/download-artifact@v3
-        with:
-          name: .coverage
-          path: .
-      - name: Combine coverage
-        run: |
-          ls -al
-          coverage combine
-          coverage xml -o coverage.xml
-          coverage report
+          path: demo/coverage.xml
       - uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
-          files: coverage.xml
+          files: demo/coverage.xml
           verbose: true
