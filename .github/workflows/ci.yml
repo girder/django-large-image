@@ -10,9 +10,9 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install tox
@@ -41,9 +41,9 @@ jobs:
         ports:
           - 9000:9000
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install tox
@@ -88,9 +88,9 @@ jobs:
         ports:
           - 9000:9000
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: "3.9"
       - name: Install tox
@@ -115,4 +115,36 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: project/coverage.xml
+          verbose: true
+  test-demo:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+      - name: Install Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements.txt -r demo/requirements.txt
+      - name: Run tests
+        working-directory: demo
+        run: |
+          rm -rf ./data && mkdir ./data
+          python manage.py migrate
+          pytest --cov=django_large_image -v .
+          coverage xml -o coverage.xml
+        env:
+          DJANGO_SETTINGS_MODULE: myimages.settings
+          DJANGO_DEBUG: true
+      - name: Stash coverage
+        uses: actions/upload-artifact@v2
+        with:
+          name: .coverage
+          path: demo/coverage.xml
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: demo/coverage.xml
           verbose: true

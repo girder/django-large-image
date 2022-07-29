@@ -6,5 +6,15 @@ class AuthenticationMiddleware(object):
         self.get_response = get_response
 
     def __call__(self, request):
-        request.user = User.objects.filter()[0]
+        try:
+            request.user = User.objects.filter()[0]
+        except IndexError:
+            # HACK: No users in DB yet, make one
+            user = User.objects.create_superuser(
+                username='admin',
+                email='admin@kitware.com',
+                password='password',
+                is_superuser=True,
+            )
+            request.user = user
         return self.get_response(request)
