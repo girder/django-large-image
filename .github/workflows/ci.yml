@@ -129,6 +129,7 @@ jobs:
           rm -rf ./data && mkdir ./data
           python manage.py migrate
           pytest --cov=django_large_image -v .
+          mv .coverage .coverage.demo
         env:
           DJANGO_SETTINGS_MODULE: myimages.settings
           DJANGO_DEBUG: true
@@ -136,7 +137,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: .coverage
-          path: demo/.coverage
+          path: demo/.coverage.demo
   coverage:
     runs-on: ubuntu-latest
     needs:
@@ -153,7 +154,9 @@ jobs:
           name: .coverage
           path: .
       - name: Combine coverage
-        run: ls -al
+        run: |
+          ls -al
+          ls -al demo
       # - uses: codecov/codecov-action@v2
       #   with:
       #     token: ${{ secrets.CODECOV_TOKEN }}
