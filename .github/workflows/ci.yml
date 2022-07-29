@@ -153,7 +153,7 @@ jobs:
           name: .coverage
           path: .
       - name: Combine coverage
-        run: ls
+        run: ls -al
       # - uses: codecov/codecov-action@v2
       #   with:
       #     token: ${{ secrets.CODECOV_TOKEN }}
