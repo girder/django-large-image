@@ -156,9 +156,11 @@ jobs:
       - name: Combine coverage
         run: |
           ls -al
-          ls -al demo
-      # - uses: codecov/codecov-action@v2
-      #   with:
-      #     token: ${{ secrets.CODECOV_TOKEN }}
-      #     files: project/coverage.xml
-      #     verbose: true
+          coverage combine
+          coverage xml -o coverage.xml
+          coverage report
+      - uses: codecov/codecov-action@v2
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: coverage.xml
+          verbose: true
