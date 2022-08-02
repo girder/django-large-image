@@ -1,11 +1,5 @@
 # 🩻 🗺️ django-large-image
 
-
-<p align="center">
-  <img src="https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png"/>
-  <p align="center">Dynamic tile server in Django built  on top of large-image (and GDAL)</p>
-</p>
-
 <p align="center">
   <a href="https://www.kitware.com/" target="_blank">
       <img src="https://img.shields.io/badge/Made%20by-Kitware-blue" alt="Made by Kitware">
@@ -38,6 +32,32 @@ reprojection, image encoding) to create image tiles on-the-fly.
 | [![outreach event video](https://raw.githubusercontent.com/girder/django-large-image/main/doc/outreach_video.png)](https://youtu.be/v3e2ODCK9Co?t=31247) |
 | [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
+# Table of Contents
+### [Overview](#ℹ️-overview)
+
+### [Support](#🤝-support)
+
+### [Features](#🌟-features)
+
+### [Installation](#⬇️-installation)
+
+### [Conda](#🐍-conda)
+
+### [Usage](#🚀-usage)
+  - ### [Example Code](#📝-example-code)
+  - ### [Customization](#🛠️-customization)
+
+  - ### [Non-Detail ViewSets](#🥸-non-detail-viewsets)
+
+  - ### [Styling](#🪄-styling)
+
+  - ### [Converting Images to Pyramidal Tiffs](#☁️-converting-images-to-pyramidal-tiffs-cogs)
+
+  - ### [Using with django-raster](#using-with-django-raster-1)
+
+### [Demo App](#demo-app-1)
+
+***
 
 ## ℹ️ Overview
 
@@ -57,7 +77,13 @@ can also be used by returning `GDALRaster.name` in the `get_path()` override.
 This package ships with pre-made HTML templates for rendering geospatial image
 tiles with CesiumJS and non-geospatial image tiles with [GeoJS](https://github.com/OpenGeoscience/geojs).
 
-### 🤝 Support [![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
+<p align="center">
+  <img src="https://raw.githubusercontent.com/girder/django-large-image/main/doc/admin.png"/>
+  <p align="center">Dynamic tile server in Django built  on top of large-image (and GDAL)</p>
+</p>
+
+### 🤝 Support
+[![Kitware](https://img.shields.io/badge/Made%20by-Kitware-blue)](https://www.kitware.com/)
 
 `django-large-image` and the supporting [`large-image`](https://github.com/girder/large_image)
 library are developed and  maintained by the Data & Analytics group at
@@ -97,7 +123,7 @@ Miscellaneous:
 
 ## ⬇️ Installation
 
-Out of the box, `django-large-image` only depends of the core `large-image`
+Out of the box, `django-large-image` only depends on the core `large-image`
 module, but you will need a `large-image-source-*` module in order for this
 to work. Most of our users probably want to work with geospatial images so we
 will focus on the `large-image-source-gdal` case, but it is worth noting that
@@ -270,18 +296,18 @@ You can also use an admin widget for your model:
 ```
 
 Please note the example Django project in the `project/` directory of this
-repository that shows how to use `django-large-image` in a `girder-4` project.
+repository that shows how to use `django-large-image` in a [`girder-4`](https://github.com/girder/cookiecutter-girder-4) project.
 
 
 ### 🛠️ Customization
 
-The mixin classes modularly designed and able to be subclassed
+The mixin classes are modularly designed and able to be subclassed
 for your project's needs. While the provided `LargeImageFileDetailMixin` handles
 `FileField`-interfaces, you can easily extend its base class,
 `LargeImageDetailMixin`, to handle any mechanism of data storage in your
 detail-oriented viewset.
 
-In the following example, I will show how to use GDAL compatible VSI paths
+In the following example, we demonstrate how to use GDAL compatible VSI paths
 from a model that stores `s3://` or `https://` URLs.
 
 ```py
@@ -428,17 +454,6 @@ def task_convert_cog(my_model_pk):
         ...
 ```
 
-
-## Demo App
-
-There is a vanilla Django project in the `demo/` directory and this app
-is published as a standalone Docker image that anyone can try out:
-
-```bash
-docker run -it -p 8000:8000 -v dli_demo_data:/opt/django-project/data ghcr.io/girder/django-large-image-demo:latest
-```
-
-
 ## Using with django-raster
 
 [`django-raster`](https://github.com/geodesign/django-raster) is a popular
@@ -448,3 +463,14 @@ serving and more.
 
 Please take a look at the demo project here: https://github.com/ResonantGeoData/django-raster-demo
 and raise any questions about usage with `django-raster` there.
+
+
+
+## Demo App
+
+There is a vanilla Django project in the `demo/` directory and this app
+is published as a standalone Docker image that anyone can try out:
+
+```bash
+docker run -it -p 8000:8000 -v dli_demo_data:/opt/django-project/data ghcr.io/girder/django-large-image-demo:latest
+```
