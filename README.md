@@ -33,7 +33,7 @@ reprojection, image encoding) to create image tiles on-the-fly.
 | [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
 # Table of Contents
-### [Overview](#ℹ️%EF%B8%8F-overview)
+### [Overview](#-overview)
 
 ### [Support](#-support)
 
