@@ -35,8 +35,8 @@ reprojection, image encoding) to create image tiles on-the-fly.
 ##  Table of Contents
 
 - [Overview](#-overview)
-- [Support](#-support)
-- [Features](#-features)
+  - [Support](#-support)
+  - [Features](#-features)
 - [Installation](#%EF%B8%8F-installation)
 - [Usage](#-usage)
   - [Example Code](#-example-code)
