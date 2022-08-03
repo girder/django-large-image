@@ -44,8 +44,8 @@ reprojection, image encoding) to create image tiles on-the-fly.
   - [Non-Detail ViewSets](#-non-detail-viewsets)
   - [Styling](#-styling)
   - [Converting Images to Pyramidal Tiffs (COGs)](#%EF%B8%8F-converting-images-to-pyramidal-tiffs-cogs)
-  - [Using with django-raster](#using-with-django-raster-1)
-- [Demo App](#demo-app-1)
+  - [Using with django-raster](#using-with-django-raster)
+- [Demo App](#demo-app)
 
 ***
 
