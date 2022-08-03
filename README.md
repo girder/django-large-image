@@ -32,28 +32,20 @@ reprojection, image encoding) to create image tiles on-the-fly.
 | [![outreach event video](https://raw.githubusercontent.com/girder/django-large-image/main/doc/outreach_video.png)](https://youtu.be/v3e2ODCK9Co?t=31247) |
 | [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
-# Table of Contents
-### [Overview](#-overview)
+##  Table of Contents
 
-### [Support](#-support)
-
-### [Features](#-features)
-
-### [Installation](#%EF%B8%8F-installation)
-
-### [Usage](#-usage)
-  - ### [Example Code](#-example-code)
-  - ### [Customization](#%EF%B8%8F-customization)
-
-  - ### [Non-Detail ViewSets](#-non-detail-viewsets)
-
-  - ### [Styling](#-styling)
-
-  - ### [Converting Images to Pyramidal Tiffs (COGs)](#%EF%B8%8F-converting-images-to-pyramidal-tiffs-cogs)
-
-  - ### [Using with django-raster](#using-with-django-raster-1)
-
-### [Demo App](#demo-app-1)
+- [Overview](#-overview)
+- [Support](#-support)
+- [Features](#-features)
+- [Installation](#%EF%B8%8F-installation)
+- [Usage](#-usage)
+  - [Example Code](#-example-code)
+  - [Customization](#%EF%B8%8F-customization)
+  - [Non-Detail ViewSets](#-non-detail-viewsets)
+  - [Styling](#-styling)
+  - [Converting Images to Pyramidal Tiffs (COGs)](#%EF%B8%8F-converting-images-to-pyramidal-tiffs-cogs)
+  - [Using with django-raster](#using-with-django-raster-1)
+- [Demo App](#demo-app-1)
 
 ***
 
