@@ -33,25 +33,23 @@ reprojection, image encoding) to create image tiles on-the-fly.
 | [View slides here](https://docs.google.com/presentation/d/1T_bmtxx1qR8GgzXdFer3LwDi_dxp6X4RqndbsSVhWTg/edit?usp=sharing) |
 
 # Table of Contents
-### [Overview](#ℹ️-overview)
+### [Overview](#ℹ️%EF%B8%8F-overview)
 
-### [Support](#🤝-support)
+### [Support](#-support)
 
-### [Features](#🌟-features)
+### [Features](#-features)
 
-### [Installation](#⬇️-installation)
+### [Installation](#%EF%B8%8F-installation)
 
-### [Conda](#🐍-conda)
+### [Usage](#-usage)
+  - ### [Example Code](#-example-code)
+  - ### [Customization](#%EF%B8%8F-customization)
 
-### [Usage](#🚀-usage)
-  - ### [Example Code](#📝-example-code)
-  - ### [Customization](#🛠️-customization)
+  - ### [Non-Detail ViewSets](#-non-detail-viewsets)
 
-  - ### [Non-Detail ViewSets](#🥸-non-detail-viewsets)
+  - ### [Styling](#-styling)
 
-  - ### [Styling](#🪄-styling)
-
-  - ### [Converting Images to Pyramidal Tiffs](#☁️-converting-images-to-pyramidal-tiffs-cogs)
+  - ### [Converting Images to Pyramidal Tiffs (COGs)](#%EF%B8%8F-converting-images-to-pyramidal-tiffs-cogs)
 
   - ### [Using with django-raster](#using-with-django-raster-1)
 
@@ -133,9 +131,12 @@ will focus on the `large-image-source-gdal` case, but it is worth noting that
 See [`large-image`](https://github.com/girder/large_image#installation)'s
 installation instructions for more details.
 
+
+### 🎡 pip
+
 **Tip:* installing GDAL is notoriously difficult, so at Kitware we provide
 pre-built Python wheels with the GDAL binary bundled for easily installation in
-production environments. To install our GDAL wheel, use:
+production **linux** environments. To install our GDAL wheel, use:
 `pip install --find-links https://girder.github.io/large_image_wheels GDAL`*
 
 
@@ -147,6 +148,8 @@ pip install \
 ```
 
 ### 🐍 Conda
+
+Or install with `conda`:
 
 ```bash
 conda install -c conda-forge django-large-image large-image-source-gdal
@@ -209,8 +212,9 @@ And that's it!
 
 ### 📝 Example Code
 
-To use the mixin classes provided here, create a model, serializer, and viewset
-in your Django project like so:
+To use the mixin classes provided here, add `django_large_image` to the
+`INSTALLED_APPS` of your Django project, then create a model, serializer,
+and viewset in your Django project like so:
 
 ```py
 # models.py
@@ -278,7 +282,7 @@ urlpatterns = [
 ] + router.urls
 ```
 
-You can also use an admin widget for your model:
+(Optional) You can also use an admin widget for your model:
 
 ```html
 <!-- templates/admin/myapp/imagefile/change_form.html -->
@@ -311,7 +315,7 @@ In the following example, we demonstrate how to use GDAL compatible VSI paths
 from a model that stores `s3://` or `https://` URLs.
 
 ```py
-# model.py
+# models.py
 from django.db import models
 from rest_framework import serializers
 
@@ -325,6 +329,17 @@ class URLImageFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = URLImageFile
         fields = '__all__'
+```
+
+```py
+# admin.py
+from django.contrib import admin
+from example.core.models import URLImageFile
+
+
+@admin.register(URLImageFile)
+class URLImageFileAdmin(admin.ModelAdmin):
+    list_display = ('pk', 'name')
 ```
 
 
