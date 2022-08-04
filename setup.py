@@ -13,7 +13,7 @@ else:
 
 setup(
     name='django-large-image',
-    version='0.8.0',
+    version='0.8.1',
     description='Dynamic tile server in Django built on top of large-image (and GDAL)',
     long_description=long_description,
     long_description_content_type='text/markdown',
