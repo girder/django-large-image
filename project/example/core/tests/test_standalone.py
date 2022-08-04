@@ -18,3 +18,9 @@ def test_list_sources(authenticated_api_client):
 def test_list_colormaps(authenticated_api_client):
     response = authenticated_api_client.get('/api/large-image/colormaps')
     assert status.is_success(response.status_code)
+
+
+@pytest.mark.django_db(transaction=True)
+def test_list_formats(authenticated_api_client):
+    response = authenticated_api_client.get('/api/large-image/formats')
+    assert status.is_success(response.status_code)

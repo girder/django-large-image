@@ -40,7 +40,7 @@ class TilesMixin(LargeImageMixinBase):
     )
     @action(
         detail=False,
-        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        url_path=rf'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def tile(
@@ -95,7 +95,7 @@ class TilesDetailMixin(TilesMixin):
     )
     @action(
         detail=True,
-        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        url_path=rf'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def tile(

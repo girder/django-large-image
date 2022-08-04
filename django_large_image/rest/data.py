@@ -28,14 +28,14 @@ class DataMixin(LargeImageMixinBase):
     )
     @action(
         detail=False,
-        url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)',
+        url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
         height = int(self.get_query_param(request, 'max_height', 256))
-        source = self.get_tile_source(request, pk, encoding=encoding)
+        source = self.get_tile_source(request, pk)
         thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
 
@@ -46,7 +46,7 @@ class DataMixin(LargeImageMixinBase):
     )
     @action(
         detail=False,
-        url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)',
+        url_path=f'data/region.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_data_renderers,
     )
     def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
@@ -133,7 +133,7 @@ class DataDetailMixin(DataMixin):
     )
     @action(
         detail=True,
-        url_path=r'data/thumbnail.(?P<fmt>png|jpg|jpeg)',
+        url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
@@ -146,7 +146,7 @@ class DataDetailMixin(DataMixin):
     )
     @action(
         detail=True,
-        url_path=r'data/region.(?P<fmt>png|jpg|jpeg|tif|tiff)',
+        url_path=f'data/region.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_data_renderers,
     )
     def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
