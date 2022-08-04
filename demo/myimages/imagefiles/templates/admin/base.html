@@ -1,0 +1,32 @@
+{% extends "admin/base.html" %}
+
+{% block extrastyle %}
+
+<style type="text/css">
+    .swagger-banner {
+        width: 200px;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+        display: block;
+        top: auto;
+        left: auto;
+        right: -50px;
+        bottom: 25px;
+        transform: rotate(-45deg);
+        z-index: 9;
+
+        line-height: 35px;
+        text-align: center;
+        color: white;
+
+        font-size: 1.2em;
+
+        background-color: tan;
+    }
+</style>
+
+<a class="swagger-banner" href="{% url 'schema-swagger-ui' %}">Swagger UI</a>
+
+{% endblock %}
