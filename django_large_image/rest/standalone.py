@@ -5,6 +5,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from django_large_image.tilesource import get_formats
+
 logger = logging.getLogger(__name__)
 
 
@@ -39,3 +41,8 @@ class ListColormapsView(APIView):
             logger.error('Install matplotlib for additional colormap choices.')
         cmaps['simple'] = [s for s in simple.keys() if len(s) > 1]
         return Response(cmaps)
+
+
+class ListAvailableFormatsView(APIView):
+    def get(self, request: Request) -> Response:
+        return Response(get_formats(return_dict=True))

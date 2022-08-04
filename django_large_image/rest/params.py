@@ -1,5 +1,9 @@
 from drf_yasg import openapi
 
+from django_large_image.tilesource import get_formats
+
+FORMAT_URL_PATTERN = rf'(?P<fmt>{r"|".join(get_formats())})'
+
 projection = openapi.Parameter(
     'projection',
     openapi.IN_QUERY,
@@ -18,14 +22,14 @@ BASE = [projection, source]
 fmt_png = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image format (png | jpeg)',
+    description=f'Image format ({" | ".join(get_formats())})',
     type=openapi.TYPE_STRING,
     default='png',
 )
 fmt_tiff = openapi.Parameter(
     'fmt',
     openapi.IN_PATH,
-    description='Image data format (png | jpeg | tiff)',
+    description=f'Image format ({" | ".join(get_formats())})',
     type=openapi.TYPE_STRING,
     default='tiff',
 )

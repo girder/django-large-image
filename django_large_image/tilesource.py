@@ -5,10 +5,17 @@ import tempfile
 from typing import List, Optional, Tuple, Union
 
 import large_image
+from large_image.constants import TileOutputMimeTypes
 from large_image.tilesource import FileTileSource
 from rest_framework.exceptions import ValidationError
 
 from django_large_image import utilities
+
+SHORTENED_FORMATS = {
+    'JPG': 'JPEG',
+    'JP2': 'JPEG2000',
+    'TIF': 'TIFF',
+}
 
 
 def get_tilesource_from_path(
@@ -121,15 +128,41 @@ def get_region(
     return _get_region(source, region, encoding)
 
 
-def format_to_encoding(format: Optional[str]) -> str:
+def get_formats(return_dict: bool = False):
+    def keys(d):
+        return [s.lower() for s in d.keys()]
+
+    shortened = {
+        k: TileOutputMimeTypes[v] for k, v in SHORTENED_FORMATS.items() if v in TileOutputMimeTypes
+    }
+    if return_dict:
+        to_return = shortened.copy()
+        to_return.update(TileOutputMimeTypes)
+        return to_return
+    return keys(TileOutputMimeTypes) + keys(shortened)
+
+
+def format_to_encoding(format: Optional[str], pil_safe: Optional[bool] = False) -> str:
     """Translate format extension (e.g., `tiff`) to encoding (e.g., `TILED`)."""
     if not format:
         return 'PNG'
-    if format.lower() not in ['tif', 'tiff', 'png', 'jpeg', 'jpg']:
-        raise ValidationError(f'Format {format!r} is not valid. Try `png`, `jpeg`, or `tif`')
     if format.lower() in ['tif', 'tiff']:
-        return 'TILED'
-    return format.upper()  # jpeg, png
+        format = 'TILED'
+    if format.lower() not in get_formats():
+        raise ValidationError(f'Format {format!r} is not valid. Try on of: {get_formats()}')
+    if format.upper() in SHORTENED_FORMATS:
+        format = SHORTENED_FORMATS[format.upper()]
+    if pil_safe and format.upper() == 'TILED':
+        return 'TIFF'
+    return format.upper()
+
+
+def get_mime_type(format: str):
+    if format.upper() in SHORTENED_FORMATS:
+        format = SHORTENED_FORMATS[format.upper()]
+    if format.lower() not in get_formats():
+        raise ValidationError(f'Format {format!r} is not valid. Try on of: {get_formats()}')
+    return TileOutputMimeTypes[format.upper()]
 
 
 def get_frames(source: FileTileSource):

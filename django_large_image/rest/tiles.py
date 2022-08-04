@@ -40,16 +40,16 @@ class TilesMixin(LargeImageMixinBase):
     )
     @action(
         detail=False,
-        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        url_path=rf'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def tile(
         self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
     ) -> HttpResponse:
-        encoding = tilesource.format_to_encoding(fmt)
+        encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
         source = self.get_tile_source(request, pk, encoding=encoding)
         try:
-            tile_binary = source.getTile(int(x), int(y), int(z), encoding=encoding)
+            tile_binary = source.getTile(int(x), int(y), int(z))
         except TileSourceXYZRangeError as e:
             raise ValidationError(e)
         mime_type = source.getTileMimeType()
@@ -95,7 +95,7 @@ class TilesDetailMixin(TilesMixin):
     )
     @action(
         detail=True,
-        url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).(?P<fmt>png|jpg|jpeg)',
+        url_path=rf'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
     def tile(

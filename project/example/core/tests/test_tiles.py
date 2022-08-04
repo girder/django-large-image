@@ -1,6 +1,8 @@
 import pytest
 from rest_framework import status
 
+from django_large_image.tilesource import get_formats, get_mime_type
+
 
 @pytest.mark.django_db(transaction=True)
 def test_tile(authenticated_api_client, image_file_geotiff):
@@ -18,6 +20,16 @@ def test_tile(authenticated_api_client, image_file_geotiff):
         f'/api/image-file/{image_file_geotiff.pk}/tiles/100/0/0.png'
     )
     assert status.is_client_error(response.status_code)
+
+
+@pytest.mark.django_db(transaction=True)
+@pytest.mark.parametrize('format', get_formats())
+def test_tile_formats(authenticated_api_client, image_file_geotiff, format):
+    response = authenticated_api_client.get(
+        f'/api/image-file/{image_file_geotiff.pk}/tiles/1/0/0.{format}?projection=EPSG:3857'
+    )
+    assert status.is_success(response.status_code)
+    assert response['Content-Type'] == get_mime_type(format)
 
 
 @pytest.mark.django_db(transaction=True)

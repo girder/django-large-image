@@ -13,4 +13,9 @@ urlpatterns = [
         rest.ListColormapsView.as_view(),
         name='large-image-colormaps',
     ),
+    path(
+        'api/large-image/formats',
+        rest.ListAvailableFormatsView.as_view(),
+        name='large-image-formats',
+    ),
 ]
