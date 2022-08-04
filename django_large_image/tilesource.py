@@ -142,16 +142,18 @@ def get_formats(return_dict: bool = False):
     return keys(TileOutputMimeTypes) + keys(shortened)
 
 
-def format_to_encoding(format: Optional[str]) -> str:
+def format_to_encoding(format: Optional[str], pil_safe: Optional[bool] = False) -> str:
     """Translate format extension (e.g., `tiff`) to encoding (e.g., `TILED`)."""
     if not format:
         return 'PNG'
     if format.lower() in ['tif', 'tiff']:
-        return 'TILED'
+        format = 'TILED'
     if format.lower() not in get_formats():
         raise ValidationError(f'Format {format!r} is not valid. Try on of: {get_formats()}')
     if format.upper() in SHORTENED_FORMATS:
         format = SHORTENED_FORMATS[format.upper()]
+    if pil_safe and format.upper() == 'TILED':
+        return 'TIFF'
     return format.upper()
 
 
