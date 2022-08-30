@@ -35,7 +35,7 @@ class DataMixin(LargeImageMixinBase):
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
         height = int(self.get_query_param(request, 'max_height', 256))
-        source = self.get_tile_source(request, pk)
+        source = self.get_tile_source(request, pk, encoding=encoding)
         thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
 

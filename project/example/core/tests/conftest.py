@@ -4,11 +4,23 @@ import pytest
 from pytest_factoryboy import register
 from rest_framework.test import APIClient
 
+from django_large_image.tilesource import get_formats
+
 from .factories import ImageFileFactory, S3ImageFileFactory, UserFactory
 
 register(UserFactory)
 register(ImageFileFactory)
 register(S3ImageFileFactory)
+
+
+def get_format_params():
+    fmts = []
+    for fmt in get_formats():
+        if fmt in ['pcx', 'eps', 'mpo', 'palm', 'pdf', 'xbm']:
+            fmts.append(pytest.param(fmt, marks=pytest.mark.xfail))
+        else:
+            fmts.append(fmt)
+    return fmts
 
 
 @pytest.fixture
