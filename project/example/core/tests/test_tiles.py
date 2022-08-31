@@ -1,9 +1,7 @@
 import pytest
 from rest_framework import status
 
-from django_large_image.tilesource import get_mime_type
-
-from .conftest import get_format_params
+from django_large_image.tilesource import get_formats, get_mime_type
 
 
 @pytest.mark.django_db(transaction=True)
@@ -25,7 +23,7 @@ def test_tile(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-@pytest.mark.parametrize('format', get_format_params())
+@pytest.mark.parametrize('format', get_formats())
 def test_tile_formats(authenticated_api_client, image_file_geotiff, format):
     response = authenticated_api_client.get(
         f'/api/image-file/{image_file_geotiff.pk}/tiles/1/0/0.{format}?projection=EPSG:3857'
