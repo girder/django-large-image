@@ -4,13 +4,11 @@ from PIL import Image
 import pytest
 from rest_framework import status
 
-from django_large_image.tilesource import get_mime_type
-
-from .conftest import get_format_params
+from django_large_image.tilesource import get_formats, get_mime_type
 
 
 @pytest.mark.django_db(transaction=True)
-@pytest.mark.parametrize('format', get_format_params())
+@pytest.mark.parametrize('format', get_formats())
 def test_thumbnail(authenticated_api_client, image_file_geotiff, format):
     response = authenticated_api_client.get(
         f'/api/image-file/{image_file_geotiff.pk}/data/thumbnail.{format}'
@@ -67,7 +65,7 @@ def test_pixel(authenticated_api_client, image_file_geotiff):
 
 
 @pytest.mark.django_db(transaction=True)
-@pytest.mark.parametrize('format', get_format_params())
+@pytest.mark.parametrize('format', get_formats())
 def test_region_pixel(authenticated_api_client, image_file_geotiff, ome_image, format):
     response = authenticated_api_client.get(
         f'/api/image-file/{image_file_geotiff.pk}/data/region.{format}?left=0&right=10&bottom=10&top=0&units=pixels'

@@ -136,7 +136,7 @@ production **linux** environments. To install our GDAL wheel, use:
 pip install \
   --find-links https://girder.github.io/large_image_wheels \
   django-large-image \
-  'large-image[gdal,pil]>=1.15'
+  'large-image[gdal,pil]>=1.16.2'
 ```
 
 ### 🐍 Conda
