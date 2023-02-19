@@ -31,7 +31,9 @@ class DataMixin(LargeImageMixinBase):
         url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
-    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
+    def thumbnail(
+        self, request: Request, pk: int = None, fmt: str = 'png', **kwargs
+    ) -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
         height = int(self.get_query_param(request, 'max_height', 256))
@@ -49,7 +51,7 @@ class DataMixin(LargeImageMixinBase):
         url_path=f'data/region.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_data_renderers,
     )
-    def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
+    def region(self, request: Request, pk: int = None, fmt: str = 'tiff', **kwargs) -> HttpResponse:
         """Return the region tile binary from world coordinates in given EPSG.
 
         Note
@@ -89,7 +91,7 @@ class DataMixin(LargeImageMixinBase):
         manual_parameters=pixel_parameters,
     )
     @action(detail=False, url_path='data/pixel')
-    def pixel(self, request: Request, pk: int = None) -> Response:
+    def pixel(self, request: Request, pk: int = None, **kwargs) -> Response:
         left = int(self.get_query_param(request, 'left'))
         top = int(self.get_query_param(request, 'top'))
         source = self.get_tile_source(request, pk)
@@ -102,7 +104,7 @@ class DataMixin(LargeImageMixinBase):
         manual_parameters=histogram_parameters,
     )
     @action(detail=False, url_path='data/histogram')
-    def histogram(self, request: Request, pk: int = None) -> Response:
+    def histogram(self, request: Request, pk: int = None, **kwargs) -> Response:
         only_min_max = not utilities.param_nully(self.get_query_param(request, 'onlyMinMax', False))
         density = not utilities.param_nully(self.get_query_param(request, 'density', False))
         kwargs = dict(
@@ -136,7 +138,9 @@ class DataDetailMixin(DataMixin):
         url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
-    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png') -> HttpResponse:
+    def thumbnail(
+        self, request: Request, pk: int = None, fmt: str = 'png', **kwargs
+    ) -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
     @swagger_auto_schema(
@@ -149,7 +153,7 @@ class DataDetailMixin(DataMixin):
         url_path=f'data/region.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_data_renderers,
     )
-    def region(self, request: Request, pk: int = None, fmt: str = 'tiff') -> HttpResponse:
+    def region(self, request: Request, pk: int = None, fmt: str = 'tiff', **kwargs) -> HttpResponse:
         return super().region(request, pk, fmt)
 
     @swagger_auto_schema(
@@ -158,7 +162,7 @@ class DataDetailMixin(DataMixin):
         manual_parameters=pixel_parameters,
     )
     @action(detail=True, url_path='data/pixel')
-    def pixel(self, request: Request, pk: int = None) -> Response:
+    def pixel(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().pixel(request, pk)
 
     @swagger_auto_schema(
@@ -167,5 +171,5 @@ class DataDetailMixin(DataMixin):
         manual_parameters=histogram_parameters,
     )
     @action(detail=True, url_path='data/histogram')
-    def histogram(self, request: Request, pk: int = None) -> Response:
+    def histogram(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().histogram(request, pk)

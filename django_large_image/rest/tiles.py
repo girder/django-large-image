@@ -27,7 +27,7 @@ class TilesMixin(LargeImageMixinBase):
         manual_parameters=tile_metadata_parameters,
     )
     @action(detail=False, url_path=r'tiles/metadata')
-    def tiles_metadata(self, request: Request, pk: int = None) -> Response:
+    def tiles_metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
         source = self.get_tile_source(request, pk, style=False)
         source.dli_geospatial = tilesource.is_geospatial(source)
         serializer = TileMetadataSerializer(source)
@@ -44,7 +44,7 @@ class TilesMixin(LargeImageMixinBase):
         renderer_classes=image_renderers,
     )
     def tile(
-        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
+        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png', **kwargs
     ) -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt, pil_safe=True)
         source = self.get_tile_source(request, pk, encoding=encoding)
@@ -64,7 +64,7 @@ class TilesMixin(LargeImageMixinBase):
         detail=False, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )
     def tile_corners(
-        self, request: Request, x: int, y: int, z: int, pk: int = None
+        self, request: Request, x: int, y: int, z: int, pk: int = None, **kwargs
     ) -> HttpResponse:
         source = self.get_tile_source(request, pk, style=False)
         xmin, ymin, xmax, ymax = source.getTileCorners(int(z), int(x), int(y))
@@ -85,7 +85,7 @@ class TilesDetailMixin(TilesMixin):
         manual_parameters=tile_metadata_parameters,
     )
     @action(detail=True, url_path=r'tiles/metadata')
-    def tiles_metadata(self, request: Request, pk: int = None) -> Response:
+    def tiles_metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().tiles_metadata(request, pk)
 
     @swagger_auto_schema(
@@ -99,7 +99,7 @@ class TilesDetailMixin(TilesMixin):
         renderer_classes=image_renderers,
     )
     def tile(
-        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png'
+        self, request: Request, x: int, y: int, z: int, pk: int = None, fmt: str = 'png', **kwargs
     ) -> HttpResponse:
         return super().tile(request, x, y, z, pk, fmt)
 
@@ -112,6 +112,6 @@ class TilesDetailMixin(TilesMixin):
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
     )
     def tile_corners(
-        self, request: Request, x: int, y: int, z: int, pk: int = None
+        self, request: Request, x: int, y: int, z: int, pk: int = None, **kwargs
     ) -> HttpResponse:
         return super().tile_corners(request, x, y, z, pk)
