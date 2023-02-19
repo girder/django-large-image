@@ -31,7 +31,9 @@ class DataMixin(LargeImageMixinBase):
         url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
-    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png', **kwargs) -> HttpResponse:
+    def thumbnail(
+        self, request: Request, pk: int = None, fmt: str = 'png', **kwargs
+    ) -> HttpResponse:
         encoding = tilesource.format_to_encoding(fmt)
         width = int(self.get_query_param(request, 'max_width', 256))
         height = int(self.get_query_param(request, 'max_height', 256))
@@ -136,7 +138,9 @@ class DataDetailMixin(DataMixin):
         url_path=f'data/thumbnail.{params.FORMAT_URL_PATTERN}',
         renderer_classes=image_renderers,
     )
-    def thumbnail(self, request: Request, pk: int = None, fmt: str = 'png', **kwargs) -> HttpResponse:
+    def thumbnail(
+        self, request: Request, pk: int = None, fmt: str = 'png', **kwargs
+    ) -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
     @swagger_auto_schema(
