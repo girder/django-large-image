@@ -5,7 +5,6 @@ import example.core.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ('core', '0004_alter_imagefile_id_alter_s3imagefile_id'),
     ]

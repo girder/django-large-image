@@ -2,7 +2,6 @@ from rest_framework import serializers
 
 
 class TileMetadataSerializer(serializers.Serializer):
-
     levels = serializers.IntegerField(
         help_text='Number of zoom levels in the image.',
         min_value=1,

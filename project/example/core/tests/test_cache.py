@@ -29,8 +29,10 @@ def cache_tracker():
 
     original = DjangoCache.__missing__
     DjangoCache.__missing__ = missing
-    yield counter
-    DjangoCache.__missing__ = original
+    try:
+        yield counter
+    finally:
+        DjangoCache.__missing__ = original
 
 
 def test_cache_tile(geotiff_path):
