@@ -1,167 +1,184 @@
-from drf_yasg import openapi
+from drf_spectacular.openapi import OpenApiTypes
+from drf_spectacular.utils import OpenApiParameter
 
 from django_large_image.tilesource import get_formats
 
 FORMAT_URL_PATTERN = rf'(?P<fmt>{r"|".join(get_formats())})'
 
-projection = openapi.Parameter(
+projection = OpenApiParameter(
     'projection',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The projection in which to open the image (try `EPSG:3857`).',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
-source = openapi.Parameter(
+source = OpenApiParameter(
     'source',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The source to use when opening the image. Use the `large-image/sources` endpoint to list the available sources.',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
 
 BASE = [projection, source]
 
-fmt_png = openapi.Parameter(
+fmt_png = OpenApiParameter(
     'fmt',
-    openapi.IN_PATH,
+    location=OpenApiParameter.PATH,
     description=f'Image format ({" | ".join(get_formats())})',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
     default='png',
 )
-fmt_tiff = openapi.Parameter(
+fmt_tiff = OpenApiParameter(
     'fmt',
-    openapi.IN_PATH,
+    location=OpenApiParameter.PATH,
     description=f'Image format ({" | ".join(get_formats())})',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
     default='tiff',
 )
 
-z = openapi.Parameter(
+z = OpenApiParameter(
     'z',
-    openapi.IN_PATH,
+    location=OpenApiParameter.PATH,
     description='The Z level of the tile. May range from [0, levels], where 0 is the lowest resolution, single tile for the whole source.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
 )
-x = openapi.Parameter(
+x = OpenApiParameter(
     'x',
-    openapi.IN_PATH,
+    location=OpenApiParameter.PATH,
     description='The 0-based X position of the tile on the specified Z level.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
 )
-y = openapi.Parameter(
+y = OpenApiParameter(
     'y',
-    openapi.IN_PATH,
+    location=OpenApiParameter.PATH,
     description='The 0-based Y position of the tile on the specified Z level.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
 )
 
 # Style Parameters
-palette = openapi.Parameter(
+palette = OpenApiParameter(
     'palette',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The color palette to map the band values (named Matplotlib colormaps or palettable palettes). `cmap` alias supported.',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
-band = openapi.Parameter(
+band = OpenApiParameter(
     'band',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The band number to use.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
 )
-vmin = openapi.Parameter(
+vmin = OpenApiParameter(
     'min',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The minimum value for the color mapping.',
-    type=openapi.TYPE_NUMBER,
+    type=OpenApiTypes.NUMBER,
 )
-vmax = openapi.Parameter(
+vmax = OpenApiParameter(
     'max',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The maximum value for the color mapping.',
-    type=openapi.TYPE_NUMBER,
+    type=OpenApiTypes.NUMBER,
 )
-nodata = openapi.Parameter(
+nodata = OpenApiParameter(
     'nodata',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The value to map as no data (often made transparent).',
-    type=openapi.TYPE_NUMBER,
+    type=OpenApiTypes.NUMBER,
 )
-scheme = openapi.Parameter(
+scheme = OpenApiParameter(
     'scheme',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='This is either ``linear`` (the default) or ``discrete``. If a palette is specified, ``linear`` uses a piecewise linear interpolation, and ``discrete`` uses exact colors from the palette with the range of the data mapped into the specified number of colors (e.g., a palette with two colors will split exactly halfway between the min and max values).',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
-style = openapi.Parameter(
+style = OpenApiParameter(
     'style',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='Encoded string of JSON style following https://girder.github.io/large_image/tilesource_options.html#style',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
 
 STYLE = [palette, band, vmin, vmax, nodata, scheme, style]
 
 # Region Parameters
-left = openapi.Parameter(
-    'left', openapi.IN_QUERY, description='left', type=openapi.TYPE_NUMBER, required=True
+left = OpenApiParameter(
+    'left',
+    location=OpenApiParameter.QUERY,
+    description='left',
+    type=OpenApiTypes.NUMBER,
+    required=True,
 )
-right = openapi.Parameter(
-    'right', openapi.IN_QUERY, description='right', type=openapi.TYPE_NUMBER, required=True
+right = OpenApiParameter(
+    'right',
+    location=OpenApiParameter.QUERY,
+    description='right',
+    type=OpenApiTypes.NUMBER,
+    required=True,
 )
-top = openapi.Parameter(
-    'top', openapi.IN_QUERY, description='top', type=openapi.TYPE_NUMBER, required=True
+top = OpenApiParameter(
+    'top',
+    location=OpenApiParameter.QUERY,
+    description='top',
+    type=OpenApiTypes.NUMBER,
+    required=True,
 )
-bottom = openapi.Parameter(
-    'bottom', openapi.IN_QUERY, description='bottom', type=openapi.TYPE_NUMBER, required=True
+bottom = OpenApiParameter(
+    'bottom',
+    location=OpenApiParameter.QUERY,
+    description='bottom',
+    type=OpenApiTypes.NUMBER,
+    required=True,
 )
-units = openapi.Parameter(
+units = OpenApiParameter(
     'units',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='The projection/units of the region coordinates.',
-    type=openapi.TYPE_STRING,
+    type=OpenApiTypes.STR,
 )
 
 REGION = [left, right, top, bottom, units, fmt_tiff]
 
 # Histogram Parameters
-only = openapi.Parameter(
+only = OpenApiParameter(
     'onlyMinMax',
-    openapi.IN_QUERY,
-    type=openapi.TYPE_BOOLEAN,
+    location=OpenApiParameter.QUERY,
+    type=OpenApiTypes.BOOL,
     default=False,
 )
-bins = openapi.Parameter(
+bins = OpenApiParameter(
     'bins',
-    openapi.IN_QUERY,
-    type=openapi.TYPE_INTEGER,
+    location=OpenApiParameter.QUERY,
+    type=OpenApiTypes.INT,
     default=256,
 )
-density = openapi.Parameter(
+density = OpenApiParameter(
     'density',
-    openapi.IN_QUERY,
-    type=openapi.TYPE_BOOLEAN,
+    location=OpenApiParameter.QUERY,
+    type=OpenApiTypes.BOOL,
     default=False,
 )
-format = openapi.Parameter(
+format = OpenApiParameter(
     'format',
-    openapi.IN_QUERY,
-    type=openapi.TYPE_STRING,
+    location=OpenApiParameter.QUERY,
+    type=OpenApiTypes.STR,
 )
 
 HISTOGRAM = [only, bins, density, format]
 
 
 # Thumbnail Parameters
-max_width = openapi.Parameter(
+max_width = OpenApiParameter(
     'max_width',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='maximum width in pixels.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
     default=256,
 )
-max_height = openapi.Parameter(
+max_height = OpenApiParameter(
     'max_height',
-    openapi.IN_QUERY,
+    location=OpenApiParameter.QUERY,
     description='maximum height in pixels.',
-    type=openapi.TYPE_INTEGER,
+    type=OpenApiTypes.INT,
     default=256,
 )
 

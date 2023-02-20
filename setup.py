@@ -40,7 +40,7 @@ setup(
     install_requires=[
         'django',
         'djangorestframework',
-        'drf-yasg',
+        'drf-spectacular',
         'filelock',
         'large-image>=1.16.2',
     ],
