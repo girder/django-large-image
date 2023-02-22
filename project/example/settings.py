@@ -19,6 +19,14 @@ class ExampleMixin(ConfigMixin):
 
     BASE_DIR = Path(__file__).resolve(strict=True).parent.parent
 
+    REST_FRAMEWORK = {
+        'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    }
+
+    SPECTACULAR_SETTINGS = {
+        'TITLE': 'Django Large Image',
+    }
+
     @staticmethod
     def mutate_configuration(configuration: ComposedConfiguration) -> None:
         # Install local apps first, to ensure any overridden resources are found first
@@ -30,6 +38,7 @@ class ExampleMixin(ConfigMixin):
         configuration.INSTALLED_APPS += [
             's3_file_field',
             'django_large_image',
+            'drf_spectacular',
         ]
 
 

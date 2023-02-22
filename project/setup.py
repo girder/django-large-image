@@ -44,7 +44,7 @@ setup(
         'django-filter',
         'django-oauth-toolkit',
         'djangorestframework',
-        'drf-yasg',
+        'drf-spectacular',
         # Production-only
         'django-composed-configuration[prod]>=0.18',
         'django-s3-file-field[boto3]',

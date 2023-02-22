@@ -4,7 +4,7 @@ from rest_framework import status
 
 @pytest.mark.django_db(transaction=True)
 def test_swagger(authenticated_api_client):
-    response = authenticated_api_client.get('/swagger/?format=openapi')
+    response = authenticated_api_client.get('/swagger/')
     assert status.is_success(response.status_code)
 
 

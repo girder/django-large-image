@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 from large_image.exceptions import TileSourceXYZRangeError
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
@@ -21,10 +21,10 @@ tile_corners_parameters = params.BASE + [params.z, params.x, params.y]
 
 
 class TilesMixin(LargeImageMixinBase):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_metadata_summary,
-        manual_parameters=tile_metadata_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_metadata_summary,
+        parameters=tile_metadata_parameters,
     )
     @action(detail=False, url_path=r'tiles/metadata')
     def tiles_metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -33,10 +33,10 @@ class TilesMixin(LargeImageMixinBase):
         serializer = TileMetadataSerializer(source)
         return Response(serializer.data)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_summary,
-        manual_parameters=tile_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_summary,
+        parameters=tile_parameters,
     )
     @action(
         detail=False,
@@ -55,10 +55,10 @@ class TilesMixin(LargeImageMixinBase):
         mime_type = source.getTileMimeType()
         return HttpResponse(tile_binary, content_type=mime_type)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_corners_summary,
-        manual_parameters=tile_corners_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_corners_summary,
+        parameters=tile_corners_parameters,
     )
     @action(
         detail=False, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'
@@ -79,19 +79,19 @@ class TilesMixin(LargeImageMixinBase):
 
 
 class TilesDetailMixin(TilesMixin):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_metadata_summary,
-        manual_parameters=tile_metadata_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_metadata_summary,
+        parameters=tile_metadata_parameters,
     )
     @action(detail=True, url_path=r'tiles/metadata')
     def tiles_metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().tiles_metadata(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_summary,
-        manual_parameters=tile_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_summary,
+        parameters=tile_parameters,
     )
     @action(
         detail=True,
@@ -103,10 +103,10 @@ class TilesDetailMixin(TilesMixin):
     ) -> HttpResponse:
         return super().tile(request, x, y, z, pk, fmt)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tile_corners_summary,
-        manual_parameters=tile_corners_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=tile_corners_summary,
+        parameters=tile_corners_parameters,
     )
     @action(
         detail=True, methods=['get'], url_path=r'tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+)/corners'

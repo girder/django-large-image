@@ -2,7 +2,7 @@ import io
 import json
 import pathlib
 
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.exceptions import APIException, ValidationError
 from rest_framework.request import Request
@@ -33,10 +33,10 @@ tiffdump_summary = 'Returns tifftools tiffdump JSON. This will raise a `Validati
 
 
 class MetaDataMixin(LargeImageMixinBase):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=metadata_summary,
-        manual_parameters=metadata_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=metadata_summary,
+        parameters=metadata_parameters,
     )
     @action(detail=False, url_path='info/metadata')
     def metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -44,10 +44,10 @@ class MetaDataMixin(LargeImageMixinBase):
         metadata = tilesource.get_metadata(source)
         return Response(metadata)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=metadata_internal_summary,
-        manual_parameters=metadata_internal_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=metadata_internal_summary,
+        parameters=metadata_internal_parameters,
     )
     @action(detail=False, url_path='info/metadata_internal')
     def metadata_internal(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -55,10 +55,10 @@ class MetaDataMixin(LargeImageMixinBase):
         metadata = tilesource.get_metadata_internal(source)
         return Response(metadata)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=bands_summary,
-        manual_parameters=bands_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=bands_summary,
+        parameters=bands_parameters,
     )
     @action(detail=False, url_path='info/bands')
     def bands(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -66,10 +66,10 @@ class MetaDataMixin(LargeImageMixinBase):
         metadata = source.getBandInformation()
         return Response(metadata)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=bands_summary,
-        manual_parameters=band_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=bands_summary,
+        parameters=band_parameters,
     )
     @action(detail=False, url_path='info/band')
     def band(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -79,10 +79,10 @@ class MetaDataMixin(LargeImageMixinBase):
         metadata = source.getOneBandInformation(band)
         return Response(metadata)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=frames_summary,
-        manual_parameters=frames_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=frames_summary,
+        parameters=frames_parameters,
     )
     @action(detail=False, url_path='info/frames')
     def frames(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -90,9 +90,9 @@ class MetaDataMixin(LargeImageMixinBase):
         data = tilesource.get_frames(source)
         return Response(data)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tiffdump_summary,
+    @extend_schema(
+        methods=['GET'],
+        summary=tiffdump_summary,
     )
     @action(detail=False, url_path='info/tiffdump')
     def tiffdump(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -118,54 +118,54 @@ class MetaDataMixin(LargeImageMixinBase):
 
 
 class MetaDataDetailMixin(MetaDataMixin):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=metadata_summary,
-        manual_parameters=metadata_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=metadata_summary,
+        parameters=metadata_parameters,
     )
     @action(detail=True, url_path='info/metadata')
     def metadata(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().metadata(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=metadata_internal_summary,
-        manual_parameters=metadata_internal_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=metadata_internal_summary,
+        parameters=metadata_internal_parameters,
     )
     @action(detail=True, url_path='info/metadata_internal')
     def metadata_internal(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().metadata_internal(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=bands_summary,
-        manual_parameters=bands_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=bands_summary,
+        parameters=bands_parameters,
     )
     @action(detail=True, url_path='info/bands')
     def bands(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().bands(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=bands_summary,
-        manual_parameters=band_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=bands_summary,
+        parameters=band_parameters,
     )
     @action(detail=True, url_path='info/band')
     def band(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().band(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=frames_summary,
-        manual_parameters=frames_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=frames_summary,
+        parameters=frames_parameters,
     )
     @action(detail=True, url_path='info/frames')
     def frames(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().frames(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=tiffdump_summary,
+    @extend_schema(
+        methods=['GET'],
+        summary=tiffdump_summary,
     )
     @action(detail=True, url_path='info/tiffdump')
     def tiffdump(self, request: Request, pk: int = None, **kwargs) -> Response:

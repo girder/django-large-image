@@ -1,5 +1,5 @@
 from django.http import HttpResponse
-from drf_yasg.utils import swagger_auto_schema
+from drf_spectacular.utils import extend_schema
 from rest_framework.decorators import action
 from rest_framework.exceptions import ValidationError
 from rest_framework.request import Request
@@ -21,10 +21,10 @@ histogram_parameters = params.BASE + params.HISTOGRAM
 
 
 class DataMixin(LargeImageMixinBase):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=thumbnail_summary,
-        manual_parameters=thumbnail_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=thumbnail_summary,
+        parameters=thumbnail_parameters,
     )
     @action(
         detail=False,
@@ -41,10 +41,10 @@ class DataMixin(LargeImageMixinBase):
         thumb_data, mime_type = source.getThumbnail(encoding=encoding, width=width, height=height)
         return HttpResponse(thumb_data, content_type=mime_type)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters + params.STYLE,
+    @extend_schema(
+        methods=['GET'],
+        summary=region_summary,
+        parameters=region_parameters + params.STYLE,
     )
     @action(
         detail=False,
@@ -85,10 +85,10 @@ class DataMixin(LargeImageMixinBase):
         tile_binary = open(path, 'rb')
         return HttpResponse(tile_binary, content_type=mime_type)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=pixel_summary,
-        manual_parameters=pixel_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=pixel_summary,
+        parameters=pixel_parameters,
     )
     @action(detail=False, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -98,10 +98,10 @@ class DataMixin(LargeImageMixinBase):
         metadata = source.getPixel(region={'left': left, 'top': top, 'units': 'pixels'})
         return Response(metadata)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=histogram_summary,
-        manual_parameters=histogram_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=histogram_summary,
+        parameters=histogram_parameters,
     )
     @action(detail=False, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None, **kwargs) -> Response:
@@ -128,10 +128,10 @@ class DataMixin(LargeImageMixinBase):
 
 
 class DataDetailMixin(DataMixin):
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=thumbnail_summary,
-        manual_parameters=thumbnail_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=thumbnail_summary,
+        parameters=thumbnail_parameters,
     )
     @action(
         detail=True,
@@ -143,10 +143,10 @@ class DataDetailMixin(DataMixin):
     ) -> HttpResponse:
         return super().thumbnail(request, pk, fmt)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=region_summary,
-        manual_parameters=region_parameters + params.STYLE,
+    @extend_schema(
+        methods=['GET'],
+        summary=region_summary,
+        parameters=region_parameters + params.STYLE,
     )
     @action(
         detail=True,
@@ -156,19 +156,19 @@ class DataDetailMixin(DataMixin):
     def region(self, request: Request, pk: int = None, fmt: str = 'tiff', **kwargs) -> HttpResponse:
         return super().region(request, pk, fmt)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=pixel_summary,
-        manual_parameters=pixel_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=pixel_summary,
+        parameters=pixel_parameters,
     )
     @action(detail=True, url_path='data/pixel')
     def pixel(self, request: Request, pk: int = None, **kwargs) -> Response:
         return super().pixel(request, pk)
 
-    @swagger_auto_schema(
-        method='GET',
-        operation_summary=histogram_summary,
-        manual_parameters=histogram_parameters,
+    @extend_schema(
+        methods=['GET'],
+        summary=histogram_summary,
+        parameters=histogram_parameters,
     )
     @action(detail=True, url_path='data/histogram')
     def histogram(self, request: Request, pk: int = None, **kwargs) -> Response:
