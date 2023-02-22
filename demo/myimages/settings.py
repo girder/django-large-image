@@ -135,8 +135,8 @@ REST_FRAMEWORK = {
 }
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'Resonant GeoData API',
-    'DESCRIPTION': 'Resonant GeoData',
+    'TITLE': 'Django Large Image API',
+    'DESCRIPTION': 'Django Large Image Demo',
     'CONTACT': {'email': 'kitware@kitare.com'},
     'LICENSE': {'name': 'Apache 2.0'},
 }
