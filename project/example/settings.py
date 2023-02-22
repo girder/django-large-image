@@ -38,6 +38,7 @@ class ExampleMixin(ConfigMixin):
         configuration.INSTALLED_APPS += [
             's3_file_field',
             'django_large_image',
+            'drf_spectacular',
         ]
 
 
