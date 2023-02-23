@@ -25,6 +25,10 @@ class ExampleMixin(ConfigMixin):
 
     SPECTACULAR_SETTINGS = {
         'TITLE': 'Django Large Image',
+        'DESCRIPTION': 'Django Large Image Demo',
+        'CONTACT': {'email': 'kitware@kitare.com'},
+        'LICENSE': {'name': 'Apache 2.0'},
+        'SCHEMA_PATH_PREFIX': r'/api',
     }
 
     @staticmethod
