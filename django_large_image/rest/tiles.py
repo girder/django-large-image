@@ -73,7 +73,7 @@ class TilesMixin(LargeImageMixinBase):
             'xmax': xmax,
             'ymin': ymin,
             'ymax': ymax,
-            'proj4': source.getProj4String(),
+            # 'proj4': source.getProj4String(),
         }
         return Response(metadata)
 

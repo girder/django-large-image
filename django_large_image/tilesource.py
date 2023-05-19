@@ -62,7 +62,7 @@ def _metadata_helper(source: FileTileSource, metadata: dict):
     metadata.setdefault('geospatial', is_geospatial(source))
     if metadata['geospatial']:
         metadata['bounds'] = get_bounds(source)
-        metadata['proj4'] = (source.getProj4String(),)
+        # metadata['proj4'] = (source.getProj4String(),)
     if 'frames' not in metadata:
         metadata['frames'] = False
 
