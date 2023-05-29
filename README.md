@@ -116,15 +116,25 @@ Miscellaneous:
 Out of the box, `django-large-image` only depends on the core `large-image`
 module, but you will need a `large-image-source-*` module in order for this
 to work. Most of our users probably want to work with geospatial images so we
-will focus on the `large-image-source-gdal` case, but it is worth noting that
-`large-image` has source modules for a wide variety of image formats
-(e.g., medical image formats for microscopy).
+will focus on the `large-image-source-gdal` and ``large-image-source-rasterio`
+cases, but it is worth noting that `large-image` has source modules for a wide
+variety of image formats (e.g., medical image formats for microscopy).
 
 See [`large-image`](https://github.com/girder/large_image#installation)'s
 installation instructions for more details.
 
 
 ### 🎡 pip
+
+### Rasterio
+
+```bash
+pip install \
+  django-large-image \
+  'large-image[rasterio,pil]>=1.22'
+```
+
+### GDAL
 
 **Tip:* installing GDAL is notoriously difficult, so at Kitware we provide
 pre-built Python wheels with the GDAL binary bundled for easily installation in
@@ -142,6 +152,10 @@ pip install \
 ### 🐍 Conda
 
 Or install with `conda`:
+
+```bash
+conda install -c conda-forge django-large-image large-image-source-rasterio
+```
 
 ```bash
 conda install -c conda-forge django-large-image large-image-source-gdal
@@ -166,7 +180,7 @@ The following are the provided mixin classes and their use case:
 - `LargeImageMixin`: for use with a standard, non-detail `ViewSet`. Users must implement `get_path()`
 - `LargeImageDetailMixin`: for use with a detail viewset like `GenericViewSet`. Users must implement `get_path()`
 - `LargeImageFileDetailMixin`: (most commonly used) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data.
-- `LargeImageVSIFileDetailMixin`: (geospatial) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data that is intended to be read with GDAL. This will access the data over GDAL's Virtual File System interface (a VSI path).
+- `LargeImageVSIFileDetailMixin`: (geospatial) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data that is intended to be read with GDAL/rasterio. This will access the data over GDAL's Virtual File System interface (a VSI path).
 
 Most users will want to use `LargeImageFileDetailMixin` and so the following
 example demonstrate how to use it:
@@ -445,7 +459,7 @@ model in your application. Here is a starting point:
 import os
 from example.core import models
 from celery import shared_task
-import large_image_converter
+import large_image_converter  # requires large-image-source-gdal
 
 
 @shared_task
@@ -460,6 +474,10 @@ def task_convert_cog(my_model_pk):
         # Do something with converted tiff file at `output_path`
         ...
 ```
+
+If using the `rasterio`-based source module, we recommend using
+[`rio-cogeo`](https://github.com/cogeotiff/rio-cogeo)
+over `large_image_converter`.
 
 ## Using with django-raster
 
