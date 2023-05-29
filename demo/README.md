@@ -5,8 +5,9 @@ for storing images.
 
 Install from root directory
 ```
-pip install --find-links https://girder.github.io/large_image_wheels \
+pip install \
   -e . \
+  large-image[rasterio,pil]>=1.22 \
   gunicorn \
   whitenoise \
   pytest \
