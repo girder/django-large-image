@@ -1,3 +1,4 @@
+large-image[rasterio,pil]>=1.22
 gunicorn
 whitenoise
 pytest
