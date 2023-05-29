@@ -134,7 +134,7 @@ pip install \
   'large-image[rasterio,pil]>=1.22'
 ```
 
-### GDal
+### GDAL
 
 **Tip:* installing GDAL is notoriously difficult, so at Kitware we provide
 pre-built Python wheels with the GDAL binary bundled for easily installation in
