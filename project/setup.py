@@ -51,6 +51,7 @@ setup(
         'gunicorn',
         'django-large-image',
         'large-image[rasterio,pil,ometiff,vips,openslide,openjpeg]>=1.22',
+        'pyproj',
         'pooch',
     ],
     extras_require={
