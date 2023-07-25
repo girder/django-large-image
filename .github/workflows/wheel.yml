@@ -28,7 +28,7 @@ jobs:
           TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
         run: twine upload --skip-existing dist/*
       - name: Make index
-        uses: banesullivan/create-pip-index-action@main
+        uses: girder/create-pip-index-action@main
         with:
           package_directory: dist
       - name: Deploy to GH Pages
