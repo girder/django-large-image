@@ -4,17 +4,13 @@ on:
   push:
     branches:
       - main
-  schedule:
-    - cron: "0 0 * * *"
 jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+        uses: actions/setup-python@v5
       - name: Install tox
         run: |
           pip install --upgrade pip
@@ -41,11 +37,9 @@ jobs:
         ports:
           - 9000:9000
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+        uses: actions/setup-python@v5
       - name: Install tox
         run: |
           pip install --upgrade pip
@@ -65,7 +59,7 @@ jobs:
           DJANGO_MINIO_STORAGE_SECRET_KEY: minioSecretKey
           DJANGO_STORAGE_BUCKET_NAME: django-storage
       - name: Upload model graphs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: graphs
           path: .tox/graphs/*.png
@@ -88,11 +82,9 @@ jobs:
         ports:
           - 9000:9000
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+        uses: actions/setup-python@v5
       - name: Install tox
         run: |
           pip install --upgrade pip
@@ -107,11 +99,11 @@ jobs:
           DJANGO_MINIO_STORAGE_SECRET_KEY: minioSecretKey
           DJANGO_STORAGE_BUCKET_NAME: django-storage
       - name: Stash coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: .coverage
           path: project/coverage.xml
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: project/coverage.xml
@@ -119,11 +111,9 @@ jobs:
   test-demo:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
+        uses: actions/setup-python@v5
       - name: Install Dependencies
         run: |
           pip install --upgrade pip
@@ -139,11 +129,11 @@ jobs:
           DJANGO_SETTINGS_MODULE: myimages.settings
           DJANGO_DEBUG: true
       - name: Stash coverage
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: .coverage
           path: demo/coverage.xml
-      - uses: codecov/codecov-action@v2
+      - uses: codecov/codecov-action@v5
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: demo/coverage.xml
