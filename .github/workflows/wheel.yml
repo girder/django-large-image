@@ -11,20 +11,21 @@ jobs:
   publish-wheels:
     name: Publish Wheels
     runs-on: ubuntu-latest
+    environment: release
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
-      - name: Build Weel
+      - name: Build Wheel
         run: |
-          pip install wheel twine
-          python setup.py sdist bdist_wheel
+          pip install build
+          python -m build
       - name: Deploy to PyPI on Tags
         if: github.event_name == 'push' && contains(github.ref, 'refs/tags/')
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_TOKEN }}
-        run: twine upload --skip-existing dist/*
+        uses: pypa/gh-action-pypi-publish@release/v1
       - name: Make index
         uses: banesullivan/create-pip-index-action@main
         with:
