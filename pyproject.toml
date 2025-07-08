@@ -1,8 +1,62 @@
+[build-system]
+requires = ["hatchling", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "django-large-image"
+description="Dynamic tile server in Django built on top of large-image (and GDAL)"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+maintainers = [{ name = "Kitware, Inc.", email = "kitware@kitware.com" }]
+keywords = [
+]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Environment :: Web Environment",
+  "Framework :: Django :: 3.0",
+  "Framework :: Django",
+  "Intended Audience :: Developers",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python",
+]
+dependencies = [
+  "django",
+  "djangorestframework",
+  "drf-spectacular",
+  "filelock",
+  "large-image>=1.16.2",
+]
+dynamic = ["version"]
+
+[project.urls]
+Repository = "https://github.com/girder/django-large-image"
+"Bug Reports" = "https://github.com/girder/django-large-image/issues"
+
+[project.entry-points."large_image.cache"]
+django = "django_large_image.cache:DjangoCache"
+
+[project.optional-dependencies]
+colormaps = [
+  "matplotlib",
+  "cmocean",
+]
+
+[tool.hatch.build]
+packages = [
+  "django_large_image",
+]
+
+[tool.hatch.version]
+source = "vcs"
+
 [tool.black]
 line-length = 100
 skip-string-normalization = true
 target-version = ["py38"]
-exclude='\.eggs|\.git|\.mypy_cache|\.tox|\.venv|_build|buck-out|build|dist|node_modules'
 
 [tool.isort]
 profile = "black"
