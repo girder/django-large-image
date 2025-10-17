@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django_large_image import tilesource
 
 
 class TileMetadataSerializer(serializers.Serializer):
@@ -30,8 +31,11 @@ class TileMetadataSerializer(serializers.Serializer):
         read_only=True,
         source='dli_geospatial',
     )
-    additional_metadata = serializers.JSONField(
+    additional_metadata = serializers.SerializerMethodField(
+        'get_additional_metadata',
         help_text='Any additional metadata on the tile source.',
         read_only=True,
-        source='getMetadata',
     )
+
+    def get_additional_metadata(self, source):
+        return tilesource.get_metadata(source)
