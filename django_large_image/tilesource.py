@@ -61,6 +61,8 @@ def get_bounds(
 
 def _metadata_helper(source: FileTileSource, metadata: dict):
     metadata.setdefault('geospatial', is_geospatial(source))
+    if metadata.get('projection'):
+        metadata['projection'] = str(metadata['projection'])
     if metadata['geospatial']:
         metadata['bounds'] = get_bounds(source)
         # metadata['proj4'] = (source.getProj4String(),)  # not supported by rasterio

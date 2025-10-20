@@ -30,7 +30,7 @@ jobs:
           - 5432:5432
       minio:
         # This image does not require any command arguments (which GitHub Actions don't support)
-        image: bitnami/minio:2022.3.5-debian-10-r3
+        image: bitnamilegacy/minio
         env:
           MINIO_ROOT_USER: minioAccessKey
           MINIO_ROOT_PASSWORD: minioSecretKey
@@ -75,7 +75,7 @@ jobs:
           - 5432:5432
       minio:
         # This image does not require any command arguments (which GitHub Actions don't support)
-        image: bitnami/minio:2022.3.5-debian-10-r3
+        image: bitnamilegacy/minio
         env:
           MINIO_ROOT_USER: minioAccessKey
           MINIO_ROOT_PASSWORD: minioSecretKey
@@ -85,6 +85,9 @@ jobs:
       - uses: actions/checkout@v4
       - name: Set up Python
         uses: actions/setup-python@v5
+      - name: Install ghostscript
+        # test_thumbnail[eps] requires ghostscript
+        run: sudo apt-get install -y ghostscript
       - name: Install tox
         run: |
           pip install --upgrade pip
