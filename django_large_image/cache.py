@@ -65,9 +65,9 @@ class DjangoCache(BaseCache):
     def getCache():  # noqa: N802
         try:
             name = getattr(settings, 'LARGE_IMAGE_CACHE_NAME', 'default')
-            dajngo_cache = caches[name]
+            django_cache = caches[name]
         except ImproperlyConfigured:  # pragma: no cover
             raise TileCacheConfigurationError
         cache_lock = threading.Lock()
-        cache = DjangoCache(dajngo_cache, alias=name)
+        cache = DjangoCache(django_cache, alias=name)
         return cache, cache_lock
