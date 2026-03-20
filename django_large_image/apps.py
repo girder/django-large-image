@@ -35,6 +35,6 @@ class DjangoLargeImageConfig(AppConfig):
             'cache_sources',
         ]:
             settings_attr_name = 'LARGE_IMAGE_' + config_var_name.upper()
-            settings_attr_value = getattr(settings, settings_attr_name)
+            settings_attr_value = getattr(settings, settings_attr_name, None)
             if settings_attr_value is not None:
                 large_image.config.setConfig(config_var_name, settings_attr_value)
