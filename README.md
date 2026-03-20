@@ -214,6 +214,22 @@ urlpatterns = [
 ] + router.urls
 ```
 
+### Optional Cache Configuration
+
+Large Image leverages a cache to optimize performance (see [Large Image caching docs](https://girder.github.io/large_image/caching.html)). By default, `django-large-image` will use a Django-based cache. You may also use certain settings to customize the caching behavior and/or use a different cache backend.
+
+The [Large Image configuration options](https://girder.github.io/large_image/config_options.html) specify several cache options, all prefixed with `cache_`. To set any of these options, specify them in the settings of your Django app as all-caps attributes prefixed with `LARGE_IMAGE_`. For example, to set Redis as your cache backend, you may specify the following settings:
+
+```
+LARGE_IMAGE_CACHE_BACKEND = "redis"
+LARGE_IMAGE_CACHE_REDIS_URL = [redis_url]
+LARGE_IMAGE_CACHE_REDIS_USERNAME = [redis_username]
+LARGE_IMAGE_CACHE_REDIS_PASSWORD = [redis_password]
+```
+
+In addition to the configuration options listed in the docs linked above, one additional configuration option exists to set the name of the cache. You may set `LARGE_IMAGE_CACHE_NAME` as any string value. Otherwise, the name will simply be "default".
+
+
 And that's it!
 
 ### 📝 Example Code
