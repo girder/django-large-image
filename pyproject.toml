@@ -28,7 +28,7 @@ dependencies = [
   "djangorestframework",
   "drf-spectacular",
   "filelock",
-  "large-image>=1.16.2",
+  "large-image>=1.35.4",
 ]
 dynamic = ["version"]
 
