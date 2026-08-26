@@ -390,7 +390,7 @@ the process environment, so set them in `settings.py` (including for Celery work
 that load the same settings module):
 
 ```py
-# settings.py
+# settings.py when using MinIO
 import os
 
 LARGE_IMAGE_FORCE_GDAL_VSIS3 = True
@@ -403,8 +403,6 @@ os.environ.setdefault('AWS_VIRTUAL_HOSTING', 'FALSE')
 os.environ.setdefault('AWS_HTTPS', 'NO')
 ```
 
-For the example project's Docker Compose setup, that resolves to credentials like
-`minioAccessKey` / `minioSecretKey` and endpoint `localhost:9000`.
 
 
 ### 🛠️ Customization
