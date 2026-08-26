@@ -33,6 +33,7 @@ class DjangoLargeImageConfig(AppConfig):
             'cache_tilesource_memory_portion',
             'cache_tilesource_maximum',
             'cache_sources',
+            'force_gdal_vsis3',
         ]:
             settings_attr_name = 'LARGE_IMAGE_' + config_var_name.upper()
             settings_attr_value = getattr(settings, settings_attr_name, None)
