@@ -8,7 +8,7 @@ from django_large_image.rest.viewsets import (
     LargeImageMixin,
     LargeImageVSIFileDetailMixin,
 )
-from django_large_image.utilities import make_vsi
+from large_image.tilesource.geo import make_vsi
 
 
 class ImageFileDetailViewSet(
