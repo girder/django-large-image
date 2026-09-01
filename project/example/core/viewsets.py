@@ -1,4 +1,5 @@
 from example.core import models
+from large_image.tilesource.geo import make_vsi
 from rest_framework import mixins, viewsets
 from rest_framework.exceptions import ValidationError
 
@@ -8,7 +9,6 @@ from django_large_image.rest.viewsets import (
     LargeImageMixin,
     LargeImageVSIFileDetailMixin,
 )
-from django_large_image.utilities import make_vsi
 
 
 class ImageFileDetailViewSet(

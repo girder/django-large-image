@@ -50,7 +50,7 @@ setup(
         'django-s3-file-field[boto3]',
         'gunicorn',
         'django-large-image',
-        'large-image[rasterio,pil,ometiff,vips,openslide,openjpeg]>=1.22',
+        'large-image[rasterio,pil,ometiff,vips,openslide,openjpeg]>=1.35.4',
         'pyproj',
         'pooch',
     ],

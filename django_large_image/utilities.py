@@ -4,7 +4,6 @@ import os
 import pathlib
 import shutil
 import tempfile
-from urllib.parse import urlencode
 
 from django.conf import settings
 from django.core.files import File
@@ -69,21 +68,6 @@ def get_cache_dir() -> pathlib.Path:
     path = pathlib.Path(get_temp_dir(), 'file_cache')
     path.mkdir(parents=True, exist_ok=True)
     return path
-
-
-def make_vsi(url: str, **options) -> str:
-    if str(url).startswith('s3://'):
-        s3_path = url.replace('s3://', '')
-        vsi = f'/vsis3/{s3_path}'
-    else:
-        gdal_options = {
-            'url': str(url),
-            'use_head': 'no',
-            'list_dir': 'no',
-        }
-        gdal_options.update(options)
-        vsi = f'/vsicurl?{urlencode(gdal_options)}'
-    return vsi
 
 
 def get_lock_dir() -> pathlib.Path:

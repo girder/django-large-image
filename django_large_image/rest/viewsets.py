@@ -3,6 +3,7 @@ import pathlib
 from typing import Union
 
 from django.db.models.fields.files import FieldFile
+from large_image.tilesource.geo import make_vsi
 from rest_framework.exceptions import APIException
 from rest_framework.request import Request
 
@@ -83,7 +84,7 @@ class LargeImageVSIFileDetailMixin(LargeImageFileDetailMixin):
             with utilities.patch_internal_presign(field_file):
                 # Grab URL and pass back VSI path
                 # DO NOT return here to make sure this context is cleared
-                vsi = utilities.make_vsi(field_file.url)
+                vsi = make_vsi(field_file.url)
             return vsi
         # Checkout file locally if no VSI
         return LargeImageFileDetailMixin.get_path(self, request, pk)

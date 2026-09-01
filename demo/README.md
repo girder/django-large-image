@@ -7,7 +7,7 @@ Install from root directory
 ```
 pip install \
   -e . \
-  large-image[rasterio,pil]>=1.22 \
+  large-image[rasterio,pil]>=1.35.4 \
   gunicorn \
   whitenoise \
   pytest \

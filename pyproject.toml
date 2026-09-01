@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "django-large-image"
 description="Dynamic tile server in Django built on top of large-image (and GDAL)"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 license = "Apache-2.0"
 license-files = ["LICENSE", "NOTICE"]
 maintainers = [{ name = "Kitware, Inc.", email = "kitware@kitware.com" }]
@@ -20,7 +20,7 @@ classifiers = [
   "Intended Audience :: Developers",
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.10",
   "Programming Language :: Python",
 ]
 dependencies = [
@@ -28,7 +28,7 @@ dependencies = [
   "djangorestframework",
   "drf-spectacular",
   "filelock",
-  "large-image>=1.16.2",
+  "large-image>=1.35.4",
 ]
 dynamic = ["version"]
 

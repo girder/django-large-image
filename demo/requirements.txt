@@ -1,4 +1,4 @@
-large-image[rasterio,pil]>=1.22
+large-image[rasterio,pil]>=1.35.4
 pyproj
 gunicorn
 whitenoise

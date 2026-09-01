@@ -40,6 +40,7 @@ reprojection, image encoding) to create image tiles on-the-fly.
 - [Installation](#%EF%B8%8F-installation)
 - [Usage](#-usage)
   - [Example Code](#-example-code)
+  - [GDAL Virtual File System (VSI)](#-gdal-virtual-file-system-vsi)
   - [Customization](#%EF%B8%8F-customization)
   - [Non-Detail ViewSets](#-non-detail-viewsets)
   - [Styling](#-styling)
@@ -131,7 +132,7 @@ installation instructions for more details.
 ```bash
 pip install \
   django-large-image \
-  'large-image[rasterio,pil]>=1.22'
+  'large-image[rasterio,pil]>=1.35.4'
 ```
 
 ### GDAL
@@ -146,7 +147,7 @@ production **linux** environments. To install our GDAL wheel, use:
 pip install \
   --find-links https://girder.github.io/large_image_wheels \
   django-large-image \
-  'large-image[gdal,pil]>=1.16.2'
+  'large-image[gdal,pil]>=1.35.4'
 ```
 
 ### 🐍 Conda
@@ -180,7 +181,7 @@ The following are the provided mixin classes and their use case:
 - `LargeImageMixin`: for use with a standard, non-detail `ViewSet`. Users must implement `get_path()`
 - `LargeImageDetailMixin`: for use with a detail viewset like `GenericViewSet`. Users must implement `get_path()`
 - `LargeImageFileDetailMixin`: (most commonly used) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data.
-- `LargeImageVSIFileDetailMixin`: (geospatial) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data that is intended to be read with GDAL/rasterio. This will access the data over GDAL's Virtual File System interface (a VSI path).
+- `LargeImageVSIFileDetailMixin`: (geospatial) for use with a detail viewset like `GenericViewSet` where the associated model has a `FileField` storing the image data that is intended to be read with GDAL/rasterio. This will access the data over GDAL's Virtual File System interface (a VSI path) instead of downloading the file to local disk.  Useful for S3 or MinIO storage of images. See [GDAL Virtual File System (VSI)](#-gdal-virtual-file-system-vsi) for configuration details.
 
 Most users will want to use `LargeImageFileDetailMixin` and so the following
 example demonstrate how to use it:
@@ -325,6 +326,85 @@ Please note the example Django project in the `project/` directory of this
 repository that shows how to use `django-large-image` in a [`girder-4`](https://github.com/girder/cookiecutter-girder-4) project.
 
 
+### GDAL Virtual File System (VSI)
+
+For geospatial images stored remotely (S3, MinIO, or HTTP URLs), you can avoid
+downloading entire files by reading them through [GDAL's Virtual File System](https://gdal.org/user/virtual_file_systems.html).
+
+#### `LargeImageVSIFileDetailMixin`
+
+Use `LargeImageVSIFileDetailMixin` instead of `LargeImageFileDetailMixin` when
+your `FileField` is backed by remote storage (for example,
+[`S3FileField`](https://github.com/girder/django-s3-file-field) or MinIO) and
+you want GDAL or rasterio to read the image in place.
+
+```py
+# viewsets.py
+from rest_framework import viewsets
+
+from django_large_image.rest import LargeImageVSIFileDetailMixin
+
+
+class MyRemoteImageViewSet(viewsets.GenericViewSet, LargeImageVSIFileDetailMixin):
+    FILE_FIELD_NAME = 'file'
+```
+
+This mixin:
+
+- Reads the file URL from the model's `FileField`
+- Converts it to a GDAL VSI path via `make_vsi` (see below)
+- Passes that path to `large-image` for tile serving
+
+#### `make_vsi`
+
+Use [`large_image.tilesource.geo.make_vsi`](https://github.com/girder/large_image/blob/master/large_image/tilesource/geo.py)
+to convert a URL into a GDAL-compatible VSI path:
+
+- `s3://bucket/key.tif` to`/vsis3/bucket/key.tif`
+- `https://...` or `http://...` to `/vsicurl?...` by default, or `/vsis3/...` when
+  `force_gdal_vsis3` is enabled (see MinIO below)
+
+#### GDAL environment variables
+
+GDAL reads configuration from environment variables (or GDAL config options).
+The following are commonly needed when using VSI paths.
+
+
+`AWS_ACCESS_KEY_ID` - S3 or S3-compatible credentials
+`AWS_SECRET_ACCESS_KEY` - S3 or S3-compatible credentials
+`AWS_S3_ENDPOINT` - Non-AWS S3 (MinIO, etc.) - Host and port, e.g. `localhost:9000`. GDAL 3.11+ also accepts `http://` or `https://` URLs.
+`AWS_VIRTUAL_HOSTING` - MinIO and path-style buckets - Set to `FALSE` for MinIO
+`AWS_HTTPS` - Local HTTP MinIO - Set to `NO` when MinIO is not using TLS
+`AWS_REGION` - Optional - Defaults to `us-east-1`
+`LARGE_IMAGE_FORCE_GDAL_VSIS3` - MinIO and other S3-compatible storage - When `true`, `make_vsi` maps `http`/`https` URLs to `/vsis3/` instead of `/vsicurl/`. Set as a Django setting or environment variable.
+
+See the [GDAL /vsis3/ documentation](https://gdal.org/en/stable/user/virtual_file_systems.html#vsis3) for the full list of supported options.
+
+#### Using MinIO
+
+When using MinIO (or another S3-compatible store) with `LargeImageVSIFileDetailMixin`,
+enable `force_gdal_vsis3` and configure GDAL's AWS variables so `make_vsi` converts
+storage URLs to `/vsis3/` paths instead of `/vsicurl/`, even when the `FileField`
+URL is `http` or `https` rather than `s3://`. GDAL reads the AWS variables from
+the process environment, so set them in `settings.py` (including for Celery workers
+that load the same settings module):
+
+```py
+# settings.py when using MinIO
+import os
+
+LARGE_IMAGE_FORCE_GDAL_VSIS3 = True
+
+# GDAL /vsis3/ access for MinIO. Use the same values as your MinIO storage config.
+os.environ.setdefault('AWS_ACCESS_KEY_ID', MINIO_STORAGE_ACCESS_KEY)
+os.environ.setdefault('AWS_SECRET_ACCESS_KEY', MINIO_STORAGE_SECRET_KEY)
+os.environ.setdefault('AWS_S3_ENDPOINT', MINIO_STORAGE_ENDPOINT)
+os.environ.setdefault('AWS_VIRTUAL_HOSTING', 'FALSE')
+os.environ.setdefault('AWS_HTTPS', 'NO')
+```
+
+
+
 ### 🛠️ Customization
 
 The mixin classes are modularly designed and able to be subclassed
@@ -370,8 +450,9 @@ class URLImageFileAdmin(admin.ModelAdmin):
 from example.core import models
 from rest_framework import mixins, viewsets
 
+from large_image.tilesource.geo import make_vsi
+
 from django_large_image.rest import LargeImageDetailMixin
-from django_large_image.utilities import make_vsi
 
 
 class URLLargeImageMixin(LargeImageDetailMixin):
@@ -407,8 +488,9 @@ with the `LargeImageMixin` like so:
 from rest_framework import viewsets
 from rest_framework.exceptions import ValidationError
 
+from large_image.tilesource.geo import make_vsi
+
 from django_large_image.rest import LargeImageMixin
-from django_large_image.utilities import make_vsi
 
 
 class URLLargeImageViewSet(viewsets.ViewSet, LargeImageMixin):
