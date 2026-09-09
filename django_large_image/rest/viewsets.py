@@ -75,16 +75,24 @@ class LargeImageFileDetailMixin(LargeImageDetailMixin):
 
 class LargeImageVSIFileDetailMixin(LargeImageFileDetailMixin):
     USE_VSI: bool = True
+    # When True (default), build a VSI path from the FieldFile's (presigned) URL.
+    # When False, use the storage bucket and object key for S3/MinIO (/vsis3/).
+    USE_PRESIGNED_URLS: bool = True
 
     @wraps(LargeImageFileDetailMixin.get_path)
     def get_path(self, request: Request, pk: int = None) -> Union[str, pathlib.Path]:
         """Wrap get_path with VSI support."""
         field_file = self.get_field_file()
         if self.USE_VSI:
-            with utilities.patch_internal_presign(field_file):
-                # Grab URL and pass back VSI path
-                # DO NOT return here to make sure this context is cleared
-                vsi = make_vsi(field_file.url)
-            return vsi
+            if self.USE_PRESIGNED_URLS:
+                with utilities.patch_internal_presign(field_file):
+                    # Grab URL and pass back VSI path
+                    # DO NOT return here to make sure this context is cleared
+                    vsi = make_vsi(field_file.url)
+                return vsi
+            try:
+                return make_vsi(utilities.field_file_to_s3_url(field_file))
+            except TypeError as exc:
+                raise APIException(str(exc)) from exc
         # Checkout file locally if no VSI
         return LargeImageFileDetailMixin.get_path(self, request, pk)
