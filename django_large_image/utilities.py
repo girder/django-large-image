@@ -54,6 +54,37 @@ def patch_internal_presign(f: FieldFile):
     yield
 
 
+def field_file_to_s3_url(f: FieldFile) -> str:
+    """Build an ``s3://bucket/key`` URL from an S3 or MinIO-backed ``FieldFile``.
+
+    This is intended for GDAL ``/vsis3/`` access via ``make_vsi``, using the
+    storage bucket and object key directly instead of a presigned HTTP URL.
+    """
+    storage = f.storage
+    bucket = getattr(storage, 'bucket_name', None)
+    if not bucket:
+        raise TypeError(
+            'USE_PRESIGNED_URLS=False requires MinIO or django-storages S3 storage; '
+            f'got {type(storage).__name__}.'
+        )
+
+    name = f.name
+    # django-storages S3 stores the unprefixed name on the field and applies
+    # ``location`` when talking to the bucket. MinIO uses the field name as the key.
+    if hasattr(storage, 'location'):  # S3 storage
+        try:
+            from storages.utils import clean_name, safe_join
+        except ImportError as exc:  # pragma: no cover
+            raise TypeError(
+                'USE_PRESIGNED_URLS=False with S3 storage requires django-storages.'
+            ) from exc
+        key = safe_join(storage.location or '', clean_name(name)).lstrip('/')
+    else:  # MinIO storage
+        key = str(name).replace('\\', '/').lstrip('/')
+
+    return f's3://{bucket}/{key}'
+
+
 def get_temp_dir() -> pathlib.Path:
     path = pathlib.Path(
         getattr(

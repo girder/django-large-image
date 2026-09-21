@@ -347,13 +347,18 @@ from django_large_image.rest import LargeImageVSIFileDetailMixin
 
 class MyRemoteImageViewSet(viewsets.GenericViewSet, LargeImageVSIFileDetailMixin):
     FILE_FIELD_NAME = 'file'
+    # Optional: skip presigned URLs and open via /vsis3/bucket/key
+    # USE_PRESIGNED_URLS = False
 ```
 
 This mixin:
 
-- Reads the file URL from the model's `FileField`
-- Converts it to a GDAL VSI path via `make_vsi` (see below)
-- Passes that path to `large-image` for tile serving
+- By default (`USE_PRESIGNED_URLS = True`), reads the file URL from the model's
+  `FileField` (often a presigned URL), converts it with `make_vsi`, and passes
+  that path to `large-image`
+- With `USE_PRESIGNED_URLS = False`, builds an `s3://bucket/key` URL from the
+  storage backend (MinIO or django-storages S3) so `make_vsi` always yields a
+  `/vsis3/` path — preferred when GDAL AWS credentials/endpoint are configured
 
 #### `make_vsi`
 
@@ -383,17 +388,26 @@ See the [GDAL /vsis3/ documentation](https://gdal.org/en/stable/user/virtual_fil
 #### Using MinIO
 
 When using MinIO (or another S3-compatible store) with `LargeImageVSIFileDetailMixin`,
-enable `force_gdal_vsis3` and configure GDAL's AWS variables so `make_vsi` converts
-storage URLs to `/vsis3/` paths instead of `/vsicurl/`, even when the `FileField`
-URL is `http` or `https` rather than `s3://`. GDAL reads the AWS variables from
-the process environment, so set them in `settings.py` (including for Celery workers
-that load the same settings module):
+prefer `USE_PRESIGNED_URLS = False` on the viewset so the mixin builds
+`s3://bucket/key` → `/vsis3/bucket/key` from storage metadata. Configure GDAL's
+AWS variables so `/vsis3/` can reach MinIO. GDAL reads those from the process
+environment, so set them in `settings.py` (including for Celery workers that
+load the same settings module):
 
 ```py
-# settings.py when using MinIO
+# viewsets.py
+class MyMinioImageViewSet(viewsets.GenericViewSet, LargeImageVSIFileDetailMixin):
+    FILE_FIELD_NAME = 'file'
+    USE_PRESIGNED_URLS = False
+```
+
+```py
+# settings.py when using MinIO with /vsis3/
 import os
 
-LARGE_IMAGE_FORCE_GDAL_VSIS3 = True
+# Only needed if you keep USE_PRESIGNED_URLS=True and pass http/https URLs
+# through make_vsi instead of bucket/key:
+# LARGE_IMAGE_FORCE_GDAL_VSIS3 = True
 
 # GDAL /vsis3/ access for MinIO. Use the same values as your MinIO storage config.
 os.environ.setdefault('AWS_ACCESS_KEY_ID', MINIO_STORAGE_ACCESS_KEY)
